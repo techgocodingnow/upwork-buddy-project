@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:upwork-buddy-project}",
+            "name": "Debug UpworkBuddy",
+            "target": "UpworkBuddy",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug UpworkBuddy"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:upwork-buddy-project}",
+            "name": "Release UpworkBuddy",
+            "target": "UpworkBuddy",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release UpworkBuddy"
+        }
+    ]
+}

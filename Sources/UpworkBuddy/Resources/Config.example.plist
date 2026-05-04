@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>UpworkClientId</key>
+    <string>your_client_id_here</string>
+    <key>UpworkClientSecret</key>
+    <string>your_client_secret_here</string>
+    <key>UpworkAPIBaseURL</key>
+    <string>https://api.upwork.com/graphql</string>
+    <key>UpworkAuthorizeURL</key>
+    <string>https://www.upwork.com/ab/account-security/oauth2/authorize</string>
+    <key>UpworkTokenURL</key>
+    <string>https://www.upwork.com/api/v3/oauth2/token</string>
+    <key>UpworkRedirectURI</key>
+    <string>http://127.0.0.1:7421/callback</string>
+</dict>
+</plist>
