@@ -80,6 +80,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             _ = store.snapshot
             _ = store.isAuthenticated
             _ = store.hideSensitive
+            _ = store.menuBarMetric
         } onChange: { [weak self] in
             DispatchQueue.main.async {
                 self?.refreshStatusButton()
@@ -132,9 +133,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let valueText: String
         let attrs: [NSAttributedString.Key: Any]
         if store.isAuthenticated {
-            let amount = store.todaySnapshot.totalEarnings
-            let formatter = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
-            valueText = " " + (amount > 0 || store.hideSensitive ? formatter.compact(amount) : "$—")
+            valueText = " " + menuBarValueText()
             attrs = [.font: font, .baselineOffset: -1.0]
         } else {
             valueText = ""
@@ -147,6 +146,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             composed.append(NSAttributedString(string: valueText, attributes: attrs))
         }
         button.attributedTitle = composed
+    }
+
+    private func menuBarValueText() -> String {
+        switch store.menuBarMetric {
+        case .hours:
+            if store.hideSensitive { return "••••" }
+            let hours = store.todaySnapshot.totalHours
+            return hours < 0.05 ? "0h" : hours.asHours()
+        case .earnings:
+            let amount = store.todaySnapshot.totalEarnings
+            let formatter = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
+            return amount > 0 || store.hideSensitive ? formatter.compact(amount) : "$—"
+        }
     }
 
     // MARK: - Popover

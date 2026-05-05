@@ -1,6 +1,11 @@
 import Foundation
 import Observation
 
+enum MenuBarMetric: String, CaseIterable, Sendable {
+    case hours
+    case earnings
+}
+
 @MainActor
 @Observable
 final class AppStore {
@@ -22,6 +27,7 @@ final class AppStore {
     private static let kRefreshSeconds = "UpworkBuddyRefreshSeconds"
     private static let kCurrencyCode   = "UpworkBuddyCurrency"
     private static let kHideSensitive  = "UpworkBuddyHideSensitive"
+    private static let kMenuBarMetric  = "UpworkBuddyMenuBarMetric"
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -35,6 +41,10 @@ final class AppStore {
         didSet { UserDefaults.standard.set(hideSensitive, forKey: Self.kHideSensitive) }
     }
 
+    var menuBarMetric: MenuBarMetric {
+        didSet { UserDefaults.standard.set(menuBarMetric.rawValue, forKey: Self.kMenuBarMetric) }
+    }
+
     private let api = UpworkAPI()
     private var refreshTask: Task<Void, Never>?
     private var aceId: String?
@@ -45,6 +55,8 @@ final class AppStore {
         self.refreshIntervalSeconds = storedRefresh > 0 ? storedRefresh : 300
         self.currency = defaults.string(forKey: Self.kCurrencyCode) ?? "USD"
         self.hideSensitive = defaults.bool(forKey: Self.kHideSensitive)
+        let storedMetric = defaults.string(forKey: Self.kMenuBarMetric).flatMap(MenuBarMetric.init(rawValue:))
+        self.menuBarMetric = storedMetric ?? .hours
     }
 
     // MARK: - Bootstrap

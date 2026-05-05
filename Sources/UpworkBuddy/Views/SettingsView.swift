@@ -28,6 +28,17 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
+                Text("Menu bar shows")
+                    .font(.subheadline.weight(.medium))
+                Picker("", selection: $store.menuBarMetric) {
+                    Text("Hours today").tag(MenuBarMetric.hours)
+                    Text("Earnings today").tag(MenuBarMetric.earnings)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
                 Toggle(isOn: $store.hideSensitive) {
                     Text("Hide sensitive amounts")
                         .font(.subheadline.weight(.medium))
@@ -64,7 +75,7 @@ struct SettingsView: View {
             .controlSize(.large)
         }
         .padding(20)
-        .frame(width: 360, height: 440)
+        .frame(width: 360, height: 500)
     }
 
     /// Derived binding: stored as seconds in AppStore, surfaced as minutes in the picker.
