@@ -61,6 +61,11 @@ final class AggregationTests: XCTestCase {
 
         // 3 distinct workdays (5/1, 5/3, 5/4).
         XCTAssertEqual(daily.count, 3)
+
+        // Hero / menubar total must reflect gross when no transactions have posted.
+        let projectsSum = snapshot.projects.reduce(0) { $0 + $1.earnings }
+        XCTAssertEqual(snapshot.totalEarnings, projectsSum, accuracy: 0.01)
+        XCTAssertGreaterThan(snapshot.totalEarnings, 0)
     }
 
     func testMergeOverlaysNetEarningsByClientName() {
