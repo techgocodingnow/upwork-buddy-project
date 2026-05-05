@@ -6,3 +6,15 @@ Package.resolved
 *.app
 *.zip
 Sources/UpworkBuddy/Resources/Config.plist
+
+# graphify outputs
+graphify-out/
+# Added by code-review-graph
+.code-review-graph/
+
+# Per-developer agent/IDE tooling (not project-wide)
+.claude/
+.mcp.json
+.opencode.json
+AGENTS.md
+GEMINI.md

@@ -2,6 +2,9 @@ import Foundation
 
 struct CurrencyFormat: Sendable {
     let code: String
+    var masked: Bool = false
+
+    static let maskGlyph = "••••"
 
     private func formatter(fractionDigits: Int) -> NumberFormatter {
         let f = NumberFormatter()
@@ -12,11 +15,18 @@ struct CurrencyFormat: Sendable {
         return f
     }
 
+    private func maskedString() -> String {
+        let symbol = formatter(fractionDigits: 0).currencySymbol ?? ""
+        return symbol + Self.maskGlyph
+    }
+
     func string(_ amount: Double) -> String {
-        formatter(fractionDigits: 2).string(from: NSNumber(value: amount)) ?? "—"
+        if masked { return maskedString() }
+        return formatter(fractionDigits: 2).string(from: NSNumber(value: amount)) ?? "—"
     }
 
     func compact(_ amount: Double) -> String {
+        if masked { return maskedString() }
         let digits = abs(amount) < 1 ? 2 : (abs(amount) < 100 ? 2 : 0)
         return formatter(fractionDigits: digits).string(from: NSNumber(value: amount)) ?? "—"
     }

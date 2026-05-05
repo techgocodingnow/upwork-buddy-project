@@ -5,6 +5,7 @@ import Observation
 private let popoverWidth: CGFloat = 380
 private let popoverHeight: CGFloat = 600
 private let menubarTitleFontSize: CGFloat = 13
+private let menubarIconPointSize: CGFloat = 16
 
 @main
 struct UpworkBuddyApp: App {
@@ -22,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private let store = AppStore()
     private var refreshTask: Task<Void, Never>?
     private var observationToken: NSObjectProtocol?
+    private var pendingStatusRefresh = false
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -77,6 +79,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             _ = store.todaySnapshot
             _ = store.snapshot
             _ = store.isAuthenticated
+            _ = store.hideSensitive
         } onChange: { [weak self] in
             DispatchQueue.main.async {
                 self?.refreshStatusButton()
@@ -91,10 +94,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem.button else { return }
 
-        let config = NSImage.SymbolConfiguration(pointSize: menubarTitleFontSize, weight: .medium)
-        let icon = NSImage(systemSymbolName: "briefcase.fill", accessibilityDescription: "UpworkBuddy")?
-            .withSymbolConfiguration(config)
-        icon?.isTemplate = true
+        let icon = makeMenuBarIcon()
         button.image = icon
         button.imagePosition = .imageLeading
 
@@ -108,14 +108,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private func refreshStatusButton() {
         guard let button = statusItem.button else { return }
 
+        // Avoid resizing the status item while the popover is open — its anchor
+        // becomes invalid mid-update and NSPopover snaps to the screen corner.
+        if popover?.isShown == true {
+            pendingStatusRefresh = true
+            return
+        }
+
+        // Drop the standalone image — the attributed title carries the icon
+        // via NSTextAttachment. Leaving both set duplicates the briefcase.
         button.image = nil
         button.imagePosition = .noImage
 
         let font = NSFont.monospacedDigitSystemFont(ofSize: menubarTitleFontSize, weight: .medium)
-        let config = NSImage.SymbolConfiguration(pointSize: menubarTitleFontSize, weight: .medium)
-        let icon = NSImage(systemSymbolName: "briefcase.fill", accessibilityDescription: "UpworkBuddy")?
-            .withSymbolConfiguration(config)
-        icon?.isTemplate = true
+        let icon = makeMenuBarIcon()
 
         let attachment = NSTextAttachment()
         attachment.image = icon
@@ -127,8 +133,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let attrs: [NSAttributedString.Key: Any]
         if store.isAuthenticated {
             let amount = store.todaySnapshot.totalEarnings
-            let formatter = CurrencyFormat(code: store.currency)
-            valueText = " " + (amount > 0 ? formatter.compact(amount) : "$—")
+            let formatter = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
+            valueText = " " + (amount > 0 || store.hideSensitive ? formatter.compact(amount) : "$—")
             attrs = [.font: font, .baselineOffset: -1.0]
         } else {
             valueText = ""
@@ -200,4 +206,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func popoverShouldDetach(_ popover: NSPopover) -> Bool { false }
+
+    func popoverDidClose(_ notification: Notification) {
+        guard pendingStatusRefresh else { return }
+        pendingStatusRefresh = false
+        refreshStatusButton()
+    }
+
+    private func makeMenuBarIcon() -> NSImage? {
+        if let url = Bundle.module.url(
+            forResource: "MenuBarIconTemplate",
+            withExtension: "png",
+            subdirectory: "GeneratedBrand"
+        ),
+           let image = NSImage(contentsOf: url) {
+            image.size = NSSize(width: menubarIconPointSize, height: menubarIconPointSize)
+            image.isTemplate = true
+            image.accessibilityDescription = "UpworkBuddy"
+            return image
+        }
+
+        let config = NSImage.SymbolConfiguration(pointSize: menubarTitleFontSize, weight: .medium)
+        let fallback = NSImage(systemSymbolName: "briefcase.fill", accessibilityDescription: "UpworkBuddy")?
+            .withSymbolConfiguration(config)
+        fallback?.isTemplate = true
+        return fallback
+    }
 }

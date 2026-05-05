@@ -1,43 +1,80 @@
 import Foundation
 
 /// Upwork GraphQL query strings.
-///
-/// Field names for `companySelector` and `contractTimeReport` are documented; the
-/// `activeContracts` query uses a community-observed shape and should be re-confirmed
-/// via `Scripts/introspect-schema.sh` against your tenant before relying on it.
 enum Queries {
-    static let companySelector = """
-    query CompanySelector {
-      companySelector {
-        items {
-          title
-          organizationId
-        }
+    /// Current user's accounting entity ID — required as `aceIds_any` for
+    /// `transactionHistory`. Freelancer-perspective ledger key.
+    static let accountingEntity = """
+    query AccountingEntity {
+      accountingEntity {
+        id
       }
     }
     """
 
-    /// Returns one row per (contract, day) within `[rangeStart, rangeEnd]`.
-    /// Schema notes (verified via introspection 2026-05):
-    /// - `totalCharges` is a scalar `Float`, not an object.
-    /// - `ContractDetails` has no `hourlyChargeRate`; derive rate from earnings/hours.
-    static let contractTimeReport = """
-    query ContractTimeReport($filter: TimeReportFilter!) {
-      contractTimeReport(filter: $filter) {
-        edges {
-          node {
-            dateWorkedOn
-            totalHoursWorked
-            totalCharges
-            contract {
-              id
-              title
+    /// Freelancer-side ledger. Rows include earnings + fee adjustments.
+    /// - `type`: `APInvoice` (earnings) | `APAdjustment` (fees, VAT, WHT, Service Fee)
+    /// - `accountingSubtype`: `Hourly`, `Bonus`, `Service Fee`, `VAT`, `WHT`, ...
+    /// - `transactionAmount`: `Money { rawValue: String, currency, displayValue }`
+    /// - `assignmentCompanyName` is the client name; `assignmentTeamId` may be null.
+    static let transactionHistory = """
+    query TransactionHistory($filter: TransactionHistoryFilter!) {
+      transactionHistory(transactionHistoryFilter: $filter) {
+        transactionDetail {
+          transactionHistoryRow {
+            transactionCreationDate
+            type
+            accountingSubtype
+            assignmentDeveloperName
+            assignmentCompanyName
+            assignmentTeamId
+            transactionAmount {
+              rawValue
+              currency
             }
           }
         }
       }
     }
     """
+
+    /// Freelancer-side hours + per-contract breakdown via `user.contractTimeReport`.
+    /// `timeReportDate_bt` takes compact `YYYYMMDD` strings (NOT ISO8601). Input
+    /// type name varies by tenant; literals are inlined to avoid that lookup.
+    /// Returns gross `totalCharges` (hours × rate, before fees), real `totalHoursWorked`,
+    /// and contract metadata including `hourlyTerms[].hourlyRate.rawValue`.
+    static func contractTimeReport(rangeStart: String, rangeEnd: String) -> String {
+        """
+        query ContractTimeReport {
+          user {
+            contractTimeReport(
+              timeReportDate_bt: {rangeStart: "\(rangeStart)", rangeEnd: "\(rangeEnd)"}
+            ) {
+              edges {
+                node {
+                  dateWorkedOn
+                  weekWorkedOn
+                  totalHoursWorked
+                  totalCharges
+                  contract {
+                    id
+                    title
+                    status
+                    clientTeam { name }
+                    terms {
+                      hourlyTerms {
+                        hourlyRate { rawValue currency }
+                      }
+                    }
+                  }
+                }
+              }
+              pageInfo { endCursor hasNextPage }
+            }
+          }
+        }
+        """
+    }
 
     /// `__schema` introspection slice — used by Introspection.swift in DEBUG builds.
     static let introspectType = """

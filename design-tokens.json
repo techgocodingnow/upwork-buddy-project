@@ -1,0 +1,54 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "source": "CodeBurn screenshot clone",
+  "color": {
+    "accent":        { "value": "#C2611C", "type": "color", "note": "Primary burnt orange — CTAs, active chips, brand accent" },
+    "accent.deep":   { "value": "#8B3A0F", "type": "color", "note": "Hero amount, deep brand text" },
+    "accent.soft":   { "value": "#D6986A", "type": "color", "note": "Soft fill / illustrations" },
+    "accent.muted":  { "value": "rgba(199,114,51,0.18)", "type": "color", "note": "Active chip wash" },
+
+    "bg.top":        { "value": "#EDEAE6", "type": "color" },
+    "bg.bottom":     { "value": "#DCD8D4", "type": "color" },
+    "surface":       { "value": "#FAF8F4", "type": "color" },
+    "chip.bg":       { "value": "#D7D3CE", "type": "color" },
+    "chip.active":   { "value": "#C2611C", "type": "color" },
+    "track.bg":      { "value": "#CCC7C0", "type": "color" },
+    "divider":       { "value": "rgba(202,193,184,0.6)", "type": "color" },
+
+    "text.primary":   { "value": "#1C1C1C", "type": "color" },
+    "text.secondary": { "value": "#615B57", "type": "color" },
+    "text.tertiary":  { "value": "#8C857F", "type": "color" }
+  },
+  "typography": {
+    "display":   { "value": { "fontWeight": 700, "fontSize": "36px", "lineHeight": "1.05" } },
+    "title":     { "value": { "fontWeight": 600, "fontSize": "15px" } },
+    "body":      { "value": { "fontWeight": 400, "fontSize": "13px" } },
+    "label":     { "value": { "fontWeight": 500, "fontSize": "12px" } },
+    "caption":   { "value": { "fontWeight": 400, "fontSize": "11px" } },
+    "micro":     { "value": { "fontWeight": 500, "fontSize": "10px", "letterSpacing": "0.06em", "textTransform": "uppercase" } }
+  },
+  "radius": {
+    "sm":  { "value": "6px" },
+    "md":  { "value": "8px" },
+    "lg":  { "value": "10px" },
+    "pill":{ "value": "999px" }
+  },
+  "spacing": {
+    "1": { "value": "4px" },
+    "2": { "value": "8px" },
+    "3": { "value": "10px" },
+    "4": { "value": "14px" },
+    "5": { "value": "16px" },
+    "6": { "value": "20px" }
+  },
+  "shadow": {
+    "chip":  { "value": "0 0.5px 1px rgba(0,0,0,0.06)" },
+    "card":  { "value": "0 1px 3px rgba(0,0,0,0.05)" }
+  },
+  "patterns": {
+    "section.dot":     "small 5px accent dot before label — replaces traditional headers",
+    "stat.bar":        "horizontal capsule track with accent fill — used for activity rows",
+    "chart.bars":      "rounded 1.5pt bars, accent at 0.85 opacity, dimmed 0.15 when zero",
+    "wordmark.split":  "first half neutral, second half accent (e.g. 'Upwork' + 'Buddy')"
+  }
+}

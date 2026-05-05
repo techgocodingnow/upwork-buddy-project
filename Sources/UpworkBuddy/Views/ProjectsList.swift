@@ -3,34 +3,40 @@ import SwiftUI
 struct ProjectsList: View {
     let projects: [ProjectStat]
     let currency: String
+    var masked: Bool = false
 
     var body: some View {
-        let format = CurrencyFormat(code: currency)
-        VStack(alignment: .leading, spacing: 0) {
+        let format = CurrencyFormat(code: currency, masked: masked)
+        let maxEarnings = max(projects.map(\.earnings).max() ?? 1, 0.01)
+
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("ACTIVE PROJECTS")
-                    .font(.system(size: 10, weight: .semibold))
-                    .tracking(1.2)
-                    .foregroundStyle(.tertiary)
+                SectionDotLabel(title: "Activity")
                 Spacer()
-                Text("\(projects.count)")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.tertiary)
+                Text("Earnings")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Theme.textTertiary)
+                    .frame(width: 70, alignment: .trailing)
+                Text("Hours")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Theme.textTertiary)
+                    .frame(width: 50, alignment: .trailing)
             }
-            .padding(.horizontal, 4)
-            .padding(.bottom, 6)
 
             if projects.isEmpty {
                 Text("No tracked work in this period.")
                     .font(.callout)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Theme.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 24)
             } else {
-                ForEach(projects) { project in
-                    ProjectRow(project: project, format: format)
-                    if project.id != projects.last?.id {
-                        Divider().padding(.leading, 4)
+                VStack(spacing: 8) {
+                    ForEach(projects) { project in
+                        ProjectRow(
+                            project: project,
+                            format: format,
+                            maxEarnings: maxEarnings
+                        )
                     }
                 }
             }
@@ -41,41 +47,43 @@ struct ProjectsList: View {
 private struct ProjectRow: View {
     let project: ProjectStat
     let format: CurrencyFormat
+    let maxEarnings: Double
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Circle()
-                .fill(Color.accentColor.opacity(0.18))
-                .overlay {
-                    Text(initials(project.title))
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
-                }
-                .frame(width: 26, height: 26)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(project.title)
-                    .font(.system(size: 13, weight: .medium))
-                    .lineLimit(1)
-                HStack(spacing: 8) {
-                    Text(project.hours.asHours())
-                    if project.derivedRate > 0 {
-                        Text("·")
-                        Text(format.compact(project.derivedRate) + "/hr")
-                    }
-                }
-                .font(.system(size: 11))
-                .foregroundStyle(.tertiary)
-            }
-            Spacer()
-            Text(format.string(project.earnings))
-                .font(.system(size: 13, weight: .semibold, design: .rounded))
-        }
-        .padding(.horizontal, 4)
-        .padding(.vertical, 8)
-    }
+        HStack(spacing: 10) {
+            BarTrack(progress: project.earnings / maxEarnings)
+                .frame(width: 86, height: 6)
 
-    private func initials(_ title: String) -> String {
-        let parts = title.split(separator: " ").prefix(2)
-        return parts.compactMap { $0.first.map(String.init) }.joined().uppercased()
+            Text(project.title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Theme.textPrimary)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(format.compact(project.earnings))
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Theme.textPrimary)
+                .frame(width: 70, alignment: .trailing)
+
+            Text(project.hours.asHours())
+                .font(.system(size: 12))
+                .foregroundStyle(Theme.textSecondary)
+                .frame(width: 50, alignment: .trailing)
+        }
+    }
+}
+
+private struct BarTrack: View {
+    let progress: Double
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Theme.trackBg)
+                Capsule()
+                    .fill(Theme.accent)
+                    .frame(width: max(4, geo.size.width * CGFloat(min(max(progress, 0), 1))))
+            }
+        }
     }
 }

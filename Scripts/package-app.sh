@@ -20,6 +20,7 @@ URL_SCHEME="upworkbuddy"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST_DIR="${ROOT}/.build/dist"
 CONFIG_PLIST="${ROOT}/Sources/UpworkBuddy/Resources/Config.plist"
+APP_ICON="${ROOT}/Sources/UpworkBuddy/Resources/GeneratedBrand/UpworkBuddy.icns"
 
 cd "${ROOT}"
 
@@ -60,6 +61,10 @@ if [[ -d "${RESOURCE_BUNDLE}" ]]; then
   cp -R "${RESOURCE_BUNDLE}" "${BUNDLE}/Contents/Resources/"
 fi
 
+if [[ -f "${APP_ICON}" ]]; then
+  cp "${APP_ICON}" "${BUNDLE}/Contents/Resources/UpworkBuddy.icns"
+fi
+
 cat > "${BUNDLE}/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -73,6 +78,8 @@ cat > "${BUNDLE}/Contents/Info.plist" <<PLIST
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIdentifier</key>
     <string>${BUNDLE_ID}</string>
+    <key>CFBundleIconFile</key>
+    <string>UpworkBuddy</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>

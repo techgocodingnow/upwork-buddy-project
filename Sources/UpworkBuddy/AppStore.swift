@@ -8,10 +8,6 @@ final class AppStore {
     var isAuthenticated: Bool = false
     var lastError: String?
 
-    // MARK: - Tenant
-    var tenants: [Tenant] = []
-    var selectedTenantId: String?
-
     // MARK: - Period + data
     var selectedPeriod: Period = .today
     var snapshot: EarningsSnapshot = .empty
@@ -25,7 +21,7 @@ final class AppStore {
     // MARK: - Settings (persisted via didSet -> UserDefaults)
     private static let kRefreshSeconds = "UpworkBuddyRefreshSeconds"
     private static let kCurrencyCode   = "UpworkBuddyCurrency"
-    private static let kTenantId       = "UpworkBuddyTenantId"
+    private static let kHideSensitive  = "UpworkBuddyHideSensitive"
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -35,14 +31,20 @@ final class AppStore {
         didSet { UserDefaults.standard.set(currency, forKey: Self.kCurrencyCode) }
     }
 
+    var hideSensitive: Bool {
+        didSet { UserDefaults.standard.set(hideSensitive, forKey: Self.kHideSensitive) }
+    }
+
     private let api = UpworkAPI()
     private var refreshTask: Task<Void, Never>?
+    private var aceId: String?
 
     init() {
         let defaults = UserDefaults.standard
         let storedRefresh = defaults.integer(forKey: Self.kRefreshSeconds)
         self.refreshIntervalSeconds = storedRefresh > 0 ? storedRefresh : 300
         self.currency = defaults.string(forKey: Self.kCurrencyCode) ?? "USD"
+        self.hideSensitive = defaults.bool(forKey: Self.kHideSensitive)
     }
 
     // MARK: - Bootstrap
@@ -50,20 +52,15 @@ final class AppStore {
     func bootstrap() async {
         if KeychainStore.read(.refresh) != nil {
             isAuthenticated = true
-            await loadTenantsAndRefresh(force: true)
+            await resolveAceAndRefresh(force: true)
         } else {
             isAuthenticated = false
         }
     }
 
-    func loadTenantsAndRefresh(force: Bool) async {
+    func resolveAceAndRefresh(force: Bool) async {
         do {
-            let fetched = try await api.fetchTenants()
-            tenants = fetched
-            let preferred = UserDefaults.standard.string(forKey: Self.kTenantId)
-            let chosen = fetched.first(where: { $0.id == preferred }) ?? fetched.first
-            selectedTenantId = chosen?.id
-            await GraphQLClient.shared.setTenantId(chosen?.id)
+            aceId = try await api.fetchAccountingEntityId()
             await refresh(force: force)
         } catch {
             handle(error)
@@ -81,27 +78,36 @@ final class AppStore {
     // MARK: - Refresh
 
     func refresh(force: Bool) async {
-        guard isAuthenticated, let tenant = selectedTenantId else { return }
+        guard isAuthenticated else { return }
+        guard let ace = aceId else {
+            do {
+                aceId = try await api.fetchAccountingEntityId()
+            } catch {
+                handle(error)
+                return
+            }
+            await refresh(force: force)
+            return
+        }
         refreshTask?.cancel()
         let task = Task { @MainActor in
-            await self.performRefresh(tenant: tenant, force: force)
+            await self.performRefresh(aceId: ace, force: force)
         }
         refreshTask = task
         await task.value
     }
 
-    private func performRefresh(tenant: String, force: Bool) async {
+    private func performRefresh(aceId: String, force: Bool) async {
         let periodRange = DateRanges.range(for: selectedPeriod)
         let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays)
         let todayRange = DateRanges.range(for: .today)
 
         let key = ReportCache.Key(
-            tenantId: tenant,
+            tenantId: "",
             rangeStart: periodRange.startString,
             rangeEnd: periodRange.endString
         )
 
-        // Cache hit — surface immediately, skip network unless forced.
         if !force, let cached = await ReportCache.shared.get(key) {
             snapshot = cached.snapshot
             sparkline = cached.daily.suffix(selectedPeriod.sparklineDays)
@@ -111,11 +117,11 @@ final class AppStore {
         defer { loadingCount -= 1 }
 
         do {
-            async let periodResult = api.fetchTimeReport(range: periodRange, organizationId: tenant)
-            async let sparkResult = api.fetchTimeReport(range: sparkRange, organizationId: tenant)
+            async let periodResult = api.fetchCombinedEarnings(range: periodRange, aceId: aceId)
+            async let sparkResult = api.fetchCombinedEarnings(range: sparkRange, aceId: aceId)
             async let todayResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .today)
                 ? nil
-                : api.fetchTimeReport(range: todayRange, organizationId: tenant)
+                : api.fetchCombinedEarnings(range: todayRange, aceId: aceId)
 
             let (periodSnap, _) = try await periodResult
             let (_, sparkDaily) = try await sparkResult
@@ -154,30 +160,17 @@ final class AppStore {
     func completeLogin() async {
         isAuthenticated = true
         lastError = nil
-        await loadTenantsAndRefresh(force: true)
+        await resolveAceAndRefresh(force: true)
     }
 
     func logout() async {
         await OAuthClient.shared.logout()
         await ReportCache.shared.clear()
-        await GraphQLClient.shared.setTenantId(nil)
-        tenants = []
-        selectedTenantId = nil
+        aceId = nil
         snapshot = .empty
         todaySnapshot = .empty
         sparkline = []
         isAuthenticated = false
-    }
-
-    // MARK: - Tenant selection
-
-    func selectTenant(_ id: String) {
-        selectedTenantId = id
-        UserDefaults.standard.set(id, forKey: Self.kTenantId)
-        Task {
-            await GraphQLClient.shared.setTenantId(id)
-            await refresh(force: true)
-        }
     }
 
     // MARK: - Errors

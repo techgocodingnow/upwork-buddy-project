@@ -28,6 +28,16 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: $store.hideSensitive) {
+                    Text("Hide sensitive amounts")
+                        .font(.subheadline.weight(.medium))
+                }
+                Text("Masks earnings, rates, and totals across the app and menu bar.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
                 Text("Currency")
                     .font(.subheadline.weight(.medium))
                 Picker("", selection: $store.currency) {
@@ -39,20 +49,6 @@ struct SettingsView: View {
                 Text("FX support coming in v2.")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-            }
-
-            if !store.tenants.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Workspace")
-                        .font(.subheadline.weight(.medium))
-                    Picker("", selection: tenantBinding(store: store)) {
-                        ForEach(store.tenants) { t in
-                            Text(t.title).tag(t.id)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                }
             }
 
             Spacer()
@@ -68,7 +64,7 @@ struct SettingsView: View {
             .controlSize(.large)
         }
         .padding(20)
-        .frame(width: 360, height: 380)
+        .frame(width: 360, height: 440)
     }
 
     /// Derived binding: stored as seconds in AppStore, surfaced as minutes in the picker.
@@ -76,14 +72,6 @@ struct SettingsView: View {
         Binding(
             get: { max(1, store.refreshIntervalSeconds / 60) },
             set: { store.refreshIntervalSeconds = $0 * 60 }
-        )
-    }
-
-    /// Tenant change has side effects (persist + refetch); routed through `selectTenant`.
-    private func tenantBinding(store: AppStore) -> Binding<String> {
-        Binding(
-            get: { store.selectedTenantId ?? "" },
-            set: { store.selectTenant($0) }
         )
     }
 }
