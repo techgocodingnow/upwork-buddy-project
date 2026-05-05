@@ -246,7 +246,10 @@ struct UpworkAPI: Sendable {
         projects.sort { $0.earnings > $1.earnings }
 
         // ---- Totals + daily series ----
-        let totalEarnings = parsedTx.reduce(0) { $0 + $1.amount }
+        // Sum across the project list (which already prefers net tx earnings,
+        // falling back to gross charges) so the hero/menubar total matches the
+        // project rows even when transactions for the period haven't posted yet.
+        let totalEarnings = projects.reduce(0) { $0 + $1.earnings }
 
         let allDays = Set(hoursByDay.keys).union(earningsByDay.keys)
         let daily = allDays
@@ -254,7 +257,7 @@ struct UpworkAPI: Sendable {
                 let earnMap = earningsByDayClient[day] ?? [:]
                 let hourMap = hoursByDayClient[day] ?? [:]
                 let grossMap = grossByDayClient[day] ?? [:]
-                let labels = Set(earnMap.keys).union(hourMap.keys)
+                let labels = Set(earnMap.keys).union(hourMap.keys).union(grossMap.keys)
                 let breakdown = labels.map { label -> DailyBreakdown in
                     let earnings = earnMap[label] ?? grossMap[label] ?? 0
                     return DailyBreakdown(
@@ -264,9 +267,10 @@ struct UpworkAPI: Sendable {
                     )
                 }
                 .sorted { $0.earnings == $1.earnings ? $0.hours > $1.hours : $0.earnings > $1.earnings }
+                let dayEarn = breakdown.reduce(0) { $0 + $1.earnings }
                 return DailyPoint(
                     date: day,
-                    earnings: earningsByDay[day] ?? 0,
+                    earnings: dayEarn,
                     hours: hoursByDay[day] ?? 0,
                     breakdown: breakdown
                 )
