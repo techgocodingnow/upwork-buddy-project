@@ -35,6 +35,7 @@ struct DashboardView: View {
                                 currency: store.currency,
                                 masked: store.hideSensitive
                             )
+                            .zIndex(2)
                         }
                         ProjectsList(
                             projects: store.snapshot.projects,
@@ -63,11 +64,6 @@ struct DashboardView: View {
                 Text("Buddy")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(Theme.accent)
-            }
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Freelance earnings tracker")
-                    .font(.system(size: 10))
-                    .foregroundStyle(Theme.textTertiary)
             }
             Spacer()
             if store.isLoading {

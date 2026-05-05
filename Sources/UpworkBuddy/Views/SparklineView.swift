@@ -66,18 +66,24 @@ struct SparklineView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+                }
+            }
+            .frame(height: 64)
+            .overlay(alignment: .topLeading) {
+                GeometryReader { geo in
+                    let count = max(values.count, 1)
+                    let gap: CGFloat = 3
+                    let barW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
                     if let idx = hoverIndex, idx < points.count {
                         tooltip(for: points[idx], format: format)
                             .offset(
                                 x: tooltipX(idx: idx, barW: barW, gap: gap, width: geo.size.width),
                                 y: geo.size.height + 6
                             )
-                            .zIndex(10)
                     }
                 }
+                .allowsHitTesting(false)
             }
-            .frame(height: 64)
         }
     }
 
@@ -131,22 +137,20 @@ struct SparklineView: View {
                     .foregroundStyle(.white.opacity(0.7))
             }
         }
+        .frame(width: 320, alignment: .leading)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.black.opacity(0.88))
+                .fill(Color.black.opacity(0.92))
         )
-        .frame(width: 260, alignment: .leading)
         .fixedSize(horizontal: false, vertical: true)
         .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
-        .allowsHitTesting(false)
-        .transition(.opacity)
     }
 
     private func tooltipX(idx: Int, barW: CGFloat, gap: CGFloat, width: CGFloat) -> CGFloat {
         let center = CGFloat(idx) * (barW + gap) + barW / 2
-        let tooltipW: CGFloat = 260
+        let tooltipW: CGFloat = 320
         let clamped = min(max(center - tooltipW / 2, 0), max(0, width - tooltipW))
         return clamped
     }
