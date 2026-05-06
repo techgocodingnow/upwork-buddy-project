@@ -13,7 +13,7 @@ let package = Package(
         .executableTarget(
             name: "UpworkBuddy",
             path: "Sources/UpworkBuddy",
-            exclude: ["Resources/Config.example.plist"],
+            exclude: ["Resources/Config.example.plist", "Resources/AppIcon.iconset", "Info.plist"],
             resources: [
                 .process("Resources")
             ],

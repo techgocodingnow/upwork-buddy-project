@@ -24,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private var refreshTask: Task<Void, Never>?
     private var observationToken: NSObjectProtocol?
     private var pendingStatusRefresh = false
+    private var outsideClickMonitor: Any?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -44,6 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                     if let button = self.statusItem.button, !self.popover.isShown {
                         self.popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
                         self.popover.contentViewController?.view.window?.makeKey()
+                        self.startOutsideClickMonitor()
                     }
                 case .failure(let error):
                     self.store.lastError = error.localizedDescription
@@ -192,6 +194,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             NSApp.activate(ignoringOtherApps: true)
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
+            startOutsideClickMonitor()
+        }
+    }
+
+    private func startOutsideClickMonitor() {
+        stopOutsideClickMonitor()
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown]
+        ) { [weak self] _ in
+            guard let self, self.popover.isShown else { return }
+            self.popover.performClose(nil)
+        }
+    }
+
+    private func stopOutsideClickMonitor() {
+        if let monitor = outsideClickMonitor {
+            NSEvent.removeMonitor(monitor)
+            outsideClickMonitor = nil
         }
     }
 
@@ -220,6 +240,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     func popoverShouldDetach(_ popover: NSPopover) -> Bool { false }
 
     func popoverDidClose(_ notification: Notification) {
+        stopOutsideClickMonitor()
         guard pendingStatusRefresh else { return }
         pendingStatusRefresh = false
         refreshStatusButton()
