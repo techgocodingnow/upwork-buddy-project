@@ -28,6 +28,7 @@ final class AppStore {
     private static let kCurrencyCode   = "UpworkBuddyCurrency"
     private static let kHideSensitive  = "UpworkBuddyHideSensitive"
     private static let kMenuBarMetric  = "UpworkBuddyMenuBarMetric"
+    private static let kDashboardMetric = "UpworkBuddyDashboardMetric"
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -45,6 +46,10 @@ final class AppStore {
         didSet { UserDefaults.standard.set(menuBarMetric.rawValue, forKey: Self.kMenuBarMetric) }
     }
 
+    var dashboardMetric: MenuBarMetric {
+        didSet { UserDefaults.standard.set(dashboardMetric.rawValue, forKey: Self.kDashboardMetric) }
+    }
+
     private let api = UpworkAPI()
     private var refreshTask: Task<Void, Never>?
     private var aceId: String?
@@ -57,6 +62,8 @@ final class AppStore {
         self.hideSensitive = defaults.bool(forKey: Self.kHideSensitive)
         let storedMetric = defaults.string(forKey: Self.kMenuBarMetric).flatMap(MenuBarMetric.init(rawValue:))
         self.menuBarMetric = storedMetric ?? .hours
+        let storedDash = defaults.string(forKey: Self.kDashboardMetric).flatMap(MenuBarMetric.init(rawValue:))
+        self.dashboardMetric = storedDash ?? .earnings
     }
 
     // MARK: - Bootstrap

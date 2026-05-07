@@ -17,7 +17,8 @@ struct DashboardView: View {
                             snapshot: store.snapshot,
                             period: store.selectedPeriod,
                             currency: store.currency,
-                            masked: store.hideSensitive
+                            masked: store.hideSensitive,
+                            primary: store.dashboardMetric
                         )
                         PeriodSegmentedControl(selection: store.selectedPeriod) { p in
                             store.switchTo(period: p)

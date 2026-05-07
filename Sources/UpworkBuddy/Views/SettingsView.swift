@@ -39,6 +39,20 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
+                Text("Dashboard primary")
+                    .font(.subheadline.weight(.medium))
+                Picker("", selection: $store.dashboardMetric) {
+                    Text("Earnings").tag(MenuBarMetric.earnings)
+                    Text("Hours").tag(MenuBarMetric.hours)
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                Text("Controls which value renders large in the popover header.")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
                 Toggle(isOn: $store.hideSensitive) {
                     Text("Hide sensitive amounts")
                         .font(.subheadline.weight(.medium))

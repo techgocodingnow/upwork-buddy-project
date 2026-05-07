@@ -5,9 +5,14 @@ struct HeroSection: View {
     let period: Period
     let currency: String
     var masked: Bool = false
+    var primary: MenuBarMetric = .earnings
 
     var body: some View {
         let format = CurrencyFormat(code: currency, masked: masked)
+        let earningsText = format.string(snapshot.totalEarnings)
+        let hoursText = snapshot.totalHours.asHours()
+        let projectsText = "\(snapshot.projects.count) project\(snapshot.projects.count == 1 ? "" : "s")"
+
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Circle().fill(Theme.accent).frame(width: 5, height: 5)
@@ -21,7 +26,7 @@ struct HeroSection: View {
             }
 
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(format.string(snapshot.totalEarnings))
+                Text(primary == .earnings ? earningsText : hoursText)
                     .font(.system(size: 36, weight: .bold, design: .default))
                     .foregroundStyle(Theme.accentDeep)
                     .lineLimit(1)
@@ -29,10 +34,10 @@ struct HeroSection: View {
                     .layoutPriority(1)
                 Spacer(minLength: 8)
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(snapshot.totalHours.asHours())
+                    Text(primary == .earnings ? hoursText : earningsText)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Theme.textSecondary)
-                    Text("\(snapshot.projects.count) project\(snapshot.projects.count == 1 ? "" : "s")")
+                    Text(projectsText)
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textTertiary)
                 }
