@@ -96,11 +96,23 @@ struct SparklineView: View {
         let f = DateFormatter()
         f.dateFormat = "EEE MMM d"
         let rows = Array(point.breakdown.prefix(5))
+        let isPayoutOnly = point.earnings > 0 && point.hours <= 0.01
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(f.string(from: point.date))
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.white)
+                if isPayoutOnly {
+                    Text("payout")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(.white.opacity(0.12))
+                        )
+                }
                 Spacer(minLength: 12)
                 Text(format.compact(point.earnings))
                     .font(.system(size: 11, weight: .semibold))
@@ -120,10 +132,17 @@ struct SparklineView: View {
                         Text(format.compact(row.earnings))
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Theme.accentSoft)
-                        Text(row.hours.asHours())
-                            .font(.system(size: 11))
-                            .foregroundStyle(.white.opacity(0.7))
-                            .frame(width: 52, alignment: .trailing)
+                        if row.hours > 0.01 {
+                            Text(row.hours.asHours())
+                                .font(.system(size: 11))
+                                .foregroundStyle(.white.opacity(0.7))
+                                .frame(width: 52, alignment: .trailing)
+                        } else {
+                            Text("—")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.white.opacity(0.4))
+                                .frame(width: 52, alignment: .trailing)
+                        }
                     }
                 }
                 if point.breakdown.count > rows.count {
