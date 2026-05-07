@@ -30,15 +30,36 @@ struct UpworkAPI: Sendable {
     /// Freelancer-side dashboard data for `[range.start, range.end]`.
     /// Runs `transactionHistory` (net earnings/fees) and `contractTimeReport`
     /// (hours, gross, hourly rate) in parallel and merges into one snapshot.
+    ///
+    /// The time report query is expanded to the enclosing Upwork week when the
+    /// range spans a single day. Upwork's `timeReportDate_bt` filter appears to
+    /// match on `weekWorkedOn` (Monday-aligned), so a same-day range would miss
+    /// the current week's data otherwise. The snapshot totals are then filtered
+    /// back to `range` via `merge(filterDate:)`.
     func fetchCombinedEarnings(
         range: DateRange,
         aceId: String
     ) async throws -> (EarningsSnapshot, [DailyPoint]) {
+        let timeRange = Self.weekExpandedRange(for: range)
+        let filterDate: Date? = timeRange.start < range.start ? range.start : nil
         async let txTask = fetchTransactionRows(range: range, aceId: aceId)
-        async let timeTask = fetchTimeReport(range: range)
+        async let timeTask = fetchTimeReport(range: timeRange)
         let txRows = try await txTask
         let timeRows = try await timeTask
-        return Self.merge(txRows: txRows, timeRows: timeRows)
+        return Self.merge(txRows: txRows, timeRows: timeRows, filterDate: filterDate)
+    }
+
+    /// Expands `range.start` to the Monday of its Upwork week when the range
+    /// covers only one calendar day. Leaves multi-day ranges unchanged.
+    private static func weekExpandedRange(for range: DateRange) -> DateRange {
+        let cal = Calendar.current
+        guard cal.isDate(range.start, inSameDayAs: range.end) else { return range }
+        var upworkCal = Calendar(identifier: .gregorian)
+        upworkCal.firstWeekday = 2 // Monday
+        guard let weekStart = upworkCal.date(
+            from: upworkCal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: range.start)
+        ), weekStart < range.start else { return range }
+        return DateRange(start: weekStart, end: range.end)
     }
 
     // MARK: - transactionHistory
@@ -155,11 +176,16 @@ struct UpworkAPI: Sendable {
     /// from transactionHistory are overlaid by matching `clientTeam.name` to
     /// `assignmentCompanyName`. Transaction rows that don't match any active
     /// contract collapse into residual rows keyed by company name.
+    /// - Parameter filterDate: When set, only rows whose `dateWorkedOn` falls on
+    ///   this day count toward snapshot totals and project breakdown. Daily
+    ///   series always includes all returned rows (for sparklines).
     static func merge(
         txRows: [TransactionRow],
-        timeRows: [TimeReportRow]
+        timeRows: [TimeReportRow],
+        filterDate: Date? = nil
     ) -> (EarningsSnapshot, [DailyPoint]) {
         let cal = Calendar.current
+        let filterDay = filterDate.map { cal.startOfDay(for: $0) }
 
         // ---- contractTimeReport aggregation ----
         struct Agg { var title: String; var clientName: String?; var hours: Double; var gross: Double; var rate: Double? }
@@ -173,18 +199,27 @@ struct UpworkAPI: Sendable {
             guard let cid = r.contractId else { continue }
             let hours = r.hours ?? 0
             let charges = r.charges ?? 0
-            var entry = byContract[cid] ?? Agg(
-                title: r.contractTitle ?? r.clientName ?? "Contract",
-                clientName: r.clientName,
-                hours: 0,
-                gross: 0,
-                rate: r.hourlyRate
-            )
-            entry.hours += hours
-            entry.gross += charges
-            if entry.rate == nil { entry.rate = r.hourlyRate }
-            byContract[cid] = entry
-            totalHours += hours
+
+            // When a filterDay is set, only rows on that day count toward the
+            // snapshot totals and per-contract breakdown. Rows on other days
+            // still populate the daily series used by sparklines/tooltips.
+            let rowDay: Date? = r.dateWorkedOn.flatMap { DateRange.iso.date(from: $0) }.map { cal.startOfDay(for: $0) }
+            let countsTowardSnapshot = filterDay == nil || rowDay == filterDay
+
+            if countsTowardSnapshot {
+                var entry = byContract[cid] ?? Agg(
+                    title: r.contractTitle ?? r.clientName ?? "Contract",
+                    clientName: r.clientName,
+                    hours: 0,
+                    gross: 0,
+                    rate: r.hourlyRate
+                )
+                entry.hours += hours
+                entry.gross += charges
+                if entry.rate == nil { entry.rate = r.hourlyRate }
+                byContract[cid] = entry
+                totalHours += hours
+            }
             if let dateStr = r.dateWorkedOn,
                let date = DateRange.iso.date(from: dateStr) {
                 let day = cal.startOfDay(for: date)

@@ -123,7 +123,7 @@ struct SparklineView: View {
                         Text(row.hours.asHours())
                             .font(.system(size: 11))
                             .foregroundStyle(.white.opacity(0.7))
-                            .frame(width: 36, alignment: .trailing)
+                            .frame(width: 52, alignment: .trailing)
                     }
                 }
                 if point.breakdown.count > rows.count {
