@@ -57,8 +57,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         setupPopover()
         startRefreshLoop()
         observeStore()
+        registerGlobalHotkey()
 
         Task { await store.bootstrap() }
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        store.reconcileLaunchAtLogin()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        HotkeyManager.shared.unbindAll()
+    }
+
+    private func registerGlobalHotkey() {
+        rebindAllHotkeys()
+        observeShortcutChanges()
+    }
+
+    private func rebindAllHotkeys() {
+        for action in ShortcutAction.allCases {
+            let shortcut = store.shortcuts[action] ?? nil
+            HotkeyManager.shared.bind(action, to: shortcut) { [weak self] in
+                self?.handleShortcut(action)
+            }
+        }
+    }
+
+    private func observeShortcutChanges() {
+        withObservationTracking {
+            _ = store.shortcuts
+        } onChange: { [weak self] in
+            DispatchQueue.main.async {
+                self?.rebindAllHotkeys()
+                self?.observeShortcutChanges()
+            }
+        }
+    }
+
+    private func handleShortcut(_ action: ShortcutAction) {
+        switch action {
+        case .togglePopover:
+            guard let button = statusItem.button else { return }
+            handleButtonClick(button)
+        case .refreshNow:
+            Task { await store.refresh(force: true); refreshStatusButton() }
+        case .openSettings:
+            SettingsWindow.show(store: store)
+        }
     }
 
     // MARK: - Refresh loop
@@ -83,6 +129,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             _ = store.isAuthenticated
             _ = store.hideSensitive
             _ = store.menuBarMetric
+            _ = store.menuBarIconStyle
         } onChange: { [weak self] in
             DispatchQueue.main.async {
                 self?.refreshStatusButton()
@@ -126,27 +173,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let font = NSFont.monospacedDigitSystemFont(ofSize: menubarTitleFontSize, weight: .medium)
         let icon = makeMenuBarIcon()
 
+        // valueOnly while logged out has nothing to show — fall back to icon
+        // so the user always has something to click.
+        let style: MenuBarIconStyle = (store.menuBarIconStyle == .valueOnly && !store.isAuthenticated)
+            ? .iconOnly
+            : store.menuBarIconStyle
+
         let attachment = NSTextAttachment()
         attachment.image = icon
         if let size = icon?.size {
             attachment.bounds = CGRect(x: 0, y: -3, width: size.width, height: size.height)
         }
 
-        let valueText: String
-        let attrs: [NSAttributedString.Key: Any]
-        if store.isAuthenticated {
-            valueText = " " + menuBarValueText()
-            attrs = [.font: font, .baselineOffset: -1.0]
-        } else {
-            valueText = ""
-            attrs = [.font: font, .baselineOffset: -1.0, .foregroundColor: NSColor.secondaryLabelColor]
+        let composed = NSMutableAttributedString()
+
+        if style != .valueOnly {
+            composed.append(NSAttributedString(attachment: attachment))
         }
 
-        let composed = NSMutableAttributedString()
-        composed.append(NSAttributedString(attachment: attachment))
-        if !valueText.isEmpty {
-            composed.append(NSAttributedString(string: valueText, attributes: attrs))
+        if style != .iconOnly && store.isAuthenticated {
+            let leadingSpace = (style == .valueOnly) ? "" : " "
+            let attrs: [NSAttributedString.Key: Any] = [.font: font, .baselineOffset: -1.0]
+            composed.append(NSAttributedString(string: leadingSpace + menuBarValueText(), attributes: attrs))
         }
+
         button.attributedTitle = composed
     }
 

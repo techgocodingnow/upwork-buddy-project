@@ -14,14 +14,33 @@ Built as a SwiftPM executable; no dependencies; lives in the menu bar (no Dock i
 
 ## Build & install
 
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `Scripts/package-app.sh [version]` | Build universal `.app` bundle (arm64 + x86_64), ad-hoc sign, zip for distribution |
+| `Scripts/introspect-schema.sh <Type>` | GraphQL schema introspection helper (dev) |
+
+### Quick start
+
 ```bash
+# 1. Config
 cp Sources/UpworkBuddy/Resources/Config.example.plist \
    Sources/UpworkBuddy/Resources/Config.plist
 $EDITOR Sources/UpworkBuddy/Resources/Config.plist   # paste your Upwork credentials
+
+# 2. Build
 chmod +x Scripts/package-app.sh Scripts/introspect-schema.sh
-Scripts/package-app.sh dev
-open .build/dist/UpworkBuddy.app
+Scripts/package-app.sh 1.0          # produces .build/dist/UpworkBuddy.app
+
+# 3. Install to /Applications
+cp -r .build/dist/UpworkBuddy.app /Applications/
+
+# 4. Launch
+open /Applications/UpworkBuddy.app
 ```
+
+> **Note:** Version argument (e.g. `1.0`) is optional; defaults to `dev`.
 
 ### Configuration
 

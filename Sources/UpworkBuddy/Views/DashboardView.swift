@@ -2,7 +2,6 @@ import SwiftUI
 
 struct DashboardView: View {
     @Environment(AppStore.self) private var store
-    @State private var showingSettings = false
 
     var body: some View {
         ZStack {
@@ -15,10 +14,12 @@ struct DashboardView: View {
                     VStack(spacing: 14) {
                         HeroSection(
                             snapshot: store.snapshot,
+                            previous: store.previousSnapshot,
                             period: store.selectedPeriod,
                             currency: store.currency,
                             masked: store.hideSensitive,
-                            primary: store.dashboardMetric
+                            primary: store.dashboardMetric,
+                            goalHours: store.goalHoursTarget
                         )
                         PeriodSegmentedControl(selection: store.selectedPeriod) { p in
                             store.switchTo(period: p)
@@ -52,9 +53,6 @@ struct DashboardView: View {
                 footer
             }
         }
-        .sheet(isPresented: $showingSettings) {
-            SettingsView()
-        }
     }
 
     private var header: some View {
@@ -79,7 +77,7 @@ struct DashboardView: View {
                 Task { await store.refresh(force: true) }
             }
             iconButton(systemName: "gearshape", help: "Settings") {
-                showingSettings = true
+                SettingsWindow.show(store: store)
             }
         }
         .padding(.horizontal, 14)
