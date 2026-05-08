@@ -4,14 +4,16 @@ struct SparklineView: View {
     let points: [DailyPoint]
     let currency: String
     var masked: Bool = false
+    var metric: MenuBarMetric = .earnings
 
     @State private var hoverIndex: Int?
 
     var body: some View {
-        let values = points.map(\.earnings)
+        let values: [Double] = points.map { metric == .hours ? $0.hours : $0.earnings }
         let maxV = max(values.max() ?? 1, 0.01)
         let total = values.reduce(0, +)
         let format = CurrencyFormat(code: currency, masked: masked)
+        let totalText: String = metric == .hours ? total.asHours() : format.compact(total)
 
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
@@ -19,7 +21,7 @@ struct SparklineView: View {
                     Text("Last \(points.count) days")
                         .font(.system(size: 11))
                         .foregroundStyle(Theme.textTertiary)
-                    Text(format.compact(total))
+                    Text(totalText)
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(Theme.textPrimary)
                         .lineLimit(1)
@@ -41,11 +43,20 @@ struct SparklineView: View {
 
                     HStack(alignment: .bottom, spacing: gap) {
                         ForEach(Array(values.enumerated()), id: \.offset) { idx, v in
+                            let point = points[idx]
                             let h = max(2, CGFloat(v / maxV) * geo.size.height)
                             let isHover = hoverIndex == idx
+                            let isPayoutOnly = metric == .earnings && point.earnings > 0 && point.hours <= 0.01
                             RoundedRectangle(cornerRadius: 1.5)
-                                .fill(barFill(value: v, hover: isHover))
+                                .fill(barFill(value: v, hover: isHover, payoutOnly: isPayoutOnly))
                                 .frame(width: barW, height: h)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 1.5)
+                                        .strokeBorder(
+                                            isPayoutOnly ? Theme.accentDeep.opacity(0.6) : Color.clear,
+                                            style: StrokeStyle(lineWidth: 1, dash: [2, 2])
+                                        )
+                                )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 1.5)
                                         .stroke(Theme.accentDeep, lineWidth: isHover ? 1 : 0)
@@ -87,9 +98,11 @@ struct SparklineView: View {
         }
     }
 
-    private func barFill(value: Double, hover: Bool) -> Color {
+    private func barFill(value: Double, hover: Bool, payoutOnly: Bool = false) -> Color {
         if hover { return Theme.accentDeep }
-        return Theme.accent.opacity(value <= 0 ? 0.15 : 0.85)
+        if value <= 0 { return Theme.accent.opacity(0.15) }
+        if payoutOnly { return Theme.accent.opacity(0.35) }
+        return Theme.accent.opacity(0.85)
     }
 
     private func tooltip(for point: DailyPoint, format: CurrencyFormat) -> some View {

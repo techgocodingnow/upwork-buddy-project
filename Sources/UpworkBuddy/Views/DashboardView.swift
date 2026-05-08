@@ -34,7 +34,8 @@ struct DashboardView: View {
                             SparklineView(
                                 points: store.sparkline,
                                 currency: store.currency,
-                                masked: store.hideSensitive
+                                masked: store.hideSensitive,
+                                metric: store.dashboardMetric
                             )
                             .zIndex(2)
                         }
