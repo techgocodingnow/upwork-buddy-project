@@ -54,6 +54,7 @@ final class AppStore {
     private static let kGoalHoursWeekly = "UpworkBuddyGoalHoursWeekly"
     private static let kMenuBarIconStyle = "UpworkBuddyMenuBarIconStyle"
     private static let kShortcuts        = "UpworkBuddyShortcuts"
+    private static let kAppTheme         = "UpworkBuddyAppTheme"
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -94,6 +95,13 @@ final class AppStore {
         didSet { UserDefaults.standard.set(menuBarIconStyle.rawValue, forKey: Self.kMenuBarIconStyle) }
     }
 
+    var appTheme: AppTheme {
+        didSet {
+            UserDefaults.standard.set(appTheme.rawValue, forKey: Self.kAppTheme)
+            ThemePalette.current = appTheme.palette
+        }
+    }
+
     /// Per-action user-overridable shortcuts. `nil` value means "unbound".
     var shortcuts: [ShortcutAction: Shortcut?] {
         didSet { persistShortcuts() }
@@ -130,6 +138,11 @@ final class AppStore {
 
         let storedIcon = defaults.string(forKey: Self.kMenuBarIconStyle).flatMap(MenuBarIconStyle.init(rawValue:))
         self.menuBarIconStyle = storedIcon ?? .iconValue
+
+        let storedTheme = defaults.string(forKey: Self.kAppTheme).flatMap(AppTheme.init(rawValue:))
+        let theme = storedTheme ?? .codeBurn
+        self.appTheme = theme
+        ThemePalette.current = theme.palette
 
         // Shortcuts: load JSON, fall back to per-action defaults.
         var loaded: [ShortcutAction: Shortcut?] = [:]

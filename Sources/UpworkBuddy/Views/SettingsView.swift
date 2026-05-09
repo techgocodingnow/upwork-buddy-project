@@ -43,6 +43,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
 
 struct SettingsRootView: View {
     @State private var selection: SettingsCategory = .general
+    @Environment(AppStore.self) private var store
 
     var body: some View {
         HStack(spacing: 0) {
@@ -54,6 +55,7 @@ struct SettingsRootView: View {
         }
         .background(Theme.bgGradient.ignoresSafeArea())
         .frame(minWidth: 640, minHeight: 480)
+        .id(store.appTheme)
     }
 }
 
@@ -373,6 +375,29 @@ private struct DisplayPage: View {
     var body: some View {
         VStack(spacing: 12) {
             SettingsCard(
+                title: "Theme",
+                subtitle: "Color palette used across the dashboard, menu bar, and settings.",
+                systemImage: "paintpalette"
+            ) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Picker("", selection: $store.appTheme) {
+                        ForEach(AppTheme.allCases) { theme in
+                            Text(theme.label).tag(theme)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    HStack(spacing: 12) {
+                        ForEach(AppTheme.allCases) { theme in
+                            ThemeSwatch(theme: theme, isSelected: store.appTheme == theme)
+                                .onTapGesture { store.appTheme = theme }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+
+            SettingsCard(
                 title: "Menu bar shows",
                 subtitle: "Which value appears next to the icon.",
                 systemImage: "menubar.rectangle"
@@ -546,6 +571,40 @@ private struct AccountPage: View {
                 .controlSize(.regular)
             }
         }
+    }
+}
+
+// MARK: - ThemeSwatch
+
+private struct ThemeSwatch: View {
+    let theme: AppTheme
+    let isSelected: Bool
+
+    var body: some View {
+        let palette = theme.palette
+        VStack(spacing: 6) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(LinearGradient(colors: [palette.bgTop, palette.bgBottom],
+                                         startPoint: .top, endPoint: .bottom))
+                HStack(spacing: 4) {
+                    Circle().fill(palette.accent).frame(width: 10, height: 10)
+                    Circle().fill(palette.accentDeep).frame(width: 10, height: 10)
+                    Circle().fill(palette.accentSoft).frame(width: 10, height: 10)
+                }
+            }
+            .frame(width: 64, height: 36)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(isSelected ? palette.accent : palette.divider,
+                                  lineWidth: isSelected ? 1.5 : 0.5)
+            )
+
+            Text(theme.label)
+                .font(.system(size: 11, weight: isSelected ? .semibold : .regular))
+                .foregroundStyle(Theme.textSecondary)
+        }
+        .contentShape(Rectangle())
     }
 }
 

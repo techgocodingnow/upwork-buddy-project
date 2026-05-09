@@ -53,6 +53,7 @@ struct DashboardView: View {
                 footer
             }
         }
+        .id(store.appTheme)
     }
 
     private var header: some View {
