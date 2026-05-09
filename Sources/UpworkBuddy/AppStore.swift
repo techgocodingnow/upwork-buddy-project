@@ -52,6 +52,13 @@ final class AppStore {
     private static let kLaunchAtLogin   = "UpworkBuddyLaunchAtLogin"
     private static let kGoalHoursDaily  = "UpworkBuddyGoalHoursDaily"
     private static let kGoalHoursWeekly = "UpworkBuddyGoalHoursWeekly"
+    private static let kGoalHoursMonthly = "UpworkBuddyGoalHoursMonthly"
+    private static let kGoalHoursYearly  = "UpworkBuddyGoalHoursYearly"
+    private static let kGoalEarningsDaily   = "UpworkBuddyGoalEarningsDaily"
+    private static let kGoalEarningsWeekly  = "UpworkBuddyGoalEarningsWeekly"
+    private static let kGoalEarningsMonthly = "UpworkBuddyGoalEarningsMonthly"
+    private static let kGoalEarningsYearly  = "UpworkBuddyGoalEarningsYearly"
+    private static let kGoalsEnabled        = "UpworkBuddyGoalsEnabled"
     private static let kMenuBarIconStyle = "UpworkBuddyMenuBarIconStyle"
     private static let kShortcuts        = "UpworkBuddyShortcuts"
     private static let kAppTheme         = "UpworkBuddyAppTheme"
@@ -89,6 +96,39 @@ final class AppStore {
 
     var goalHoursWeekly: Double {
         didSet { UserDefaults.standard.set(goalHoursWeekly, forKey: Self.kGoalHoursWeekly) }
+    }
+
+    var goalHoursMonthly: Double {
+        didSet { UserDefaults.standard.set(goalHoursMonthly, forKey: Self.kGoalHoursMonthly) }
+    }
+
+    var goalHoursYearly: Double {
+        didSet { UserDefaults.standard.set(goalHoursYearly, forKey: Self.kGoalHoursYearly) }
+    }
+
+    var goalEarningsDaily: Double {
+        didSet { UserDefaults.standard.set(goalEarningsDaily, forKey: Self.kGoalEarningsDaily) }
+    }
+
+    var goalEarningsWeekly: Double {
+        didSet { UserDefaults.standard.set(goalEarningsWeekly, forKey: Self.kGoalEarningsWeekly) }
+    }
+
+    var goalEarningsMonthly: Double {
+        didSet { UserDefaults.standard.set(goalEarningsMonthly, forKey: Self.kGoalEarningsMonthly) }
+    }
+
+    var goalEarningsYearly: Double {
+        didSet { UserDefaults.standard.set(goalEarningsYearly, forKey: Self.kGoalEarningsYearly) }
+    }
+
+    var goalsEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(goalsEnabled, forKey: Self.kGoalsEnabled)
+            if !goalsEnabled {
+                GoalNotificationService.shared.cancelPending()
+            }
+        }
     }
 
     var menuBarIconStyle: MenuBarIconStyle {
@@ -135,6 +175,18 @@ final class AppStore {
         self.goalHoursDaily = storedDaily > 0 ? storedDaily : 0   // 0 hides ring
         let storedWeekly = defaults.double(forKey: Self.kGoalHoursWeekly)
         self.goalHoursWeekly = storedWeekly > 0 ? storedWeekly : 0
+        self.goalHoursMonthly = defaults.double(forKey: Self.kGoalHoursMonthly)
+        self.goalHoursYearly  = defaults.double(forKey: Self.kGoalHoursYearly)
+        self.goalEarningsDaily   = defaults.double(forKey: Self.kGoalEarningsDaily)
+        self.goalEarningsWeekly  = defaults.double(forKey: Self.kGoalEarningsWeekly)
+        self.goalEarningsMonthly = defaults.double(forKey: Self.kGoalEarningsMonthly)
+        self.goalEarningsYearly  = defaults.double(forKey: Self.kGoalEarningsYearly)
+        // Default goals on for new installs.
+        if defaults.object(forKey: Self.kGoalsEnabled) == nil {
+            self.goalsEnabled = true
+        } else {
+            self.goalsEnabled = defaults.bool(forKey: Self.kGoalsEnabled)
+        }
 
         let storedIcon = defaults.string(forKey: Self.kMenuBarIconStyle).flatMap(MenuBarIconStyle.init(rawValue:))
         self.menuBarIconStyle = storedIcon ?? .iconValue
@@ -184,12 +236,29 @@ final class AppStore {
         if actual != launchAtLogin { launchAtLogin = actual }
     }
 
-    var goalHoursTarget: Double {
-        switch selectedPeriod {
-        case .today:       return goalHoursDaily
-        case .week:        return goalHoursWeekly
-        case .month, .year: return 0
+    /// Period-and-metric-aware goal lookup. Returns 0 when goals disabled or unset.
+    func goalTarget(for metric: MenuBarMetric, period: Period) -> Double {
+        guard goalsEnabled else { return 0 }
+        switch (metric, period) {
+        case (.hours, .today):  return goalHoursDaily
+        case (.hours, .week):   return goalHoursWeekly
+        case (.hours, .month):  return goalHoursMonthly
+        case (.hours, .year):   return goalHoursYearly
+        case (.earnings, .today): return goalEarningsDaily
+        case (.earnings, .week):  return goalEarningsWeekly
+        case (.earnings, .month): return goalEarningsMonthly
+        case (.earnings, .year):  return goalEarningsYearly
         }
+    }
+
+    /// Convenience for the dashboard hero — uses currently-selected period and dashboard metric.
+    var dashboardGoalTarget: Double {
+        goalTarget(for: dashboardMetric, period: selectedPeriod)
+    }
+
+    /// Legacy hours-only accessor preserved for callers still keyed on hours.
+    var goalHoursTarget: Double {
+        goalTarget(for: .hours, period: selectedPeriod)
     }
 
     // MARK: - Bootstrap
@@ -287,6 +356,7 @@ final class AppStore {
             }
 
             lastError = nil
+            await GoalNotificationService.shared.evaluate(store: self)
         } catch is CancellationError {
             // Period changed mid-flight; ignore.
         } catch {

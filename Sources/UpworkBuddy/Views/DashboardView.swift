@@ -19,7 +19,7 @@ struct DashboardView: View {
                             currency: store.currency,
                             masked: store.hideSensitive,
                             primary: store.dashboardMetric,
-                            goalHours: store.goalHoursTarget
+                            goalTarget: store.dashboardGoalTarget
                         )
                         PeriodSegmentedControl(selection: store.selectedPeriod) { p in
                             store.switchTo(period: p)

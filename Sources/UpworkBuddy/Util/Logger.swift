@@ -6,4 +6,5 @@ enum Log {
     static let net = Logger(subsystem: "com.upworkbuddy.app", category: "net")
     static let app = Logger(subsystem: "com.upworkbuddy.app", category: "app")
     static let api = Logger(subsystem: "com.upworkbuddy.app", category: "api")
+    static let goals = Logger(subsystem: "com.upworkbuddy.app", category: "goals")
 }

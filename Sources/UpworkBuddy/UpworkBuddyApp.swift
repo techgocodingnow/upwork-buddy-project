@@ -60,6 +60,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         registerGlobalHotkey()
 
         Task { await store.bootstrap() }
+        Task { await GoalNotificationService.shared.requestAuthorizationIfNeeded() }
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {

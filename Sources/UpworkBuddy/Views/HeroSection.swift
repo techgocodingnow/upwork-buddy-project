@@ -7,7 +7,8 @@ struct HeroSection: View {
     let currency: String
     var masked: Bool = false
     var primary: MenuBarMetric = .earnings
-    var goalHours: Double = 0
+    /// Target value for the current `primary` metric. 0 hides the ring.
+    var goalTarget: Double = 0
 
     var body: some View {
         let format = CurrencyFormat(code: currency, masked: masked)
@@ -36,10 +37,12 @@ struct HeroSection: View {
                     .minimumScaleFactor(0.5)
                     .layoutPriority(1)
                 Spacer(minLength: 8)
-                if goalHours > 0 {
+                if goalTarget > 0 {
+                    let current = (primary == .earnings) ? snapshot.totalEarnings : snapshot.totalHours
+                    let progress = current / goalTarget
                     GoalRing(
-                        progress: snapshot.totalHours / goalHours,
-                        label: "\(Int((snapshot.totalHours / goalHours) * 100))%"
+                        progress: progress,
+                        label: "\(Int(progress * 100))%"
                     )
                 }
                 VStack(alignment: .trailing, spacing: 2) {
