@@ -63,8 +63,8 @@ extension ThemePalette {
         trackBg:       Color(red: 0.80, green: 0.78, blue: 0.75),
         divider:       Color(red: 0.79, green: 0.76, blue: 0.72).opacity(0.6),
         textPrimary:   Color(red: 0.11, green: 0.11, blue: 0.11),
-        textSecondary: Color(red: 0.38, green: 0.36, blue: 0.34),
-        textTertiary:  Color(red: 0.55, green: 0.53, blue: 0.50)
+        textSecondary: Color(red: 0.32, green: 0.30, blue: 0.28),
+        textTertiary:  Color(red: 0.45, green: 0.42, blue: 0.39)
     )
 
     /// Webshare-inspired: emerald accent, near-white mint background,
@@ -82,8 +82,8 @@ extension ThemePalette {
         trackBg:       Color(red: 0.812, green: 0.871, blue: 0.835),  // #CFDED5
         divider:       Color(red: 0.706, green: 0.784, blue: 0.745).opacity(0.6),
         textPrimary:   Color(red: 0.055, green: 0.106, blue: 0.173),  // #0E1B2C deep navy
-        textSecondary: Color(red: 0.294, green: 0.333, blue: 0.388),  // #4B5563
-        textTertiary:  Color(red: 0.561, green: 0.604, blue: 0.639)   // #8F9AA3
+        textSecondary: Color(red: 0.235, green: 0.275, blue: 0.329),  // #3C4654
+        textTertiary:  Color(red: 0.420, green: 0.467, blue: 0.522)   // #6B7785
     )
 }
 

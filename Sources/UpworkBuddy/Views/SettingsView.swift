@@ -59,7 +59,7 @@ struct SettingsRootView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(Theme.bgGradient.ignoresSafeArea())
-        .frame(minWidth: 680, minHeight: 520)
+        .frame(minWidth: 760, minHeight: 520)
         .id(store.appTheme)
         .background {
             // Hidden command pads register ⌘1…⌘5 for sidebar jumps.
@@ -191,6 +191,7 @@ private struct SidebarRow: View {
     let action: () -> Void
 
     @State private var hovering = false
+    @FocusState private var focused: Bool
 
     var body: some View {
         Button(action: action) {
@@ -203,7 +204,9 @@ private struct SidebarRow: View {
                 Spacer()
                 Text(keyHint)
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(isSelected ? Color.white.opacity(0.85) : Theme.textTertiary.opacity(hovering ? 0.85 : 0))
+                    .foregroundStyle(isSelected
+                                     ? Color.white.opacity(0.9)
+                                     : Theme.textTertiary.opacity(hovering ? 0.95 : 0.55))
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
@@ -212,10 +215,19 @@ private struct SidebarRow: View {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(rowFill)
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(focused ? Theme.accent : .clear,
+                                  lineWidth: focused ? 1.5 : 0)
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .focusable()
+        .focused($focused)
         .onHover { hovering = $0 }
+        .accessibilityLabel("\(label), \(keyHint)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var rowFill: Color {
@@ -370,18 +382,18 @@ private struct SettingsCard<Content: View>: View {
     let title: String
     var subtitle: String? = nil
     var systemImage: String? = nil
-    var trailingMinWidth: CGFloat = 220
+    var trailingMinWidth: CGFloat = 200
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
+        HStack(alignment: .center, spacing: 12) {
             if let systemImage {
                 Image(systemName: systemImage)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Theme.accent)
                     .frame(width: 28, height: 28)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: 7)
                             .fill(Theme.accent.opacity(0.12))
                     )
             }
@@ -389,15 +401,20 @@ private struct SettingsCard<Content: View>: View {
                 Text(title)
                     .font(.system(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
+                    .lineLimit(1)
                 if let subtitle {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(Theme.textTertiary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            Spacer(minLength: 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer(minLength: 12)
             content()
                 .frame(minWidth: trailingMinWidth, alignment: .trailing)
+                .layoutPriority(1)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -441,6 +458,7 @@ private struct GeneralPage: View {
                     Toggle("", isOn: $store.launchAtLogin)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .accessibilityLabel("Launch at login")
                 }
             }
         }
@@ -457,6 +475,7 @@ private struct GeneralPage: View {
 private struct RefreshPillRow: View {
     @Binding var selection: Int
     let options: [Int]
+    @FocusState private var focusedValue: Int?
 
     var body: some View {
         HStack(spacing: 6) {
@@ -467,6 +486,8 @@ private struct RefreshPillRow: View {
                     Text("\(value) min")
                         .font(.system(size: 12, weight: selection == value ? .semibold : .medium))
                         .foregroundStyle(selection == value ? Color.white : Theme.textSecondary)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(
@@ -475,11 +496,19 @@ private struct RefreshPillRow: View {
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .strokeBorder(Theme.divider.opacity(selection == value ? 0 : 1),
-                                              lineWidth: 0.5)
+                                .strokeBorder(
+                                    focusedValue == value
+                                        ? Theme.accent
+                                        : Theme.divider.opacity(selection == value ? 0 : 1),
+                                    lineWidth: focusedValue == value ? 1.5 : 0.5
+                                )
                         )
                 }
                 .buttonStyle(.plain)
+                .focusable()
+                .focused($focusedValue, equals: value)
+                .accessibilityLabel("Refresh every \(value) minutes")
+                .accessibilityAddTraits(selection == value ? .isSelected : [])
             }
         }
     }
@@ -500,7 +529,7 @@ private struct GoalsPage: View {
                 caption: store.goalsEnabled ? "Tap a value to type directly" : "Enable tracking to edit"
             ) {
                 LazyVGrid(
-                    columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                    columns: [GridItem(.adaptive(minimum: 260), spacing: 12)],
                     spacing: 12
                 ) {
                     ForEach(Array(Period.allCases.enumerated()), id: \.element.id) { idx, period in
@@ -560,6 +589,7 @@ private struct GoalsHeroStrip: View {
                 .labelsHidden()
                 .toggleStyle(.switch)
                 .controlSize(.large)
+                .accessibilityLabel("Goal tracking")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -606,22 +636,26 @@ private struct NotificationStatusChip: View {
     let enabled: Bool
 
     var body: some View {
-        let (label, color) = display
+        let (label, color, icon) = display
         HStack(spacing: 5) {
-            Circle().fill(color).frame(width: 6, height: 6)
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(color)
             Text(label)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(label)
     }
 
-    private var display: (String, Color) {
-        guard enabled else { return ("Tracking off", Theme.textTertiary) }
+    private var display: (String, Color, String) {
+        guard enabled else { return ("Tracking off", Theme.textTertiary, "pause.circle.fill") }
         switch status {
-        case .authorized, .provisional: return ("Notifications on", Color.green.opacity(0.85))
-        case .denied:                   return ("Notifications blocked — check System Settings", Color.orange)
-        case .notDetermined:            return ("Awaiting permission", Color.orange.opacity(0.8))
-        case .unknown:                  return ("Notifications unavailable", Theme.textTertiary)
+        case .authorized, .provisional: return ("Notifications on", Color.green.opacity(0.9), "checkmark.circle.fill")
+        case .denied:                   return ("Notifications blocked — check System Settings", Color.orange, "exclamationmark.triangle.fill")
+        case .notDetermined:            return ("Awaiting permission", Color.orange.opacity(0.8), "questionmark.circle.fill")
+        case .unknown:                  return ("Notifications unavailable", Theme.textTertiary, "xmark.circle.fill")
         }
     }
 }
@@ -675,6 +709,8 @@ private struct PeriodGoalCard: View {
                 Text(chip)
                     .font(.system(size: 10.5, weight: .medium, design: .monospaced))
                     .foregroundStyle(Theme.textSecondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
                     .background(
@@ -782,7 +818,7 @@ private struct NumericGoalField: View {
     @FocusState private var focused: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.system(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textTertiary)
@@ -790,29 +826,34 @@ private struct NumericGoalField: View {
             Text(label)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
-            Spacer()
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+            Spacer(minLength: 6)
 
-            HStack(spacing: 6) {
+            HStack(spacing: 5) {
                 TextField(placeholder, text: $draft)
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.trailing)
                     .font(.system(size: 13, weight: .semibold, design: .monospaced))
                     .foregroundStyle(value > 0 ? Theme.textPrimary : Theme.textTertiary)
-                    .frame(width: 76)
+                    .frame(width: 60)
                     .focused($focused)
                     .onSubmit(commit)
                     .onExitCommand { focused = false }
                     .onChange(of: focused) { _, isFocused in
                         if !isFocused { commit() }
                     }
+                    .accessibilityLabel("\(label) target")
 
                 if !suffix.isEmpty {
                     Text(suffix)
                         .font(.system(size: 11.5, weight: .medium))
                         .foregroundStyle(Theme.textTertiary)
-                        .frame(minWidth: 16, alignment: .leading)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
             }
+            .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
@@ -914,6 +955,7 @@ private struct DisplayPage: View {
                     Toggle("", isOn: $store.hideSensitive)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .accessibilityLabel("Hide sensitive amounts")
                 }
             }
 

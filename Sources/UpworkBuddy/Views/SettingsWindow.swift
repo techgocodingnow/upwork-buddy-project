@@ -17,8 +17,8 @@ enum SettingsWindow {
 
         let hosting = NSHostingController(rootView: root)
         let win = NSWindow(contentViewController: hosting)
-        win.setContentSize(NSSize(width: 720, height: 540))
-        win.minSize = NSSize(width: 640, height: 480)
+        win.setContentSize(NSSize(width: 820, height: 580))
+        win.minSize = NSSize(width: 760, height: 520)
         win.title = "UpworkBuddy Settings"
         win.titlebarAppearsTransparent = true
         win.titleVisibility = .hidden
