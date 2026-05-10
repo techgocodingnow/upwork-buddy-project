@@ -115,9 +115,44 @@ cat > "${BUNDLE}/Contents/PkgInfo" <<'PKG'
 APPL????
 PKG
 
-echo "▸ Ad-hoc signing..."
-codesign --force --sign - --timestamp=none --deep "${BUNDLE}" 2>/dev/null || true
-codesign --verify --deep --strict "${BUNDLE}" 2>/dev/null || echo "  (signature verify skipped)"
+ENTITLEMENTS="${ROOT}/Scripts/UpworkBuddy.entitlements"
+SIGN_IDENTITY="${SIGN_IDENTITY:-Developer ID Application: I Le Duc (L23PD654Q3)}"
+
+if security find-identity -v -p codesigning | grep -qF "${SIGN_IDENTITY}"; then
+  echo "▸ Signing with: ${SIGN_IDENTITY}"
+  # Sign nested resource bundles first, then the app bundle.
+  find "${BUNDLE}/Contents/Resources" -name "*.bundle" -type d -print0 2>/dev/null | \
+    while IFS= read -r -d '' nested; do
+      codesign --force --options runtime --timestamp \
+        --sign "${SIGN_IDENTITY}" "${nested}"
+    done
+  codesign --force --options runtime --timestamp \
+    --entitlements "${ENTITLEMENTS}" \
+    --sign "${SIGN_IDENTITY}" "${BUNDLE}"
+  codesign --verify --deep --strict --verbose=2 "${BUNDLE}"
+
+  if [[ -n "${NOTARY_PROFILE:-}" ]]; then
+    echo "▸ Notarizing (profile: ${NOTARY_PROFILE})..."
+    NOTARY_ZIP="${DIST_DIR}/UpworkBuddy-notarize.zip"
+    /usr/bin/ditto -c -k --keepParent "${BUNDLE}" "${NOTARY_ZIP}"
+    NOTARY_ARGS=(--keychain-profile "${NOTARY_PROFILE}" --wait)
+    if [[ -n "${NOTARY_KEYCHAIN:-}" ]]; then
+      NOTARY_ARGS+=(--keychain "${NOTARY_KEYCHAIN}")
+    fi
+    xcrun notarytool submit "${NOTARY_ZIP}" "${NOTARY_ARGS[@]}"
+    rm -f "${NOTARY_ZIP}"
+    echo "▸ Stapling..."
+    xcrun stapler staple "${BUNDLE}"
+    xcrun stapler validate "${BUNDLE}"
+  else
+    echo "  (skipping notarization — set NOTARY_PROFILE env var to enable)"
+  fi
+else
+  echo "▸ WARN: '${SIGN_IDENTITY}' not found — falling back to ad-hoc."
+  echo "       End users will get keychain password prompts."
+  codesign --force --sign - --timestamp=none --deep "${BUNDLE}" 2>/dev/null || true
+  codesign --verify --deep --strict "${BUNDLE}" 2>/dev/null || echo "  (signature verify skipped)"
+fi
 
 ZIP_NAME="UpworkBuddy-${VERSION}.zip"
 ZIP_PATH="${DIST_DIR}/${ZIP_NAME}"

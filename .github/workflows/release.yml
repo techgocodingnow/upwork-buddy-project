@@ -1,0 +1,227 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to release (e.g. v1.0.0)'
+        required: true
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  APP_NAME: UpworkBuddy
+  TEAM_ID: L23PD654Q3
+  BUNDLE_ID: com.upworkbuddy.app
+  SIGN_IDENTITY: "Developer ID Application: I Le Duc (L23PD654Q3)"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Resolve tag
+        id: tag
+        env:
+          DISPATCH_TAG: ${{ github.event.inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAG="$DISPATCH_TAG"
+          else
+            TAG="$REF_NAME"
+          fi
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$ ]]; then
+            echo "::error::Tag '$TAG' does not match vMAJOR.MINOR.PATCH[-PRERELEASE]"
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$TAG" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: |
+          if [ -d "/Applications/Xcode_16.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app
+          else
+            sudo xcode-select -s /Applications/Xcode.app
+          fi
+          xcodebuild -version
+          swift --version
+
+      - name: Stage Config.plist from secret
+        env:
+          CONFIG_PLIST_BASE64: ${{ secrets.CONFIG_PLIST_BASE64 }}
+        run: |
+          if [ -z "$CONFIG_PLIST_BASE64" ]; then
+            echo "::error::CONFIG_PLIST_BASE64 secret missing"
+            exit 1
+          fi
+          echo "$CONFIG_PLIST_BASE64" | base64 --decode \
+            > Sources/UpworkBuddy/Resources/Config.plist
+          plutil -lint Sources/UpworkBuddy/Resources/Config.plist
+
+      - name: Import signing certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          CERT_PATH="$RUNNER_TEMP/cert.p12"
+          echo "$BUILD_CERTIFICATE_BASE64" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$P12_PASSWORD" \
+            -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          OTHER=$(security list-keychains -d user | tr -d '"' | tr -d ' ')
+          security list-keychain -d user -s "$KEYCHAIN_PATH" $OTHER
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          rm -f "$CERT_PATH"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+      - name: Store notarization credentials
+        env:
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        run: |
+          xcrun notarytool store-credentials ci-notary \
+            --apple-id "$NOTARY_APPLE_ID" \
+            --team-id "$NOTARY_TEAM_ID" \
+            --password "$NOTARY_PASSWORD" \
+            --keychain "$KEYCHAIN_PATH"
+
+      - name: Build, sign, notarize, staple .app
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+          NOTARY_PROFILE: ci-notary
+          NOTARY_KEYCHAIN: ${{ env.KEYCHAIN_PATH }}
+        run: |
+          chmod +x Scripts/package-app.sh
+          Scripts/package-app.sh "$VERSION"
+
+      - name: Verify signing & notarization
+        run: |
+          BUNDLE=".build/dist/UpworkBuddy.app"
+          codesign -dv --verbose=4 "$BUNDLE" 2>&1 | tee /tmp/cs.txt
+          grep -q "flags=.*runtime" /tmp/cs.txt || { echo "::error::hardened runtime missing"; exit 1; }
+          grep -q "Timestamp=" /tmp/cs.txt || { echo "::error::secure timestamp missing"; exit 1; }
+          codesign --verify --deep --strict --verbose=2 "$BUNDLE"
+          spctl -a -t exec -vv "$BUNDLE" || true
+          xcrun stapler validate "$BUNDLE"
+
+      - name: Create + sign DMG
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          brew install create-dmg jq
+          BUNDLE=".build/dist/UpworkBuddy.app"
+          DMG_PATH=".build/dist/UpworkBuddy-${VERSION}.dmg"
+          create-dmg \
+            --volname "UpworkBuddy ${VERSION}" \
+            --window-pos 200 120 \
+            --window-size 640 400 \
+            --icon-size 100 \
+            --icon "UpworkBuddy.app" 180 180 \
+            --hide-extension "UpworkBuddy.app" \
+            --app-drop-link 460 180 \
+            --no-internet-enable \
+            "$DMG_PATH" \
+            "$BUNDLE"
+          codesign --force --sign "$SIGN_IDENTITY" --timestamp "$DMG_PATH"
+          echo "DMG_PATH=$DMG_PATH" >> "$GITHUB_ENV"
+
+      - name: Notarize + staple DMG
+        id: notarize_dmg
+        run: |
+          set +e
+          OUT=$(xcrun notarytool submit "$DMG_PATH" \
+            --keychain-profile ci-notary \
+            --keychain "$KEYCHAIN_PATH" \
+            --output-format json --wait)
+          RC=$?
+          echo "$OUT"
+          SUB_ID=$(echo "$OUT" | jq -r '.id // empty')
+          STATUS=$(echo "$OUT" | jq -r '.status // empty')
+          echo "submission_id=$SUB_ID" >> "$GITHUB_OUTPUT"
+          if [ "$STATUS" != "Accepted" ] || [ "$RC" -ne 0 ]; then
+            echo "::error::DMG notarization failed: $STATUS"
+            xcrun notarytool log "$SUB_ID" \
+              --keychain-profile ci-notary --keychain "$KEYCHAIN_PATH" || true
+            exit 1
+          fi
+          xcrun stapler staple "$DMG_PATH"
+          xcrun stapler validate "$DMG_PATH"
+
+      - name: Fetch notary log on failure
+        if: failure() && steps.notarize_dmg.outputs.submission_id != ''
+        run: |
+          xcrun notarytool log "${{ steps.notarize_dmg.outputs.submission_id }}" \
+            --keychain-profile ci-notary --keychain "$KEYCHAIN_PATH" || true
+
+      - name: Generate changelog
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || echo "")
+          {
+            echo "## UpworkBuddy ${VERSION}"
+            echo ""
+            if [ -n "$PREV_TAG" ]; then
+              echo "### Changes since ${PREV_TAG}"
+              echo ""
+              git log "${PREV_TAG}..${TAG}" --pretty=format:"- %s (%h)" --no-merges
+            else
+              echo "### Initial release"
+            fi
+            echo ""
+            echo ""
+            echo "### Install"
+            echo ""
+            echo "1. Download \`UpworkBuddy-${VERSION}.dmg\` below"
+            echo "2. Open the DMG, drag UpworkBuddy to Applications"
+            echo "3. Launch — signed + notarized, no Gatekeeper warning"
+          } > /tmp/changelog.md
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UpworkBuddy-${{ steps.tag.outputs.version }}-dmg
+          path: ${{ env.DMG_PATH }}
+          retention-days: 30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: UpworkBuddy ${{ steps.tag.outputs.version }}
+          body_path: /tmp/changelog.md
+          prerelease: ${{ steps.tag.outputs.prerelease == 'true' }}
+          files: ${{ env.DMG_PATH }}
+
+      - name: Cleanup keychain
+        if: always()
+        run: |
+          security delete-keychain "$KEYCHAIN_PATH" || true

@@ -6,9 +6,14 @@ final class GoalNotificationService {
     static let shared = GoalNotificationService()
     private init() {}
 
+    private var canUseNotifications: Bool {
+        Bundle.main.bundleIdentifier != nil
+    }
+
     private static let kLastNotified = "UpworkBuddyGoalLastNotified"
 
     func requestAuthorizationIfNeeded() async {
+        guard canUseNotifications else { return }
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .notDetermined else { return }
@@ -20,13 +25,14 @@ final class GoalNotificationService {
     }
 
     func cancelPending() {
+        guard canUseNotifications else { return }
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
     /// Inspect each (metric, period) pair on the active store. If the user has crossed
     /// a target for the first time in the current bucket, send a local notification.
     func evaluate(store: AppStore) async {
-        guard store.goalsEnabled else { return }
+        guard canUseNotifications, store.goalsEnabled else { return }
 
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()

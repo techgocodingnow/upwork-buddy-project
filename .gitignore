@@ -1,5 +1,7 @@
 .DS_Store
 .build/
+build/local/
+.env
 .swiftpm/
 *.xcodeproj
 Package.resolved
@@ -13,9 +15,10 @@ graphify-out/
 .code-review-graph/
 
 # Per-developer agent/IDE tooling (not project-wide)
-.claude/
-.mcp.json
+.claude/settings.local.json
+# .mcp.json
 .opencode.json
 AGENTS.md
 GEMINI.md
 .gitnexus
+build

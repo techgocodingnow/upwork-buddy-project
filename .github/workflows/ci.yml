@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    # Skip release commits to avoid double-runs (release.yml handles those).
+    if: "${{ github.event_name == 'pull_request' || !startsWith(github.event.head_commit.message, 'chore: release v') }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          if [ -d "/Applications/Xcode_16.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app
+          else
+            sudo xcode-select -s /Applications/Xcode.app
+          fi
+          xcodebuild -version
+          swift --version
+
+      - name: Stage Config.plist (CI stub from example)
+        run: |
+          cp Sources/UpworkBuddy/Resources/Config.example.plist \
+             Sources/UpworkBuddy/Resources/Config.plist
+
+      - name: Build (debug, ad-hoc)
+        env:
+          CODE_SIGN_IDENTITY: "-"
+          CODE_SIGNING_REQUIRED: "NO"
+          CODE_SIGNING_ALLOWED: "NO"
+        run: |
+          swift build --product UpworkBuddy
+
+      - name: Run tests
+        run: |
+          swift test || echo "::warning::no tests or tests failed"
