@@ -11,13 +11,17 @@ struct LoginView: View {
             Image(systemName: "briefcase.fill")
                 .font(.system(size: 56, weight: .light))
                 .foregroundStyle(Theme.accent)
+                .accessibilityHidden(true)
             VStack(spacing: 6) {
                 HStack(spacing: 0) {
-                    Text("Upwork").foregroundStyle(Theme.textPrimary)
-                    Text("Buddy").foregroundStyle(Theme.accent)
+                    Text(loc: "Upwork").foregroundStyle(Theme.textPrimary)
+                    Text(loc: "Buddy").foregroundStyle(Theme.accentDeep)
                 }
                 .font(.title2.weight(.semibold))
-                Text("Track your active Upwork projects, hours, and earnings — right from the menu bar.")
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(L10n.t("UpworkBuddy"))
+                .accessibilityAddTraits(.isHeader)
+                Text(loc: "Track your active Upwork projects, hours, and earnings — right from the menu bar.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -26,14 +30,18 @@ struct LoginView: View {
             Button {
                 store.startLogin()
             } label: {
-                Label("Connect Upwork", systemImage: "link")
-                    .font(.system(size: 13, weight: .semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 9)
-                    .foregroundStyle(.white)
-                    .background(
-                        RoundedRectangle(cornerRadius: 9).fill(Theme.accent)
-                    )
+                Label {
+                    Text(loc: "Connect Upwork")
+                } icon: {
+                    Image(systemName: "link")
+                }
+                .font(.system(size: 13, weight: .semibold))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 9)
+                .foregroundStyle(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 9).fill(Theme.accentDeep)
+                )
             }
             .buttonStyle(.plain)
             .padding(.horizontal, 32)
@@ -44,9 +52,10 @@ struct LoginView: View {
                     .foregroundStyle(.red)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
+                    .accessibilityLabel(L10n.t("Error: %@", err))
             }
             Spacer()
-            Text("A browser window will open for sign-in.")
+            Text(loc: "A browser window will open for sign-in.")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
                 .padding(.bottom, 12)

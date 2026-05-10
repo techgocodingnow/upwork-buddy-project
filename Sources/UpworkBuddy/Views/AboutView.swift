@@ -2,49 +2,31 @@ import SwiftUI
 import AppKit
 
 private let aboutAuthorURL   = URL(string: "https://github.com/anthropics")!
-private let aboutReleasesURL = URL(string: "https://github.com/anthropics/claude-code/releases")!
 
-struct AboutView: View {
+/// Inline About page rendered inside `SettingsContent`. Inherits the
+/// active theme background from the parent container.
+struct AboutPage: View {
     @State private var showingResetConfirm = false
     @Environment(AppStore.self) private var store
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 26) {
-                heroBlock
-                Divider().background(Color.white.opacity(0.10))
-                createdByBlock
-                linksBlock
-                Spacer(minLength: 12)
-                footerBlock
-            }
-            .padding(.horizontal, 28)
-            .padding(.vertical, 32)
-            .frame(maxWidth: .infinity)
+        VStack(spacing: 26) {
+            heroBlock
+            Divider().background(Theme.divider)
+            createdByBlock
+            linksBlock
+            Spacer(minLength: 12)
+            footerBlock
         }
-        .background(backdrop.ignoresSafeArea())
-        .frame(minWidth: 460, minHeight: 580)
-        .alert("Reset App Data?", isPresented: $showingResetConfirm) {
-            Button("Cancel", role: .cancel) {}
-            Button("Reset", role: .destructive) {
+        .frame(maxWidth: .infinity)
+        .alert(L10n.t("Reset App Data?"), isPresented: $showingResetConfirm) {
+            Button(L10n.t("Cancel"), role: .cancel) {}
+            Button(L10n.t("Reset"), role: .destructive) {
                 Task { await performReset() }
             }
         } message: {
-            Text("Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone.")
+            Text(loc: "Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone.")
         }
-    }
-
-    // MARK: - Backdrop
-
-    private var backdrop: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.04, green: 0.07, blue: 0.16),
-                Color(red: 0.02, green: 0.03, blue: 0.06)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
     }
 
     // MARK: - Hero
@@ -56,24 +38,25 @@ struct AboutView: View {
 
             Text(appName)
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Theme.textPrimary)
 
-            Text("Version \(appVersion)")
+            Text(L10n.t("Version %@", appVersion))
                 .font(.system(size: 13))
-                .foregroundStyle(Color.white.opacity(0.55))
+                .foregroundStyle(Theme.textTertiary)
 
             Button {
-                NSWorkspace.shared.open(aboutReleasesURL)
+                UpdateService.shared.checkForUpdates()
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.down.circle")
                         .font(.system(size: 13, weight: .semibold))
-                    Text("Check for Updates")
+                    Text(loc: "Check for Updates")
                         .font(.system(size: 13, weight: .semibold))
                 }
-                .foregroundStyle(Color(red: 0.30, green: 0.66, blue: 1.0))
+                .foregroundStyle(Theme.accentDeep)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(L10n.t("Check for Updates"))
         }
     }
 
@@ -92,11 +75,12 @@ struct AboutView: View {
             } else {
                 ZStack {
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(Color(red: 0.76, green: 0.38, blue: 0.11))
+                        .fill(Theme.accentDeep)
                     Image(systemName: "briefcase.fill")
                         .font(.system(size: 40, weight: .bold))
                         .foregroundStyle(Color.white)
                 }
+                .accessibilityHidden(true)
             }
         }
     }
@@ -105,9 +89,9 @@ struct AboutView: View {
 
     private var createdByBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Created By")
+            Text(loc: "Created By")
                 .font(.system(size: 14.5, weight: .semibold))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Theme.textPrimary)
 
             Button {
                 NSWorkspace.shared.open(aboutAuthorURL)
@@ -115,34 +99,34 @@ struct AboutView: View {
                 HStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color.white.opacity(0.10))
+                            .fill(Theme.chipBg)
                         Image(systemName: "person.fill")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Color.white.opacity(0.7))
+                            .foregroundStyle(Theme.textSecondary)
                     }
                     .frame(width: 38, height: 38)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(authorName)
                             .font(.system(size: 13.5, weight: .semibold))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(Theme.textPrimary)
                         Text(authorHandle)
                             .font(.system(size: 11.5))
-                            .foregroundStyle(Color.white.opacity(0.55))
+                            .foregroundStyle(Theme.textTertiary)
                     }
                     Spacer(minLength: 8)
                     Image(systemName: "arrow.up.right")
                         .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(Color.white.opacity(0.45))
+                        .foregroundStyle(Theme.textTertiary)
                 }
                 .padding(12)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Theme.surface.opacity(0.6))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.6)
+                        .strokeBorder(Theme.divider, lineWidth: 0.6)
                 )
             }
             .buttonStyle(.plain)
@@ -154,22 +138,22 @@ struct AboutView: View {
 
     private var linksBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Links")
+            Text(loc: "Links")
                 .font(.system(size: 14.5, weight: .semibold))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Theme.textPrimary)
 
             VStack(spacing: 0) {
                 AboutLinkRow(
                     icon: "bubble.left.and.bubble.right.fill",
-                    label: "Send Feedback",
+                    label: L10n.t("Send Feedback"),
                     trailing: .arrow
                 ) {
                     FeedbackWindow.show()
                 }
-                Divider().background(Color.white.opacity(0.06))
+                Divider().background(Theme.divider)
                 AboutLinkRow(
                     icon: "trash.fill",
-                    label: "Reset App Data",
+                    label: L10n.t("Reset App Data"),
                     trailing: .arrow,
                     destructive: true
                 ) {
@@ -178,11 +162,11 @@ struct AboutView: View {
             }
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.white.opacity(0.05))
+                    .fill(Theme.surface.opacity(0.6))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.6)
+                    .strokeBorder(Theme.divider, lineWidth: 0.6)
             )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -192,12 +176,12 @@ struct AboutView: View {
 
     private var footerBlock: some View {
         VStack(spacing: 4) {
-            Text("MIT License • Open Source")
+            Text(loc: "MIT License • Open Source")
                 .font(.system(size: 11.5))
-                .foregroundStyle(Color.white.opacity(0.45))
-            Text("© \(currentYear) \(authorName)")
+                .foregroundStyle(Theme.textTertiary)
+            Text(verbatim: "© \(currentYear) \(authorName)")
                 .font(.system(size: 11.5))
-                .foregroundStyle(Color.white.opacity(0.45))
+                .foregroundStyle(Theme.textTertiary)
         }
         .padding(.top, 16)
     }
@@ -249,20 +233,20 @@ private struct AboutLinkRow: View {
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(destructive
-                                     ? Color(red: 1.0, green: 0.45, blue: 0.45)
-                                     : Color.white.opacity(0.85))
+                                     ? Color(red: 0.85, green: 0.25, blue: 0.25)
+                                     : Theme.textPrimary)
                     .frame(width: 22)
                 Text(label)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(destructive
-                                     ? Color(red: 1.0, green: 0.55, blue: 0.55)
-                                     : Color.white)
+                                     ? Color(red: 0.85, green: 0.25, blue: 0.25)
+                                     : Theme.textPrimary)
                 Spacer(minLength: 8)
                 trailingGlyph
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 13)
-            .background(hovering ? Color.white.opacity(0.04) : .clear)
+            .background(hovering ? Theme.accent.opacity(0.08) : .clear)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -275,57 +259,13 @@ private struct AboutLinkRow: View {
         case .external:
             Image(systemName: "arrow.up.right")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Color.white.opacity(0.45))
+                .foregroundStyle(Theme.textTertiary)
         case .arrow:
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Color.white.opacity(0.45))
+                .foregroundStyle(Theme.textTertiary)
         case .none:
             EmptyView()
         }
-    }
-}
-
-// MARK: - Window host
-
-@MainActor
-enum AboutWindow {
-    private static var window: NSWindow?
-
-    static func show(store: AppStore) {
-        if let existing = window {
-            existing.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            return
-        }
-
-        let root = AboutView().environment(store)
-        let hosting = NSHostingController(rootView: root)
-        let win = NSWindow(contentViewController: hosting)
-        win.setContentSize(NSSize(width: 480, height: 620))
-        win.minSize = NSSize(width: 460, height: 580)
-        win.title = "About UpworkBuddy"
-        win.titlebarAppearsTransparent = true
-        win.titleVisibility = .hidden
-        win.styleMask.insert(.fullSizeContentView)
-        win.isReleasedWhenClosed = false
-        win.center()
-        win.delegate = AboutWindowDelegate.shared
-
-        window = win
-        NSApp.activate(ignoringOtherApps: true)
-        win.makeKeyAndOrderFront(nil)
-    }
-
-    static func didClose() {
-        window = nil
-    }
-}
-
-@MainActor
-private final class AboutWindowDelegate: NSObject, NSWindowDelegate {
-    static let shared = AboutWindowDelegate()
-    func windowWillClose(_ notification: Notification) {
-        AboutWindow.didClose()
     }
 }

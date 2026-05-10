@@ -153,5 +153,7 @@ struct MenuBarStylePickerTile: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
+        .accessibilityLabel("\(style.label) menu bar style")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

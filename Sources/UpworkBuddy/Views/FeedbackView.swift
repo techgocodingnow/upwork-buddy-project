@@ -25,9 +25,9 @@ struct FeedbackView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             header
-            field(placeholder: "Name", text: $name)
+            field(placeholder: L10n.t("Name"), text: $name)
             roleField
-            field(placeholder: "Email", text: $email, keyboard: .emailAddress)
+            field(placeholder: L10n.t("Email"), text: $email, keyboard: .emailAddress)
             messageField
             actionRow
             dontAskRow
@@ -56,12 +56,14 @@ struct FeedbackView: View {
                     .foregroundStyle(Color(red: 0.95, green: 0.50, blue: 0.20))
             }
             .frame(width: 50, height: 50)
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("Help Us Improve")
+                Text(loc: "Help Us Improve")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Color.white)
-                Text("Your feedback shapes the future of this app")
+                    .accessibilityAddTraits(.isHeader)
+                Text(loc: "Your feedback shapes the future of this app")
                     .font(.system(size: 12.5))
                     .foregroundStyle(Color.white.opacity(0.65))
             }
@@ -75,7 +77,8 @@ struct FeedbackView: View {
                        text: Binding<String>,
                        keyboard: PlatformKeyboard = .default) -> some View {
         TextField("", text: text, prompt: Text(placeholder)
-            .foregroundStyle(Color.white.opacity(0.45)))
+            .foregroundStyle(Color.white.opacity(0.45))
+        )
             .textFieldStyle(.plain)
             .font(.system(size: 13))
             .foregroundStyle(Color.white)
@@ -89,11 +92,12 @@ struct FeedbackView: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
             )
+            .accessibilityLabel(placeholder)
     }
 
     private var roleField: some View {
         HStack {
-            Text("Role")
+            Text(loc: "Role")
                 .font(.system(size: 13))
                 .foregroundStyle(Color.white.opacity(0.75))
             Spacer()
@@ -127,12 +131,13 @@ struct FeedbackView: View {
                 .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
 
             if message.isEmpty {
-                Text("Tell us anything — feedback, ideas, feature requests…")
+                Text(loc: "Tell us anything — feedback, ideas, feature requests…")
                     .font(.system(size: 13))
                     .foregroundStyle(Color.white.opacity(0.45))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                     .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             }
 
             TextEditor(text: $message)
@@ -141,6 +146,7 @@ struct FeedbackView: View {
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
+                .accessibilityLabel(L10n.t("Message"))
         }
         .frame(height: 120)
     }
@@ -153,7 +159,7 @@ struct FeedbackView: View {
                 FeedbackPrefs.snoozeForDays(7)
                 dismiss()
             } label: {
-                Text("Remind Me Later")
+                Text(loc: "Remind Me Later")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity)
@@ -173,7 +179,7 @@ struct FeedbackView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "paperplane.fill")
                         .font(.system(size: 13, weight: .semibold))
-                    Text("Submit")
+                    Text(loc: "Submit")
                         .font(.system(size: 13, weight: .semibold))
                 }
                 .foregroundStyle(canSubmit ? Color.white : Color.white.opacity(0.55))
@@ -197,7 +203,7 @@ struct FeedbackView: View {
                 FeedbackPrefs.disablePrompt()
                 dismiss()
             } label: {
-                Text("Don't Ask Again")
+                Text(loc: "Don't Ask Again")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Color.white.opacity(0.7))
                     .underline()
@@ -218,7 +224,7 @@ struct FeedbackView: View {
         submitting = true
 
         let to = "dev@gocodingnow.click"
-        let subject = "UpworkBuddy Feedback — \(role.label)"
+        let subject = L10n.t("UpworkBuddy Feedback — %@", role.label)
         let bodyLines = [
             "Name: \(name.isEmpty ? "(unspecified)" : name)",
             "Role: \(role.label)",
@@ -262,12 +268,12 @@ enum FeedbackRole: String, CaseIterable, Identifiable, Sendable {
 
     var label: String {
         switch self {
-        case .developer:  return "Developer"
-        case .designer:   return "Designer"
-        case .manager:    return "Manager"
-        case .student:    return "Student"
-        case .researcher: return "Researcher"
-        case .other:      return "Other"
+        case .developer:  return L10n.t("Developer")
+        case .designer:   return L10n.t("Designer")
+        case .manager:    return L10n.t("Manager")
+        case .student:    return L10n.t("Student")
+        case .researcher: return L10n.t("Researcher")
+        case .other:      return L10n.t("Other")
         }
     }
 }

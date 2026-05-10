@@ -26,7 +26,11 @@ struct PeriodSegmentedControl: View {
                         .shadow(color: selection == period ? Color.black.opacity(0.06) : .clear, radius: 1, y: 0.5)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(period.label)
+                .accessibilityAddTraits(selection == period ? .isSelected : [])
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(L10n.t("Time period"))
     }
 }

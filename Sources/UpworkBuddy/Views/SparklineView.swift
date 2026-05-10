@@ -18,7 +18,7 @@ struct SparklineView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Last \(points.count) days")
+                    Text(L10n.t("Last %d days", points.count))
                         .font(.system(size: 11))
                         .foregroundStyle(Theme.textTertiary)
                     Text(totalText)
@@ -36,6 +36,9 @@ struct SparklineView: View {
                 let barW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
 
                 ZStack(alignment: .topLeading) {
+                    Color.clear
+                        .accessibilityLabel(L10n.t("Trend chart, last %d days, total %@", count, totalText))
+                        .accessibilityAddTraits(.isImage)
                     Rectangle()
                         .fill(Theme.divider)
                         .frame(height: 0.5)

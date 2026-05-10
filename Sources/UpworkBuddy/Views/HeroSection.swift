@@ -19,10 +19,12 @@ struct HeroSection: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Circle().fill(Theme.accent).frame(width: 5, height: 5)
+                    .accessibilityHidden(true)
                 Text(period.label)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(Theme.textPrimary)
                 Text("·").foregroundStyle(Theme.textTertiary)
+                    .accessibilityHidden(true)
                 Text(headerSubtitle)
                     .font(.system(size: 12))
                     .foregroundStyle(Theme.textTertiary)
@@ -36,6 +38,8 @@ struct HeroSection: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .layoutPriority(1)
+                    .accessibilityAddTraits(.isHeader)
+                    .accessibilityLabel("\(period.label) \(primary == .earnings ? "earnings" : "hours"): \(primary == .earnings ? earningsText : hoursText)")
                 Spacer(minLength: 8)
                 if goalTarget > 0 {
                     let current = (primary == .earnings) ? snapshot.totalEarnings : snapshot.totalHours
@@ -53,6 +57,7 @@ struct HeroSection: View {
                         .font(.system(size: 12))
                         .foregroundStyle(Theme.textTertiary)
                 }
+                .accessibilityElement(children: .combine)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -73,9 +78,11 @@ struct HeroSection: View {
             let delta = current - prior
             let pct = (delta / prior) * 100
             let positive = delta >= 0
+            let tooltip = deltaTooltip(delta: delta, format: format)
             HStack(spacing: 3) {
                 Image(systemName: positive ? "arrow.up.right" : "arrow.down.right")
                     .font(.system(size: 9, weight: .semibold))
+                    .accessibilityHidden(true)
                 Text(String(format: "%@%.0f%%", positive ? "+" : "", pct))
                     .font(.system(size: 11, weight: .semibold))
             }
@@ -85,7 +92,9 @@ struct HeroSection: View {
             .background(
                 Capsule().fill((positive ? Color.green : Color.red).opacity(0.12))
             )
-            .help(deltaTooltip(delta: delta, format: format))
+            .help(tooltip)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(tooltip)
         } else {
             EmptyView()
         }

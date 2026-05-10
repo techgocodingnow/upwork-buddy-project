@@ -3,6 +3,8 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(AppStore.self) private var store
 
+    @State private var activeCelebration: UUID?
+
     var body: some View {
         ZStack {
             Theme.bgGradient.ignoresSafeArea()
@@ -52,32 +54,58 @@ struct DashboardView: View {
                 Divider().background(Theme.divider)
                 footer
             }
+
+            if let token = activeCelebration {
+                ConfettiView(
+                    palette: [
+                        Theme.accent,
+                        Theme.accentDeep,
+                        Theme.accentSoft,
+                        .yellow,
+                        .pink,
+                        .mint
+                    ]
+                ) {
+                    if activeCelebration == token { activeCelebration = nil }
+                }
+                .transition(.opacity)
+            }
         }
         .id(store.appTheme)
+        .onChange(of: store.celebrationToken) { _, token in
+            guard let token, store.goalCelebrationEnabled else { return }
+            activeCelebration = token
+            store.celebrationToken = nil
+        }
     }
 
     private var header: some View {
         HStack(spacing: 8) {
             HStack(spacing: 0) {
-                Text("Upwork")
+                Text(loc: "Upwork")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
-                Text("Buddy")
+                Text(loc: "Buddy")
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Theme.accent)
+                    .foregroundStyle(Theme.accentDeep)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(L10n.t("Upwork Buddy"))
+            .accessibilityAddTraits(.isHeader)
             Spacer()
             if store.isLoading {
-                ProgressView().controlSize(.small)
+                ProgressView()
+                    .controlSize(.small)
+                    .accessibilityLabel(L10n.t("Loading"))
             }
             iconButton(systemName: store.hideSensitive ? "eye.slash" : "eye",
-                       help: store.hideSensitive ? "Show amounts" : "Hide amounts") {
+                       help: store.hideSensitive ? L10n.t("Show amounts") : L10n.t("Hide amounts")) {
                 store.hideSensitive.toggle()
             }
-            iconButton(systemName: "arrow.clockwise", help: "Refresh now") {
+            iconButton(systemName: "arrow.clockwise", help: L10n.t("Refresh now")) {
                 Task { await store.refresh(force: true) }
             }
-            iconButton(systemName: "gearshape", help: "Settings") {
+            iconButton(systemName: "gearshape", help: L10n.t("Settings")) {
                 SettingsWindow.show(store: store)
             }
         }
@@ -98,28 +126,35 @@ struct DashboardView: View {
         }
         .buttonStyle(.plain)
         .help(help)
+        .accessibilityLabel(help)
     }
 
     private var footer: some View {
         HStack {
             if let err = store.lastError {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(Theme.accent)
-                Text(err)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .font(.caption)
-                    .foregroundStyle(Theme.textSecondary)
+                HStack(spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(Theme.accentDeep)
+                        .accessibilityHidden(true)
+                    Text(err)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(L10n.t("Error: %@", err))
             } else {
-                Text("Updated \(updatedRelative)")
+                Text(L10n.t("Updated %@", updatedRelative))
                     .font(.caption)
                     .foregroundStyle(Theme.textTertiary)
+                    .accessibilityLabel(L10n.t("Last updated %@", updatedRelative))
             }
             Spacer()
             Button {
                 NSApp.terminate(nil)
             } label: {
-                Text("Quit")
+                Text(loc: "Quit")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(Theme.textSecondary)
                     .padding(.horizontal, 10)

@@ -2,6 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>es</string>
+        <string>fr</string>
+        <string>de</string>
+        <string>it</string>
+        <string>pt-PT</string>
+        <string>pt-BR</string>
+        <string>ja</string>
+        <string>ko</string>
+        <string>zh-Hans</string>
+        <string>zh-Hant</string>
+        <string>uk</string>
+        <string>tr</string>
+    </array>
     <key>CFBundleExecutable</key>
     <string>UpworkBuddy</string>
     <key>CFBundleIdentifier</key>
@@ -31,5 +49,15 @@
         <key>NSAllowsArbitraryLoads</key>
         <false/>
     </dict>
+    <key>SUFeedURL</key>
+    <string>https://techgocodingnow.github.io/upwork-buddy-project/appcast.xml</string>
+    <key>SUPublicEDKey</key>
+    <string>REPLACE_WITH_BASE64_ED25519_PUBLIC_KEY</string>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SUEnableInstallerLauncherService</key>
+    <false/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>86400</integer>
 </dict>
 </plist>

@@ -13,18 +13,18 @@ struct ProjectsList: View {
             HStack {
                 SectionDotLabel(title: "Activity")
                 Spacer()
-                Text("Earnings")
+                Text(loc: "Earnings")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.textTertiary)
                     .frame(width: 70, alignment: .trailing)
-                Text("Hours")
+                Text(loc: "Hours")
                     .font(.system(size: 11))
                     .foregroundStyle(Theme.textTertiary)
                     .frame(width: 50, alignment: .trailing)
             }
 
             if projects.isEmpty {
-                Text("No tracked work in this period.")
+                Text(loc: "No tracked work in this period.")
                     .font(.callout)
                     .foregroundStyle(Theme.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -53,6 +53,7 @@ private struct ProjectRow: View {
         HStack(spacing: 10) {
             BarTrack(progress: project.earnings / maxEarnings)
                 .frame(width: 86, height: 6)
+                .accessibilityHidden(true)
 
             Text(project.title)
                 .font(.system(size: 13, weight: .medium))
@@ -70,6 +71,8 @@ private struct ProjectRow: View {
                 .foregroundStyle(Theme.textSecondary)
                 .frame(width: 50, alignment: .trailing)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(project.title): \(format.compact(project.earnings)), \(project.hours.asHours())")
     }
 }
 

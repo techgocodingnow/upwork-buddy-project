@@ -97,17 +97,17 @@ enum ShortcutAction: String, CaseIterable, Codable, Identifiable, Sendable {
 
     var label: String {
         switch self {
-        case .togglePopover: return "Toggle Popover"
-        case .refreshNow:    return "Refresh Now"
-        case .openSettings:  return "Open Settings"
+        case .togglePopover: return L10n.t("Toggle Popover")
+        case .refreshNow:    return L10n.t("Refresh Now")
+        case .openSettings:  return L10n.t("Open Settings")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .togglePopover: return "Show or hide the UpworkBuddy popover"
-        case .refreshNow:    return "Fetch the latest earnings data"
-        case .openSettings:  return "Open the settings window"
+        case .togglePopover: return L10n.t("Show or hide the UpworkBuddy popover")
+        case .refreshNow:    return L10n.t("Fetch the latest earnings data")
+        case .openSettings:  return L10n.t("Open the settings window")
         }
     }
 

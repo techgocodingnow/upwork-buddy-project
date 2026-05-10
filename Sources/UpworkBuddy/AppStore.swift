@@ -18,9 +18,9 @@ enum MenuBarIconStyle: String, CaseIterable, Sendable {
 
     var label: String {
         switch self {
-        case .iconValue: return "Icon + value"
-        case .iconOnly:  return "Icon only"
-        case .valueOnly: return "Value only"
+        case .iconValue: return L10n.t("Icon + value")
+        case .iconOnly:  return L10n.t("Icon only")
+        case .valueOnly: return L10n.t("Value only")
         }
     }
 }
@@ -37,11 +37,11 @@ enum MenuBarMetricStyle: String, CaseIterable, Sendable, Identifiable {
 
     var label: String {
         switch self {
-        case .batteryClassic: return "Battery (Classic)"
-        case .progressBar:    return "Progress Bar"
-        case .percentage:     return "Percentage"
-        case .iconWithBar:    return "Icon with Bar"
-        case .compact:        return "Compact"
+        case .batteryClassic: return L10n.t("Battery (Classic)")
+        case .progressBar:    return L10n.t("Progress Bar")
+        case .percentage:     return L10n.t("Percentage")
+        case .iconWithBar:    return L10n.t("Icon with Bar")
+        case .compact:        return L10n.t("Compact")
         }
     }
 }
@@ -55,15 +55,15 @@ enum MenuBarDisplayMode: String, CaseIterable, Sendable, Identifiable {
 
     var label: String {
         switch self {
-        case .percentage: return "Percentage"
-        case .count:      return "Count vs goal"
+        case .percentage: return L10n.t("Percentage")
+        case .count:      return L10n.t("Count vs goal")
         }
     }
 
     var subtitle: String {
         switch self {
-        case .percentage: return "Show as percentage (e.g., 60%)"
-        case .count:      return "Show count vs goal (e.g., 5h/8h)"
+        case .percentage: return L10n.t("Show as percentage (e.g., 60%)")
+        case .count:      return L10n.t("Show count vs goal (e.g., 5h/8h)")
         }
     }
 }
@@ -110,6 +110,15 @@ final class AppStore {
     private static let kWeekMetricEnabled  = "UpworkBuddyWeekMetricEnabled"
     private static let kWeekMetricStyle    = "UpworkBuddyWeekMetricStyle"
     private static let kWeekMetricMode     = "UpworkBuddyWeekMetricMode"
+    private static let kProgressNotifEnabled = "UpworkBuddyProgressNotifEnabled"
+    private static let kEnabledThresholds    = "UpworkBuddyEnabledThresholds"
+    private static let kKnownThresholds      = "UpworkBuddyKnownThresholds"
+    private static let kNotifySessionReset   = "UpworkBuddyNotifySessionReset"
+    private static let kNotifySoundEnabled   = "UpworkBuddyNotifySoundEnabled"
+    private static let kGoalCelebrationEnabled = "UpworkBuddyGoalCelebrationEnabled"
+    static let kPreferredLanguage = "UpworkBuddyPreferredLanguage"
+
+    static let defaultThresholds: [Int] = [75, 90, 95]
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -205,6 +214,42 @@ final class AppStore {
         didSet { UserDefaults.standard.set(weekMetricMode.rawValue, forKey: Self.kWeekMetricMode) }
     }
 
+    // MARK: - Progress notifications
+
+    /// Master switch for progress notifications (threshold crossings + session resets).
+    /// Goal-completion notifications still fire when goalsEnabled is on.
+    var progressNotificationsEnabled: Bool {
+        didSet { UserDefaults.standard.set(progressNotificationsEnabled, forKey: Self.kProgressNotifEnabled) }
+    }
+
+    /// Percentages (1…99) where the user wants a "you've hit X%" alert.
+    var enabledThresholds: Set<Int> {
+        didSet { persistIntSet(enabledThresholds, key: Self.kEnabledThresholds) }
+    }
+
+    /// Every threshold the user has ever added (defaults + custom). Drives the row list
+    /// in settings so user-added rows persist with their toggle state.
+    var knownThresholds: [Int] {
+        didSet { persistIntArray(knownThresholds, key: Self.kKnownThresholds) }
+    }
+
+    var notifyOnSessionReset: Bool {
+        didSet { UserDefaults.standard.set(notifyOnSessionReset, forKey: Self.kNotifySessionReset) }
+    }
+
+    var notificationSoundEnabled: Bool {
+        didSet { UserDefaults.standard.set(notificationSoundEnabled, forKey: Self.kNotifySoundEnabled) }
+    }
+
+    /// Confetti / fireworks overlay when a goal is reached.
+    var goalCelebrationEnabled: Bool {
+        didSet { UserDefaults.standard.set(goalCelebrationEnabled, forKey: Self.kGoalCelebrationEnabled) }
+    }
+
+    /// Set by GoalNotificationService when a goal first crosses 100% in a bucket.
+    /// Views observe this to play the confetti animation, then nil it out.
+    var celebrationToken: UUID?
+
     /// Snapshot for the current week. Mirrors `snapshot` when `selectedPeriod == .week`,
     /// else fetched alongside today during refresh so the menu bar can show weekly progress
     /// independent of the dashboard's selected period.
@@ -220,6 +265,16 @@ final class AppStore {
     /// Per-action user-overridable shortcuts. `nil` value means "unbound".
     var shortcuts: [ShortcutAction: Shortcut?] {
         didSet { persistShortcuts() }
+    }
+
+    /// User-selected UI language. Changes are persisted immediately and applied
+    /// to the Foundation locale machinery on next launch (matches the
+    /// "restart the app" hint shown on the Language settings page).
+    var preferredLanguage: AppLanguage {
+        didSet {
+            UserDefaults.standard.set(preferredLanguage.code, forKey: Self.kPreferredLanguage)
+            UserDefaults.standard.set([preferredLanguage.code], forKey: "AppleLanguages")
+        }
     }
 
     private let api = UpworkAPI()
@@ -284,10 +339,38 @@ final class AppStore {
             .flatMap(MenuBarDisplayMode.init(rawValue:))
         self.weekMetricMode = storedWeekMode ?? .percentage
 
+        // Progress notifications. Default on, with [75,90,95] enabled, no reset alert, sound on, celebration on.
+        if defaults.object(forKey: Self.kProgressNotifEnabled) == nil {
+            self.progressNotificationsEnabled = true
+        } else {
+            self.progressNotificationsEnabled = defaults.bool(forKey: Self.kProgressNotifEnabled)
+        }
+        let storedKnown = (defaults.array(forKey: Self.kKnownThresholds) as? [Int]) ?? Self.defaultThresholds
+        self.knownThresholds = storedKnown.isEmpty ? Self.defaultThresholds : storedKnown
+        if let storedEnabled = defaults.array(forKey: Self.kEnabledThresholds) as? [Int] {
+            self.enabledThresholds = Set(storedEnabled)
+        } else {
+            self.enabledThresholds = Set(Self.defaultThresholds)
+        }
+        self.notifyOnSessionReset = defaults.bool(forKey: Self.kNotifySessionReset)
+        if defaults.object(forKey: Self.kNotifySoundEnabled) == nil {
+            self.notificationSoundEnabled = true
+        } else {
+            self.notificationSoundEnabled = defaults.bool(forKey: Self.kNotifySoundEnabled)
+        }
+        if defaults.object(forKey: Self.kGoalCelebrationEnabled) == nil {
+            self.goalCelebrationEnabled = true
+        } else {
+            self.goalCelebrationEnabled = defaults.bool(forKey: Self.kGoalCelebrationEnabled)
+        }
+
         let storedTheme = defaults.string(forKey: Self.kAppTheme).flatMap(AppTheme.init(rawValue:))
         let theme = storedTheme ?? .codeBurn
         self.appTheme = theme
         ThemePalette.current = theme.palette
+
+        let storedLang = defaults.string(forKey: Self.kPreferredLanguage)
+        self.preferredLanguage = AppLanguage.resolve(from: storedLang)
 
         // Shortcuts: load JSON, fall back to per-action defaults.
         var loaded: [ShortcutAction: Shortcut?] = [:]
@@ -302,6 +385,35 @@ final class AppStore {
             loaded[action] = action.defaultShortcut
         }
         self.shortcuts = loaded
+    }
+
+    private func persistIntSet(_ set: Set<Int>, key: String) {
+        UserDefaults.standard.set(Array(set).sorted(), forKey: key)
+    }
+
+    private func persistIntArray(_ arr: [Int], key: String) {
+        UserDefaults.standard.set(arr, forKey: key)
+    }
+
+    /// Add a custom threshold (1…99) to the known list and enable it. No-op if already known.
+    func addCustomThreshold(_ percent: Int) {
+        let clamped = max(1, min(99, percent))
+        if !knownThresholds.contains(clamped) {
+            knownThresholds = (knownThresholds + [clamped]).sorted()
+        }
+        enabledThresholds.insert(clamped)
+    }
+
+    /// Remove a user-added custom threshold (only those outside the defaults).
+    func removeCustomThreshold(_ percent: Int) {
+        guard !Self.defaultThresholds.contains(percent) else { return }
+        knownThresholds.removeAll { $0 == percent }
+        enabledThresholds.remove(percent)
+    }
+
+    func setThreshold(_ percent: Int, enabled: Bool) {
+        if enabled { enabledThresholds.insert(percent) }
+        else { enabledThresholds.remove(percent) }
     }
 
     private func persistShortcuts() {

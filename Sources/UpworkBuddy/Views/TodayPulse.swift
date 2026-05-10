@@ -93,6 +93,8 @@ struct TodayPulse: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(Theme.divider, lineWidth: 0.5)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(primary). \(secondary)")
     }
 
     private func deltaText(today: Double, prior: Double, format: CurrencyFormat) -> String {

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import Observation
+import UserNotifications
 
 private let popoverWidth: CGFloat = 380
 private let popoverHeight: CGFloat = 600
@@ -11,13 +12,24 @@ private let menubarIconPointSize: CGFloat = 16
 struct UpworkBuddyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
+    init() {
+        // Apply the persisted UI language before Foundation's localization
+        // caches warm up. Writing to AppleLanguages here makes
+        // Bundle.module.localizedString/NSLocalizedString resolve against the
+        // chosen .lproj for the rest of the process lifetime.
+        if let stored = UserDefaults.standard.string(forKey: AppStore.kPreferredLanguage),
+           !stored.isEmpty {
+            UserDefaults.standard.set([stored], forKey: "AppleLanguages")
+        }
+    }
+
     var body: some Scene {
         Settings { EmptyView() }
     }
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNUserNotificationCenterDelegate {
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
     private let store = AppStore()
@@ -61,6 +73,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         Task { await store.bootstrap() }
         Task { await GoalNotificationService.shared.requestAuthorizationIfNeeded() }
+
+        // Updates: register custom category, become UN delegate so the
+        // "Install" action button on the update notification surfaces
+        // Sparkle's update window. Instantiating the service kicks off the
+        // background check timer (24h by default).
+        UNUserNotificationCenter.current().delegate = self
+        UpdateService.registerNotificationCategory()
+        _ = UpdateService.shared
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // Show banners + sound even when the app is foregrounded.
+        completionHandler([.banner, .sound])
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let actionIdentifier = response.actionIdentifier
+        let categoryIdentifier = response.notification.request.content.categoryIdentifier
+        if categoryIdentifier == UpdateNotification.category {
+            let shouldSurface = actionIdentifier == UpdateNotification.installAction
+                || actionIdentifier == UNNotificationDefaultActionIdentifier
+            if shouldSurface {
+                Task { @MainActor in
+                    UpdateService.shared.checkForUpdates()
+                }
+            }
+        }
+        completionHandler()
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {

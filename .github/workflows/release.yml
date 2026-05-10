@@ -180,6 +180,32 @@ jobs:
           xcrun notarytool log "${{ steps.notarize_dmg.outputs.submission_id }}" \
             --keychain-profile ci-notary --keychain "$KEYCHAIN_PATH" || true
 
+      - name: Resolve Sparkle (provides sign_update binary)
+        run: swift package resolve
+
+      - name: Read build number from Info.plist
+        id: build_no
+        run: |
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" Sources/UpworkBuddy/Info.plist)
+          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
+
+      - name: Sign DMG and publish appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GIT_AUTHOR_EMAIL: actions@github.com
+          GIT_AUTHOR_NAME: github-actions[bot]
+          VERSION: ${{ steps.tag.outputs.version }}
+          BUILD: ${{ steps.build_no.outputs.build }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "::warning::SPARKLE_PRIVATE_KEY not set — skipping appcast publish"
+            exit 0
+          fi
+          chmod +x Scripts/sign-and-publish-appcast.sh
+          Scripts/sign-and-publish-appcast.sh "$VERSION" "$BUILD" "$DMG_PATH" "$TAG"
+
       - name: Generate changelog
         env:
           TAG: ${{ steps.tag.outputs.tag }}

@@ -24,7 +24,8 @@ struct ShortcutRecorder: View {
                         .foregroundStyle(Theme.textTertiary)
                 }
                 .buttonStyle(.plain)
-                .help("Clear shortcut")
+                .help(L10n.t("Clear shortcut"))
+                .accessibilityLabel(L10n.t("Clear shortcut"))
             }
         }
         .onDisappear { stopRecording() }
@@ -53,6 +54,13 @@ struct ShortcutRecorder: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
+        .accessibilityLabel(recorderAccessibilityLabel)
+    }
+
+    private var recorderAccessibilityLabel: String {
+        if isRecording { return "Recording shortcut, press keys" }
+        if let s = shortcut?.displayString { return "Shortcut: \(s). Click to record new" }
+        return "Click to record shortcut"
     }
 
     private var buttonLabel: String {

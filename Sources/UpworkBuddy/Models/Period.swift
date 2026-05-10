@@ -8,12 +8,14 @@ enum Period: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
+    /// Localized human label, e.g. "Today" or its translation. Caller can use
+    /// the result directly inside `Text(...)`.
     var label: String {
         switch self {
-        case .today: return "Today"
-        case .week:  return "Week"
-        case .month: return "Month"
-        case .year:  return "Year"
+        case .today: return L10n.t("Today")
+        case .week:  return L10n.t("Week")
+        case .month: return L10n.t("Month")
+        case .year:  return L10n.t("Year")
         }
     }
 

@@ -5,34 +5,17 @@ private let supportRepoURL    = URL(string: "https://github.com/anthropics/claud
 private let supportIssuesURL  = URL(string: "https://github.com/anthropics/claude-code/issues")!
 private let buyMeACoffeeURL   = URL(string: "https://buymeacoffee.com/")!
 
-struct SupportView: View {
+/// Inline Support page rendered inside `SettingsContent`. Inherits the
+/// active theme background from the parent container.
+struct SupportPage: View {
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                heroBlock
-                featuresCard
-                supportBlock
-                githubBlock
-            }
-            .padding(.horizontal, 28)
-            .padding(.vertical, 32)
-            .frame(maxWidth: .infinity)
+        VStack(spacing: 24) {
+            heroBlock
+            featuresCard
+            supportBlock
+            githubBlock
         }
-        .background(backdrop.ignoresSafeArea())
-        .frame(minWidth: 460, minHeight: 620)
-    }
-
-    // MARK: - Backdrop
-
-    private var backdrop: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.04, green: 0.07, blue: 0.16),
-                Color(red: 0.02, green: 0.03, blue: 0.06)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Hero
@@ -49,14 +32,16 @@ struct SupportView: View {
                     .foregroundStyle(Color(red: 1.0, green: 0.30, blue: 0.36))
                     .shadow(color: Color.red.opacity(0.45), radius: 10, y: 2)
             }
+            .accessibilityHidden(true)
 
-            Text("Support the Project")
+            Text(loc: "Support the Project")
                 .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Theme.textPrimary)
+                .accessibilityAddTraits(.isHeader)
 
-            Text("UpworkBuddy is free and open source")
+            Text(loc: "UpworkBuddy is free and open source")
                 .font(.system(size: 13.5))
-                .foregroundStyle(Color.white.opacity(0.65))
+                .foregroundStyle(Theme.textSecondary)
         }
         .padding(.top, 8)
     }
@@ -68,31 +53,31 @@ struct SupportView: View {
             FeatureRow(
                 icon: "checkmark.circle.fill",
                 tint: Color(red: 0.20, green: 0.78, blue: 0.46),
-                title: "All Features Are Free",
-                detail:"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions."
+                title: L10n.t("All Features Are Free"),
+                detail: L10n.t("Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions.")
             )
             FeatureRow(
                 icon: "lock.open.fill",
                 tint: Color(red: 0.30, green: 0.60, blue: 1.0),
-                title: "Open Source",
-                detail:"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project."
+                title: L10n.t("Open Source"),
+                detail: L10n.t("The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project.")
             )
             FeatureRow(
                 icon: "hand.raised.fill",
                 tint: Color(red: 1.0, green: 0.55, blue: 0.20),
-                title: "No Tracking",
-                detail:"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac."
+                title: L10n.t("No Tracking"),
+                detail: L10n.t("Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac.")
             )
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white.opacity(0.05))
+                .fill(Theme.surface.opacity(0.6))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.6)
+                .strokeBorder(Theme.divider, lineWidth: 0.6)
         )
     }
 
@@ -100,9 +85,9 @@ struct SupportView: View {
 
     private var supportBlock: some View {
         VStack(spacing: 14) {
-            Text("If you find this app useful, consider supporting its development")
+            Text(loc: "If you find this app useful, consider supporting its development")
                 .font(.system(size: 12.5))
-                .foregroundStyle(Color.white.opacity(0.65))
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -112,7 +97,7 @@ struct SupportView: View {
                 HStack(spacing: 10) {
                     Image(systemName: "cup.and.saucer.fill")
                         .font(.system(size: 14, weight: .bold))
-                    Text("Buy Me a Coffee")
+                    Text(loc: "Buy Me a Coffee")
                         .font(.system(size: 14, weight: .bold))
                 }
                 .foregroundStyle(Color.black)
@@ -124,10 +109,12 @@ struct SupportView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(L10n.t("Buy Me a Coffee"))
+            .accessibilityHint(L10n.t("Opens donation page in browser"))
 
-            Text("Your support helps keep this project alive and growing")
+            Text(loc: "Your support helps keep this project alive and growing")
                 .font(.system(size: 11.5))
-                .foregroundStyle(Color.white.opacity(0.45))
+                .foregroundStyle(Theme.textTertiary)
                 .multilineTextAlignment(.center)
         }
     }
@@ -136,9 +123,9 @@ struct SupportView: View {
 
     private var githubBlock: some View {
         VStack(spacing: 12) {
-            Text("You can also support by")
+            Text(loc: "You can also support by")
                 .font(.system(size: 12.5))
-                .foregroundStyle(Color.white.opacity(0.65))
+                .foregroundStyle(Theme.textSecondary)
 
             Button {
                 NSWorkspace.shared.open(supportRepoURL)
@@ -146,7 +133,7 @@ struct SupportView: View {
                 HStack(spacing: 8) {
                     Image(systemName: "star.fill")
                         .font(.system(size: 13, weight: .bold))
-                    Text("Starring on GitHub")
+                    Text(loc: "Starring on GitHub")
                         .font(.system(size: 13, weight: .semibold))
                 }
                 .foregroundStyle(Color.white)
@@ -154,14 +141,16 @@ struct SupportView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color.black.opacity(0.55))
+                        .fill(Theme.accentDeep)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.6)
+                        .strokeBorder(Theme.accentDeep.opacity(0.4), lineWidth: 0.6)
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(L10n.t("Star on GitHub"))
+            .accessibilityHint(L10n.t("Opens GitHub repo"))
         }
         .padding(.bottom, 8)
     }
@@ -180,59 +169,19 @@ private struct FeatureRow: View {
                 .foregroundStyle(tint)
                 .frame(width: 26, alignment: .center)
                 .padding(.top, 2)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.system(size: 14.5, weight: .semibold))
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Theme.textPrimary)
                 Text(detail)
                     .font(.system(size: 12.5))
-                    .foregroundStyle(Color.white.opacity(0.62))
+                    .foregroundStyle(Theme.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-    }
-}
-
-// MARK: - Window host
-
-@MainActor
-enum SupportWindow {
-    private static var window: NSWindow?
-
-    static func show() {
-        if let existing = window {
-            existing.makeKeyAndOrderFront(nil)
-            NSApp.activate(ignoringOtherApps: true)
-            return
-        }
-
-        let hosting = NSHostingController(rootView: SupportView())
-        let win = NSWindow(contentViewController: hosting)
-        win.setContentSize(NSSize(width: 480, height: 680))
-        win.minSize = NSSize(width: 460, height: 620)
-        win.title = "Support UpworkBuddy"
-        win.titlebarAppearsTransparent = true
-        win.titleVisibility = .hidden
-        win.styleMask.insert(.fullSizeContentView)
-        win.isReleasedWhenClosed = false
-        win.center()
-        win.delegate = SupportWindowDelegate.shared
-
-        window = win
-        NSApp.activate(ignoringOtherApps: true)
-        win.makeKeyAndOrderFront(nil)
-    }
-
-    static func didClose() {
-        window = nil
-    }
-}
-
-@MainActor
-private final class SupportWindowDelegate: NSObject, NSWindowDelegate {
-    static let shared = SupportWindowDelegate()
-    func windowWillClose(_ notification: Notification) {
-        SupportWindow.didClose()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(detail)") // both pre-localized at call site
     }
 }

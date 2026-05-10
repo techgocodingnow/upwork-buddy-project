@@ -10,8 +10,8 @@ enum AppTheme: String, CaseIterable, Identifiable, Sendable {
 
     var label: String {
         switch self {
-        case .codeBurn: return "Code Burn"
-        case .emerald:  return "Emerald"
+        case .codeBurn: return L10n.t("Code Burn")
+        case .emerald:  return L10n.t("Emerald")
         }
     }
 
@@ -71,7 +71,7 @@ extension ThemePalette {
     /// deep-navy primary text, cool neutral seconds.
     static let emerald = ThemePalette(
         accent:        Color(red: 0.10, green: 0.70, blue: 0.47),  // #1AB377
-        accentDeep:    Color(red: 0.05, green: 0.54, blue: 0.34),  // #0E8A56
+        accentDeep:    Color(red: 0.043, green: 0.478, blue: 0.290),  // #0B7A4A — WCAG AA 5.4:1 white-on
         accentSoft:    Color(red: 0.62, green: 0.89, blue: 0.77),  // #9FE3C4
         accentMuted:   Color(red: 0.10, green: 0.70, blue: 0.47).opacity(0.15),
         bgTop:         Color(red: 0.945, green: 0.984, blue: 0.961),  // #F1FBF5
@@ -83,7 +83,7 @@ extension ThemePalette {
         divider:       Color(red: 0.706, green: 0.784, blue: 0.745).opacity(0.6),
         textPrimary:   Color(red: 0.055, green: 0.106, blue: 0.173),  // #0E1B2C deep navy
         textSecondary: Color(red: 0.235, green: 0.275, blue: 0.329),  // #3C4654
-        textTertiary:  Color(red: 0.420, green: 0.467, blue: 0.522)   // #6B7785
+        textTertiary:  Color(red: 0.361, green: 0.408, blue: 0.471)   // #5C6878 — WCAG AA 4.5:1 on bgTop
     )
 }
 
@@ -121,9 +121,11 @@ struct SectionDotLabel: View {
     var body: some View {
         HStack(spacing: 6) {
             Circle().fill(Theme.accent).frame(width: 5, height: 5)
-            Text(title)
+                .accessibilityHidden(true)
+            Text(L10n.t(title))
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Theme.textPrimary)
+                .accessibilityAddTraits(.isHeader)
         }
     }
 }

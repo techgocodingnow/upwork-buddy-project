@@ -1,0 +1,262 @@
+/*
+  Localizable.strings — English (default)
+
+  Single source of truth for every user-facing string in UpworkBuddy.
+  Keys are the original English text. Translators: copy this file to a
+  sibling .lproj folder (e.g. fr.lproj) and translate the right-hand
+  values only. Keep the keys verbatim — they double as fallback copy
+  when a translation is missing.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "Cancel";
+"Reset" = "Reset";
+"Add" = "Add";
+"Submit" = "Submit";
+"Connected" = "Connected";
+"Disconnected" = "Disconnected";
+"Never" = "Never";
+"Coming soon" = "Coming soon";
+"Quit" = "Quit";
+"Quit UpworkBuddy" = "Quit UpworkBuddy";
+"Settings" = "Settings";
+
+// MARK: - Period
+"Today" = "Today";
+"Week" = "Week";
+"Month" = "Month";
+"Year" = "Year";
+
+// MARK: - Metrics
+"Hours" = "Hours";
+"Earnings" = "Earnings";
+"target" = "target";
+"Session Reset" = "Session Reset";
+"Enable notifications" = "Enable notifications";
+"Receive alerts when approaching usage limits" = "Receive alerts when approaching usage limits";
+"Enable progress notifications" = "Enable progress notifications";
+"Remove %d%%" = "Remove %d%%";
+"Add custom threshold" = "Add custom threshold";
+"Notification sound" = "Notification sound";
+"Light" = "Light";
+"Dark" = "Dark";
+"Auto" = "Auto";
+"App appearance" = "App appearance";
+"Earnings target" = "Earnings target";
+"Hours target" = "Hours target";
+"Custom threshold percent" = "Custom threshold percent";
+"Remove custom threshold" = "Remove custom threshold";
+"Remove %d percent threshold" = "Remove %d percent threshold";
+"%@ at %d percent" = "%@ at %d percent";
+"Warning" = "Warning";
+"High Usage" = "High Usage";
+"Critical" = "Critical";
+"Milestone" = "Milestone";
+"%@ theme" = "%@ theme";
+"Reset to default" = "Reset to default";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "Error: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "Loading";
+"Updated %@" = "Updated %@";
+"Last updated %@" = "Last updated %@";
+"Name" = "Name";
+"Email" = "Email";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "Opens donation page in browser";
+"Star on GitHub" = "Star on GitHub";
+"Opens GitHub repo" = "Opens GitHub repo";
+"Last %d days" = "Last %d days";
+"Trend chart, last %d days, total %@" = "Trend chart, last %1$d days, total %2$@";
+"Goal progress %d percent" = "Goal progress %d percent";
+"Clear shortcut" = "Clear shortcut";
+"Time period" = "Time period";
+
+// MARK: - Settings categories
+"General" = "General";
+"Goals" = "Goals";
+"Display" = "Display";
+"Language" = "Language";
+"Shortcuts" = "Shortcuts";
+"Account" = "Account";
+"Software Updates" = "Software Updates";
+"Support" = "Support";
+"About" = "About";
+"About UpworkBuddy" = "About UpworkBuddy";
+
+"Refresh cadence and login behavior" = "Refresh cadence and login behavior";
+"Hours and earnings targets, with notifications" = "Hours and earnings targets, with notifications";
+"Theme, menu bar, and dashboard" = "Theme, menu bar, and dashboard";
+"Choose your preferred language" = "Choose your preferred language";
+"Global keyboard shortcuts" = "Global keyboard shortcuts";
+"Connected Upwork session" = "Connected Upwork session";
+"Keep your app up to date" = "Keep your app up to date";
+"Support the project" = "Support the project";
+
+// MARK: - General page
+"Sync" = "Sync";
+"Startup" = "Startup";
+"Launch at login" = "Launch at login";
+"Open UpworkBuddy automatically when you sign in." = "Open UpworkBuddy automatically when you sign in.";
+"Refresh Interval" = "Refresh Interval";
+"How often UpworkBuddy polls for new earnings" = "How often UpworkBuddy polls for new earnings";
+"Refresh interval" = "Refresh interval";
+"1 min" = "1 min";
+"30 min" = "30 min";
+"1 minute" = "1 minute";
+"%d minutes" = "%d minutes";
+
+// MARK: - Goals page
+"Targets" = "Targets";
+"Notifications" = "Notifications";
+"Celebration" = "Celebration";
+"Confetti when a goal is hit" = "Confetti when a goal is hit";
+"Plays a quick burst when any target reaches 100%." = "Plays a quick burst when any target reaches 100%.";
+"Goal tracking" = "Goal tracking";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "Stay on pace day, week, month, and year. Get a banner when you cross a target.";
+"Tracking off" = "Tracking off";
+"Notifications on" = "Notifications on";
+"Notifications blocked — check System Settings" = "Notifications blocked — check System Settings";
+"Awaiting permission" = "Awaiting permission";
+"Notifications unavailable" = "Notifications unavailable";
+"Alert Thresholds" = "Alert Thresholds";
+"Custom Thresholds" = "Custom Thresholds";
+"e.g. 50" = "e.g. 50";
+"Sound" = "Sound";
+"Tap a value to type directly" = "Tap a value to type directly";
+"Enable tracking to edit" = "Enable tracking to edit";
+"Get notified about usage milestones" = "Get notified about usage milestones";
+"Goal celebration animation" = "Goal celebration animation";
+
+// MARK: - Display page
+"Theme" = "Theme";
+"Used across dashboard, menu bar, and settings" = "Used across dashboard, menu bar, and settings";
+"Dashboard" = "Dashboard";
+"Primary metric" = "Primary metric";
+"Renders large in the popover header." = "Renders large in the popover header.";
+"Hide sensitive amounts" = "Hide sensitive amounts";
+"Masks earnings, rates, and totals across the app." = "Masks earnings, rates, and totals across the app.";
+"Currency" = "Currency";
+"Display currency" = "Display currency";
+"FX support coming in v2." = "FX support coming in v2.";
+
+// MARK: - Shortcuts page
+"Bindings" = "Bindings";
+"Esc cancels recording" = "Esc cancels recording";
+"Global shortcuts" = "Global shortcuts";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧).";
+
+// MARK: - Account page
+"Connection" = "Connection";
+"Signed in via OAuth." = "Signed in via OAuth.";
+"Not connected." = "Not connected.";
+"Danger zone" = "Danger zone";
+"Disconnect" = "Disconnect";
+"Sign out and clear cached earnings on this Mac." = "Sign out and clear cached earnings on this Mac.";
+
+// MARK: - Menu bar
+"Menu bar" = "Menu bar";
+"Choose which targets surface in the status bar" = "Choose which targets surface in the status bar";
+"Today target" = "Today target";
+"Daily progress in the menu bar" = "Daily progress in the menu bar";
+"Weekly target" = "Weekly target";
+"Weekly progress in the menu bar" = "Weekly progress in the menu bar";
+"Icon Style" = "Icon Style";
+"Display Mode" = "Display Mode";
+
+// MARK: - Menu bar enums
+"Icon + value" = "Icon + value";
+"Icon only" = "Icon only";
+"Value only" = "Value only";
+"Battery (Classic)" = "Battery (Classic)";
+"Progress Bar" = "Progress Bar";
+"Percentage" = "Percentage";
+"Icon with Bar" = "Icon with Bar";
+"Compact" = "Compact";
+"Count vs goal" = "Count vs goal";
+"Show as percentage (e.g., 60%)" = "Show as percentage (e.g., 60%)";
+"Show count vs goal (e.g., 5h/8h)" = "Show count vs goal (e.g., 5h/8h)";
+
+// MARK: - Language page
+"Select Language" = "Select Language";
+"Language changes will take effect after restarting the app" = "Language changes will take effect after restarting the app";
+
+// MARK: - About page
+"Reset App Data?" = "Reset App Data?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone.";
+"Version %@" = "Version %@";
+"Check for Updates" = "Check for Updates";
+"Created By" = "Created By";
+"Links" = "Links";
+"Send Feedback" = "Send Feedback";
+"Reset App Data" = "Reset App Data";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "Track your active Upwork projects, hours, and earnings — right from the menu bar.";
+"Connect Upwork" = "Connect Upwork";
+"A browser window will open for sign-in." = "A browser window will open for sign-in.";
+
+// MARK: - Dashboard
+"Show amounts" = "Show amounts";
+"Hide amounts" = "Hide amounts";
+"Refresh now" = "Refresh now";
+
+// MARK: - Feedback
+"Help Us Improve" = "Help Us Improve";
+"Your feedback shapes the future of this app" = "Your feedback shapes the future of this app";
+"Role" = "Role";
+"Tell us anything — feedback, ideas, feature requests…" = "Tell us anything — feedback, ideas, feature requests…";
+"Remind Me Later" = "Remind Me Later";
+"Don't Ask Again" = "Don't Ask Again";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy Feedback — %@";
+"Developer" = "Developer";
+"Designer" = "Designer";
+"Manager" = "Manager";
+"Student" = "Student";
+"Researcher" = "Researcher";
+"Other" = "Other";
+
+// MARK: - Projects list
+"Activity" = "Activity";
+"No tracked work in this period." = "No tracked work in this period.";
+
+// MARK: - Software updates
+"Version Information" = "Version Information";
+"Current Version" = "Current Version";
+"Last Checked" = "Last Checked";
+"Update Preferences" = "Update Preferences";
+"Automatic Updates" = "Automatic Updates";
+"Automatically check for and download updates daily" = "Automatically check for and download updates daily";
+"Checking…" = "Checking…";
+"Secure Updates" = "Secure Updates";
+"All updates are cryptographically signed and verified before installation" = "All updates are cryptographically signed and verified before installation";
+
+// MARK: - Support page
+"Support the Project" = "Support the Project";
+"UpworkBuddy is free and open source" = "UpworkBuddy is free and open source";
+"All Features Are Free" = "All Features Are Free";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions.";
+"Open Source" = "Open Source";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project.";
+"No Tracking" = "No Tracking";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac.";
+"If you find this app useful, consider supporting its development" = "If you find this app useful, consider supporting its development";
+"Buy Me a Coffee" = "Buy Me a Coffee";
+"Your support helps keep this project alive and growing" = "Your support helps keep this project alive and growing";
+"You can also support by" = "You can also support by";
+"Starring on GitHub" = "Starring on GitHub";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "Toggle Popover";
+"Refresh Now" = "Refresh Now";
+"Open Settings" = "Open Settings";
+"Show or hide the UpworkBuddy popover" = "Show or hide the UpworkBuddy popover";
+"Fetch the latest earnings data" = "Fetch the latest earnings data";
+"Open the settings window" = "Open the settings window";

@@ -33,6 +33,6 @@ struct GoalRing: View {
             .padding(2)
         }
         .frame(width: size, height: size)
-        .accessibilityLabel("Goal progress \(Int(progress * 100)) percent")
+        .accessibilityLabel(L10n.t("Goal progress %d percent", Int(progress * 100)))
     }
 }
