@@ -126,11 +126,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private func observeStore() {
         withObservationTracking {
             _ = store.todaySnapshot
+            _ = store.weekSnapshot
             _ = store.snapshot
             _ = store.isAuthenticated
             _ = store.hideSensitive
             _ = store.menuBarMetric
             _ = store.menuBarIconStyle
+            _ = store.todayMetricEnabled
+            _ = store.todayMetricStyle
+            _ = store.weekMetricEnabled
+            _ = store.weekMetricStyle
+            _ = store.weekMetricMode
+            _ = store.goalsEnabled
+            _ = store.goalHoursDaily
+            _ = store.goalHoursWeekly
+            _ = store.goalEarningsDaily
+            _ = store.goalEarningsWeekly
         } onChange: { [weak self] in
             DispatchQueue.main.async {
                 self?.refreshStatusButton()
@@ -166,51 +177,111 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             return
         }
 
-        // Drop the standalone image — the attributed title carries the icon
-        // via NSTextAttachment. Leaving both set duplicates the briefcase.
         button.image = nil
         button.imagePosition = .noImage
 
-        let font = NSFont.monospacedDigitSystemFont(ofSize: menubarTitleFontSize, weight: .medium)
-        let icon = makeMenuBarIcon()
-
-        // valueOnly while logged out has nothing to show — fall back to icon
-        // so the user always has something to click.
-        let style: MenuBarIconStyle = (store.menuBarIconStyle == .valueOnly && !store.isAuthenticated)
-            ? .iconOnly
-            : store.menuBarIconStyle
-
-        let attachment = NSTextAttachment()
-        attachment.image = icon
-        if let size = icon?.size {
-            attachment.bounds = CGRect(x: 0, y: -3, width: size.width, height: size.height)
+        // Logged out → just the briefcase glyph (clickable affordance).
+        guard store.isAuthenticated else {
+            let attachment = NSTextAttachment()
+            attachment.image = makeMenuBarIcon()
+            if let size = attachment.image?.size {
+                attachment.bounds = CGRect(x: 0, y: -3, width: size.width, height: size.height)
+            }
+            button.attributedTitle = NSAttributedString(attachment: attachment)
+            return
         }
 
         let composed = NSMutableAttributedString()
+        var appended = 0
 
-        if style != .valueOnly {
-            composed.append(NSAttributedString(attachment: attachment))
+        if store.todayMetricEnabled {
+            if let attr = makeMetricAttachment(
+                snapshot: store.todaySnapshot,
+                period: .today,
+                style: store.todayMetricStyle,
+                mode: .percentage,                 // today has no display-mode toggle
+                periodCaption: "Today"
+            ) {
+                composed.append(attr)
+                appended += 1
+            }
         }
 
-        if style != .iconOnly && store.isAuthenticated {
-            let leadingSpace = (style == .valueOnly) ? "" : " "
-            let attrs: [NSAttributedString.Key: Any] = [.font: font, .baselineOffset: -1.0]
-            composed.append(NSAttributedString(string: leadingSpace + menuBarValueText(), attributes: attrs))
+        if store.weekMetricEnabled {
+            if appended > 0 {
+                composed.append(NSAttributedString(string: "  "))
+            }
+            if let attr = makeMetricAttachment(
+                snapshot: store.weekSnapshot,
+                period: .week,
+                style: store.weekMetricStyle,
+                mode: store.weekMetricMode,
+                periodCaption: "Week"
+            ) {
+                composed.append(attr)
+                appended += 1
+            }
+        }
+
+        // Nothing enabled — fall back to the brand glyph so the menu item is
+        // still discoverable / clickable.
+        if appended == 0 {
+            let attachment = NSTextAttachment()
+            attachment.image = makeMenuBarIcon()
+            if let size = attachment.image?.size {
+                attachment.bounds = CGRect(x: 0, y: -3, width: size.width, height: size.height)
+            }
+            composed.append(NSAttributedString(attachment: attachment))
         }
 
         button.attributedTitle = composed
     }
 
-    private func menuBarValueText() -> String {
-        switch store.menuBarMetric {
-        case .hours:
-            if store.hideSensitive { return "••••" }
-            let hours = store.todaySnapshot.totalHours
-            return hours < 0.05 ? "0h" : hours.asHours()
-        case .earnings:
-            let amount = store.todaySnapshot.totalEarnings
-            let formatter = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
-            return amount > 0 || store.hideSensitive ? formatter.compact(amount) : "$—"
+    /// Renders one metric (style + label) into an NSAttributedString attachment
+    /// suitable for the status item title.
+    private func makeMetricAttachment(snapshot: EarningsSnapshot,
+                                      period: Period,
+                                      style: MenuBarMetricStyle,
+                                      mode: MenuBarDisplayMode,
+                                      periodCaption: String) -> NSAttributedString? {
+        let progress = MenuBarMetricFormatter.progress(snapshot: snapshot, period: period, store: store)
+        let label: String = {
+            switch style {
+            case .batteryClassic: return periodCaption
+            case .progressBar, .compact: return ""
+            case .percentage, .iconWithBar:
+                return MenuBarMetricFormatter.label(
+                    snapshot: snapshot, period: period, store: store, mode: mode
+                )
+            }
+        }()
+
+        let preview = MenuBarStylePreview(
+            style: style,
+            progress: progress,
+            label: label,
+            width: previewWidth(for: style),
+            height: 18
+        )
+
+        let renderer = ImageRenderer(content: preview)
+        renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
+        guard let nsImage = renderer.nsImage else { return nil }
+        nsImage.isTemplate = false   // styles use color (accent) — not template glyphs.
+
+        let attachment = NSTextAttachment()
+        attachment.image = nsImage
+        attachment.bounds = CGRect(x: 0, y: -4, width: nsImage.size.width, height: nsImage.size.height)
+        return NSAttributedString(attachment: attachment)
+    }
+
+    private func previewWidth(for style: MenuBarMetricStyle) -> CGFloat {
+        switch style {
+        case .batteryClassic: return 56
+        case .progressBar:    return 44
+        case .percentage:     return 38
+        case .iconWithBar:    return 18
+        case .compact:        return 12
         }
     }
 

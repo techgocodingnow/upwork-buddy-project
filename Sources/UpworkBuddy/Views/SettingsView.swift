@@ -82,6 +82,7 @@ struct SettingsView: View {
 
 private struct SettingsSidebar: View {
     @Binding var selection: SettingsCategory
+    @Environment(AppStore.self) private var store
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -166,22 +167,19 @@ private struct SettingsSidebar: View {
     }
 
     private var footer: some View {
-        HStack(spacing: 4) {
-            FooterIcon(systemImage: "info.circle", help: "About") {
-                NSApp.orderFrontStandardAboutPanel(nil)
+        HStack(spacing: 0) {
+            FooterIcon(systemImage: "heart", label: "Support", help: "Support the project") {
+                SupportWindow.show()
             }
-            FooterIcon(systemImage: "questionmark.circle", help: "Support") {
-                if let url = URL(string: "https://github.com/anthropics/claude-code/issues") {
-                    NSWorkspace.shared.open(url)
-                }
+            FooterIcon(systemImage: "info.circle", label: "About", help: "About UpworkBuddy") {
+                AboutWindow.show(store: store)
             }
-            Spacer()
-            FooterIcon(systemImage: "power", help: "Quit UpworkBuddy") {
+            FooterIcon(systemImage: "power", label: "Quit", help: "Quit UpworkBuddy") {
                 NSApp.terminate(nil)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 10)
     }
 }
 
@@ -229,17 +227,29 @@ private struct SidebarRow: View {
 
 private struct FooterIcon: View {
     let systemImage: String
+    let label: String
     let help: String
     let action: () -> Void
     @State private var hovering = false
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(hovering ? Theme.accent : Theme.textTertiary)
-                .frame(width: 24, height: 24)
-                .contentShape(Rectangle())
+            VStack(spacing: 4) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 14, weight: .medium))
+                    .frame(height: 18)
+                Text(label)
+                    .font(.system(size: 10.5, weight: .medium))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(hovering ? Theme.accent : Theme.textTertiary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(hovering ? Theme.accent.opacity(0.10) : .clear)
+            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
@@ -631,19 +641,15 @@ private struct PeriodGoalCard: View {
                     suffix: "h",
                     value: hoursBinding,
                     range: hoursRange,
-                    step: hoursStep,
-                    formatter: { hoursLabel($0) },
-                    presets: hoursPresets
+                    placeholder: hoursPlaceholder
                 )
                 NumericGoalField(
                     icon: "dollarsign.circle",
                     label: "Earnings",
-                    suffix: "",
+                    suffix: store.currency,
                     value: earningsBinding,
                     range: earningsRange,
-                    step: earningsStep,
-                    formatter: { earningsLabel($0) },
-                    presets: earningsPresets
+                    placeholder: earningsPlaceholder
                 )
             }
         }
@@ -706,14 +712,6 @@ private struct PeriodGoalCard: View {
         case .year:  return 0...8760
         }
     }
-    private var hoursStep: Double {
-        switch period {
-        case .today: return 0.5
-        case .week:  return 1
-        case .month: return 5
-        case .year:  return 25
-        }
-    }
     private var earningsRange: ClosedRange<Double> {
         switch period {
         case .today: return 0...10000
@@ -722,28 +720,20 @@ private struct PeriodGoalCard: View {
         case .year:  return 0...2000000
         }
     }
-    private var earningsStep: Double {
+    private var hoursPlaceholder: String {
         switch period {
-        case .today: return 25
-        case .week:  return 100
-        case .month: return 500
-        case .year:  return 1000
+        case .today: return "8"
+        case .week:  return "40"
+        case .month: return "160"
+        case .year:  return "2000"
         }
     }
-    private var hoursPresets: [Double] {
+    private var earningsPlaceholder: String {
         switch period {
-        case .today: return [4, 6, 8]
-        case .week:  return [20, 30, 40]
-        case .month: return [80, 120, 160]
-        case .year:  return [1000, 1500, 2000]
-        }
-    }
-    private var earningsPresets: [Double] {
-        switch period {
-        case .today: return [200, 500, 1000]
-        case .week:  return [1000, 2500, 5000]
-        case .month: return [5000, 10000, 20000]
-        case .year:  return [50000, 100000, 200000]
+        case .today: return "500"
+        case .week:  return "2500"
+        case .month: return "10000"
+        case .year:  return "100000"
         }
     }
 
@@ -775,170 +765,97 @@ private struct PeriodGoalCard: View {
         }
     }
 
-    // MARK: labels
-
-    private func hoursLabel(_ hours: Double) -> String {
-        if hours <= 0 { return "Off" }
-        let whole = Int(hours)
-        let frac = hours - Double(whole)
-        if frac < 0.05 { return "\(whole) h" }
-        return String(format: "%.1f h", hours)
-    }
-
-    private func earningsLabel(_ amount: Double) -> String {
-        if amount <= 0 { return "Off" }
-        return CurrencyFormat(code: store.currency, masked: false).compact(amount)
-    }
 }
 
+/// Single-line goal row: icon + label + always-editable text field + suffix.
+/// Empty / 0 = "Off". Commits on enter, focus loss, or value change. No
+/// stepper, no preset chips — type the number directly.
 private struct NumericGoalField: View {
     let icon: String
     let label: String
     let suffix: String
     @Binding var value: Double
     let range: ClosedRange<Double>
-    let step: Double
-    let formatter: (Double) -> String
-    let presets: [Double]
+    let placeholder: String
 
-    @State private var editing = false
-    @State private var draftText = ""
+    @State private var draft: String = ""
     @FocusState private var focused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(Theme.textTertiary)
-                    .frame(width: 14)
-                Text(label)
-                    .font(.system(size: 11.5, weight: .medium))
-                    .foregroundStyle(Theme.textSecondary)
-                Spacer()
-
-                if editing {
-                    TextField("", text: $draftText, onCommit: commitDraft)
-                        .textFieldStyle(.plain)
-                        .font(.system(size: 12.5, weight: .medium, design: .monospaced))
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
-                        .focused($focused)
-                        .onSubmit(commitDraft)
-                        .onExitCommand { editing = false }
-                } else {
-                    Button {
-                        draftText = formatDraft(value)
-                        editing = true
-                        DispatchQueue.main.async { focused = true }
-                    } label: {
-                        Text(formatter(value))
-                            .font(.system(size: 12.5, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(value > 0 ? Theme.textPrimary : Theme.textTertiary)
-                            .frame(minWidth: 60, alignment: .trailing)
-                    }
-                    .buttonStyle(.plain)
-                    .help("Click to type a value")
-                }
-
-                stepperButtons
-            }
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 11.5, weight: .medium))
+                .foregroundStyle(Theme.textTertiary)
+                .frame(width: 16)
+            Text(label)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Theme.textSecondary)
+            Spacer()
 
             HStack(spacing: 6) {
-                ForEach(presets, id: \.self) { preset in
-                    Button {
-                        value = preset
-                    } label: {
-                        Text(formatPreset(preset))
-                            .font(.system(size: 10.5, weight: .medium, design: .monospaced))
-                            .foregroundStyle(value == preset ? Color.white : Theme.textSecondary)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(
-                                Capsule().fill(value == preset ? Theme.accent : Theme.chipBg.opacity(0.7))
-                            )
+                TextField(placeholder, text: $draft)
+                    .textFieldStyle(.plain)
+                    .multilineTextAlignment(.trailing)
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(value > 0 ? Theme.textPrimary : Theme.textTertiary)
+                    .frame(width: 76)
+                    .focused($focused)
+                    .onSubmit(commit)
+                    .onExitCommand { focused = false }
+                    .onChange(of: focused) { _, isFocused in
+                        if !isFocused { commit() }
                     }
-                    .buttonStyle(.plain)
+
+                if !suffix.isEmpty {
+                    Text(suffix)
+                        .font(.system(size: 11.5, weight: .medium))
+                        .foregroundStyle(Theme.textTertiary)
+                        .frame(minWidth: 16, alignment: .leading)
                 }
-                if value > 0 {
-                    Button {
-                        value = 0
-                    } label: {
-                        Text("Off")
-                            .font(.system(size: 10.5, weight: .medium))
-                            .foregroundStyle(Theme.textTertiary)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(
-                                Capsule().strokeBorder(Theme.divider, lineWidth: 0.5)
-                            )
-                    }
-                    .buttonStyle(.plain)
-                    .help("Clear this target")
-                }
-                Spacer()
             }
-            .opacity(0.95)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(Theme.chipBg.opacity(focused ? 0.5 : 0.6))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(focused ? Theme.accent : Theme.divider,
+                                  lineWidth: focused ? 1.2 : 0.5)
+            )
+        }
+        .onAppear(perform: syncDraft)
+        .onChange(of: value) { _, _ in
+            if !focused { syncDraft() }
         }
     }
 
-    private var stepperButtons: some View {
-        HStack(spacing: 2) {
-            stepperButton(systemName: "minus") {
-                value = max(range.lowerBound, value - step)
-            }
-            stepperButton(systemName: "plus") {
-                value = min(range.upperBound, value + step)
-            }
-        }
+    private func syncDraft() {
+        draft = value > 0 ? formatNumber(value) : ""
     }
 
-    private func stepperButton(systemName: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(Theme.textSecondary)
-                .frame(width: 18, height: 18)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Theme.chipBg.opacity(0.7))
-                )
-        }
-        .buttonStyle(.plain)
+    private func formatNumber(_ v: Double) -> String {
+        if v == v.rounded() { return "\(Int(v))" }
+        return String(format: "%.1f", v)
     }
 
-    private func formatDraft(_ v: Double) -> String {
-        if v <= 0 { return "" }
-        let frac = v - Double(Int(v))
-        if frac < 0.05 { return "\(Int(v))" }
-        return String(format: "%.2f", v)
-    }
-
-    private func formatPreset(_ p: Double) -> String {
-        if p >= 1000 {
-            let k = p / 1000
-            if k == k.rounded() {
-                return "\(Int(k))k\(suffix)"
-            }
-            return String(format: "%.1fk%@", k, suffix)
-        }
-        if p == p.rounded() {
-            return "\(Int(p))\(suffix)"
-        }
-        return String(format: "%.1f%@", p, suffix)
-    }
-
-    private func commitDraft() {
-        let trimmed = draftText
+    private func commit() {
+        let cleaned = draft
             .replacingOccurrences(of: ",", with: "")
             .replacingOccurrences(of: "$", with: "")
+            .replacingOccurrences(of: " ", with: "")
             .trimmingCharacters(in: .whitespaces)
-        if trimmed.isEmpty {
+
+        if cleaned.isEmpty {
             value = 0
-        } else if let parsed = Double(trimmed) {
+            draft = ""
+            return
+        }
+        if let parsed = Double(cleaned) {
             value = min(range.upperBound, max(range.lowerBound, parsed))
         }
-        editing = false
+        syncDraft()
     }
 }
 
@@ -972,36 +889,7 @@ private struct DisplayPage: View {
                 .padding(.leading, 4)
             }
 
-            SettingsSection(title: "Menu bar") {
-                SettingsCard(
-                    title: "Shows",
-                    subtitle: "Which value appears next to the icon.",
-                    systemImage: "menubar.rectangle"
-                ) {
-                    Picker("", selection: $store.menuBarMetric) {
-                        Text("Hours").tag(MenuBarMetric.hours)
-                        Text("Earnings").tag(MenuBarMetric.earnings)
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(maxWidth: 220)
-                }
-
-                SettingsCard(
-                    title: "Style",
-                    subtitle: "Compact display variants.",
-                    systemImage: "rectangle.compress.vertical"
-                ) {
-                    Picker("", selection: $store.menuBarIconStyle) {
-                        ForEach(MenuBarIconStyle.allCases, id: \.self) { style in
-                            Text(style.label).tag(style)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .frame(maxWidth: 260)
-                }
-            }
+            MenuBarMetricsSection(store: store)
 
             SettingsSection(title: "Dashboard") {
                 SettingsCard(
@@ -1166,6 +1054,244 @@ private struct AccountPage: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Menu Bar Metrics
+
+private struct MenuBarMetricsSection: View {
+    @Bindable var store: AppStore
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Menu Bar Metrics")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                Text("Select which metrics to display in the menu bar")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            Divider().background(Theme.divider.opacity(0.5))
+
+            MenuBarMetricCard(
+                title: "Today target",
+                subtitle: "Daily progress in the menu bar",
+                systemImage: "clock.fill",
+                enabled: $store.todayMetricEnabled,
+                style: $store.todayMetricStyle,
+                displayMode: nil,
+                sampleProgress: todayProgress,
+                sampleLabel: todayLabel(for: store.todayMetricStyle, mode: .percentage)
+            )
+
+            MenuBarMetricCard(
+                title: "Weekly target",
+                subtitle: "Weekly progress in the menu bar",
+                systemImage: "calendar",
+                enabled: $store.weekMetricEnabled,
+                style: $store.weekMetricStyle,
+                displayMode: $store.weekMetricMode,
+                sampleProgress: weekProgress,
+                sampleLabel: weekLabel(for: store.weekMetricStyle, mode: store.weekMetricMode)
+            )
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Sample data
+
+    private var todayProgress: Double {
+        progress(snapshot: store.todaySnapshot, period: .today)
+    }
+
+    private var weekProgress: Double {
+        progress(snapshot: store.weekSnapshot, period: .week)
+    }
+
+    private func progress(snapshot: EarningsSnapshot, period: Period) -> Double {
+        let target = store.goalTarget(for: .hours, period: period)
+        if target > 0 { return snapshot.totalHours / target }
+        let earnTarget = store.goalTarget(for: .earnings, period: period)
+        if earnTarget > 0 { return snapshot.totalEarnings / earnTarget }
+        return 0.6   // sample fill so previews still illustrate the style
+    }
+
+    private func todayLabel(for style: MenuBarMetricStyle, mode: MenuBarDisplayMode) -> String {
+        previewLabel(snapshot: store.todaySnapshot, period: .today, style: style, mode: mode, periodCaption: "Today")
+    }
+
+    private func weekLabel(for style: MenuBarMetricStyle, mode: MenuBarDisplayMode) -> String {
+        previewLabel(snapshot: store.weekSnapshot, period: .week, style: style, mode: mode, periodCaption: "Week")
+    }
+
+    private func previewLabel(snapshot: EarningsSnapshot,
+                              period: Period,
+                              style: MenuBarMetricStyle,
+                              mode: MenuBarDisplayMode,
+                              periodCaption: String) -> String {
+        switch style {
+        case .batteryClassic: return periodCaption
+        case .progressBar, .compact: return ""
+        case .percentage, .iconWithBar:
+            return MenuBarMetricFormatter.label(
+                snapshot: snapshot,
+                period: period,
+                store: store,
+                mode: mode
+            )
+        }
+    }
+}
+
+private struct MenuBarMetricCard: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    @Binding var enabled: Bool
+    @Binding var style: MenuBarMetricStyle
+    let displayMode: Binding<MenuBarDisplayMode>?
+    let sampleProgress: Double
+    let sampleLabel: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            cardHeader
+            if enabled {
+                Divider().background(Theme.divider.opacity(0.4))
+                iconStylePicker
+                if let displayMode {
+                    Divider().background(Theme.divider.opacity(0.4))
+                    DisplayModePicker(selection: displayMode)
+                        .padding(14)
+                }
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Theme.surface.opacity(0.85))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(
+                    enabled ? Theme.accent.opacity(0.35) : Theme.divider,
+                    lineWidth: enabled ? 0.8 : 0.5
+                )
+        )
+        .animation(.smooth(duration: 0.22), value: enabled)
+    }
+
+    private var cardHeader: some View {
+        HStack(spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Theme.accent.opacity(0.14))
+                    .frame(width: 32, height: 32)
+                Image(systemName: systemImage)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.accent)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                Text(subtitle)
+                    .font(.system(size: 11.5))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            Spacer(minLength: 8)
+            Toggle("", isOn: $enabled)
+                .labelsHidden()
+                .toggleStyle(.switch)
+        }
+        .padding(14)
+    }
+
+    private var iconStylePicker: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Icon Style")
+                .font(.system(size: 11.5, weight: .medium))
+                .foregroundStyle(Theme.textSecondary)
+            HStack(spacing: 10) {
+                ForEach(MenuBarMetricStyle.allCases) { option in
+                    MenuBarStylePickerTile(
+                        style: option,
+                        isSelected: style == option,
+                        sampleProgress: sampleProgress,
+                        sampleLabel: tileSampleLabel(for: option),
+                        action: { style = option }
+                    )
+                }
+            }
+        }
+        .padding(14)
+    }
+
+    private func tileSampleLabel(for option: MenuBarMetricStyle) -> String {
+        switch option {
+        case .batteryClassic: return "Claude"
+        case .percentage:     return "60%"
+        case .iconWithBar, .compact, .progressBar: return ""
+        }
+    }
+}
+
+private struct DisplayModePicker: View {
+    @Binding var selection: MenuBarDisplayMode
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Display Mode")
+                .font(.system(size: 11.5, weight: .medium))
+                .foregroundStyle(Theme.textSecondary)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(MenuBarDisplayMode.allCases) { mode in
+                    DisplayModeRow(
+                        mode: mode,
+                        isSelected: selection == mode,
+                        action: { selection = mode }
+                    )
+                }
+            }
+        }
+    }
+}
+
+private struct DisplayModeRow: View {
+    let mode: MenuBarDisplayMode
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 10) {
+                ZStack {
+                    Circle()
+                        .strokeBorder(isSelected ? Theme.accent : Theme.divider,
+                                      lineWidth: isSelected ? 1.4 : 1)
+                        .frame(width: 14, height: 14)
+                    if isSelected {
+                        Circle()
+                            .fill(Theme.accent)
+                            .frame(width: 7, height: 7)
+                    }
+                }
+                .padding(.top, 2)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(mode.label)
+                        .font(.system(size: 12.5, weight: isSelected ? .semibold : .medium))
+                        .foregroundStyle(Theme.textPrimary)
+                    Text(mode.subtitle)
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.textSecondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 

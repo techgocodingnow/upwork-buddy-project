@@ -25,6 +25,49 @@ enum MenuBarIconStyle: String, CaseIterable, Sendable {
     }
 }
 
+/// Visual style for a single menu-bar metric (today or weekly).
+enum MenuBarMetricStyle: String, CaseIterable, Sendable, Identifiable {
+    case batteryClassic
+    case progressBar
+    case percentage
+    case iconWithBar
+    case compact
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .batteryClassic: return "Battery (Classic)"
+        case .progressBar:    return "Progress Bar"
+        case .percentage:     return "Percentage"
+        case .iconWithBar:    return "Icon with Bar"
+        case .compact:        return "Compact"
+        }
+    }
+}
+
+/// How a metric value is rendered next to its icon (week metric only).
+enum MenuBarDisplayMode: String, CaseIterable, Sendable, Identifiable {
+    case percentage   // "60%"
+    case count        // "5h/8h" or "$200/$500"
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .percentage: return "Percentage"
+        case .count:      return "Count vs goal"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .percentage: return "Show as percentage (e.g., 60%)"
+        case .count:      return "Show count vs goal (e.g., 5h/8h)"
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class AppStore {
@@ -62,6 +105,11 @@ final class AppStore {
     private static let kMenuBarIconStyle = "UpworkBuddyMenuBarIconStyle"
     private static let kShortcuts        = "UpworkBuddyShortcuts"
     private static let kAppTheme         = "UpworkBuddyAppTheme"
+    private static let kTodayMetricEnabled = "UpworkBuddyTodayMetricEnabled"
+    private static let kTodayMetricStyle   = "UpworkBuddyTodayMetricStyle"
+    private static let kWeekMetricEnabled  = "UpworkBuddyWeekMetricEnabled"
+    private static let kWeekMetricStyle    = "UpworkBuddyWeekMetricStyle"
+    private static let kWeekMetricMode     = "UpworkBuddyWeekMetricMode"
 
     var refreshIntervalSeconds: Int {
         didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
@@ -135,6 +183,33 @@ final class AppStore {
         didSet { UserDefaults.standard.set(menuBarIconStyle.rawValue, forKey: Self.kMenuBarIconStyle) }
     }
 
+    // MARK: - Per-period menu bar metrics
+
+    var todayMetricEnabled: Bool {
+        didSet { UserDefaults.standard.set(todayMetricEnabled, forKey: Self.kTodayMetricEnabled) }
+    }
+
+    var todayMetricStyle: MenuBarMetricStyle {
+        didSet { UserDefaults.standard.set(todayMetricStyle.rawValue, forKey: Self.kTodayMetricStyle) }
+    }
+
+    var weekMetricEnabled: Bool {
+        didSet { UserDefaults.standard.set(weekMetricEnabled, forKey: Self.kWeekMetricEnabled) }
+    }
+
+    var weekMetricStyle: MenuBarMetricStyle {
+        didSet { UserDefaults.standard.set(weekMetricStyle.rawValue, forKey: Self.kWeekMetricStyle) }
+    }
+
+    var weekMetricMode: MenuBarDisplayMode {
+        didSet { UserDefaults.standard.set(weekMetricMode.rawValue, forKey: Self.kWeekMetricMode) }
+    }
+
+    /// Snapshot for the current week. Mirrors `snapshot` when `selectedPeriod == .week`,
+    /// else fetched alongside today during refresh so the menu bar can show weekly progress
+    /// independent of the dashboard's selected period.
+    var weekSnapshot: EarningsSnapshot = .empty
+
     var appTheme: AppTheme {
         didSet {
             UserDefaults.standard.set(appTheme.rawValue, forKey: Self.kAppTheme)
@@ -190,6 +265,24 @@ final class AppStore {
 
         let storedIcon = defaults.string(forKey: Self.kMenuBarIconStyle).flatMap(MenuBarIconStyle.init(rawValue:))
         self.menuBarIconStyle = storedIcon ?? .iconValue
+
+        // Per-period metrics. Default: today on (percentage style), week off.
+        if defaults.object(forKey: Self.kTodayMetricEnabled) == nil {
+            self.todayMetricEnabled = true
+        } else {
+            self.todayMetricEnabled = defaults.bool(forKey: Self.kTodayMetricEnabled)
+        }
+        let storedTodayStyle = defaults.string(forKey: Self.kTodayMetricStyle)
+            .flatMap(MenuBarMetricStyle.init(rawValue:))
+        self.todayMetricStyle = storedTodayStyle ?? .percentage
+
+        self.weekMetricEnabled = defaults.bool(forKey: Self.kWeekMetricEnabled)
+        let storedWeekStyle = defaults.string(forKey: Self.kWeekMetricStyle)
+            .flatMap(MenuBarMetricStyle.init(rawValue:))
+        self.weekMetricStyle = storedWeekStyle ?? .percentage
+        let storedWeekMode = defaults.string(forKey: Self.kWeekMetricMode)
+            .flatMap(MenuBarDisplayMode.init(rawValue:))
+        self.weekMetricMode = storedWeekMode ?? .percentage
 
         let storedTheme = defaults.string(forKey: Self.kAppTheme).flatMap(AppTheme.init(rawValue:))
         let theme = storedTheme ?? .codeBurn
@@ -316,6 +409,7 @@ final class AppStore {
         let prevRange = DateRanges.previousRange(for: selectedPeriod)
         let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays)
         let todayRange = DateRanges.range(for: .today)
+        let weekRange = DateRanges.range(for: .week)
 
         let key = ReportCache.Key(
             tenantId: "",
@@ -338,11 +432,15 @@ final class AppStore {
             async let todayResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .today)
                 ? nil
                 : api.fetchCombinedEarnings(range: todayRange, aceId: aceId)
+            async let weekResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .week)
+                ? nil
+                : api.fetchCombinedEarnings(range: weekRange, aceId: aceId)
 
             let (periodSnap, _) = try await periodResult
             let (prevSnap, _) = try await prevResult
             let (_, sparkDaily) = try await sparkResult
             let todayPair = try await todayResult
+            let weekPair = try await weekResult
 
             snapshot = periodSnap
             previousSnapshot = prevSnap
@@ -353,6 +451,12 @@ final class AppStore {
                 todaySnapshot = periodSnap
             } else if let pair = todayPair {
                 todaySnapshot = pair.0
+            }
+
+            if selectedPeriod == .week {
+                weekSnapshot = periodSnap
+            } else if let pair = weekPair {
+                weekSnapshot = pair.0
             }
 
             lastError = nil
@@ -388,6 +492,7 @@ final class AppStore {
         aceId = nil
         snapshot = .empty
         todaySnapshot = .empty
+        weekSnapshot = .empty
         previousSnapshot = .empty
         sparkline = []
         isAuthenticated = false

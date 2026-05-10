@@ -42,6 +42,12 @@ open /Applications/UpworkBuddy.app
 
 > **Note:** Version argument (e.g. `1.0`) is optional; defaults to `dev`.
 
+### Rebuild
+
+```bash
+Scripts/package-app.sh && rm -rf /Applications/UpworkBuddy.app && cp -R .build/dist/UpworkBuddy.app /Applications/
+```
+
 ### Configuration
 
 All runtime config lives in `Sources/UpworkBuddy/Resources/Config.plist`
