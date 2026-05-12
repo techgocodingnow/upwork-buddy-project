@@ -1,0 +1,334 @@
+/* Localizable.strings — Japanese (ja)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "キャンセル";
+"Reset" = "リセット";
+"Add" = "追加";
+"Submit" = "送信";
+"Connected" = "接続済み";
+"Disconnected" = "未接続";
+"Never" = "なし";
+"Coming soon" = "近日公開";
+"Quit" = "終了";
+"Quit UpworkBuddy" = "UpworkBuddy を終了";
+"Settings" = "設定";
+
+// MARK: - Period
+"Today" = "今日";
+"Week" = "週";
+"Month" = "月";
+"Year" = "年";
+
+// MARK: - Metrics
+"Hours" = "時間";
+"Earnings" = "収益";
+"target" = "目標";
+"Session Reset" = "新たなスタート";
+"Enable notifications" = "マイルストーンを祝う";
+"Receive alerts when approaching usage limits" = "日次目標に近づいたら通知を受け取る";
+"Enable progress notifications" = "マイルストーン通知を有効にする";
+"Remove %d%%" = "%d%% を削除";
+"Add custom threshold" = "カスタム閾値を追加";
+"Notification sound" = "通知音";
+"Light" = "ライト";
+"Dark" = "ダーク";
+"Auto" = "自動";
+"App appearance" = "アプリの外観";
+"Earnings target" = "収益目標";
+"Hours target" = "時間目標";
+"Custom threshold percent" = "カスタム閾値（%）";
+"Remove custom threshold" = "カスタム閾値を削除";
+"Remove %d percent threshold" = "%d パーセントの閾値を削除";
+"%@ at %d percent" = "%1$@ — %2$d%%";
+"Warning" = "もうすぐ！";
+"High Usage" = "あと少し！";
+"Critical" = "ラストスパート";
+"Milestone" = "マイルストーン";
+"%@ theme" = "%@ テーマ";
+"Reset to default" = "デフォルトに戻す";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "エラー: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "読み込み中";
+"Updated %@" = "%@ に更新";
+"Last updated %@" = "最終更新: %@";
+"Name" = "名前";
+"Email" = "メール";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "ブラウザで寄付ページを開く";
+"Star on GitHub" = "GitHub でスターを付ける";
+"Opens GitHub repo" = "GitHub リポジトリを開く";
+"Last %d days" = "過去 %d 日間";
+"Trend chart, last %d days, total %@" = "トレンドチャート、過去 %1$d 日間、合計 %2$@";
+"Goal progress %d percent" = "目標進捗 %d%%";
+"Clear shortcut" = "ショートカットをクリア";
+"Time period" = "期間";
+
+// MARK: - Settings categories
+"General" = "一般";
+"Goals" = "目標";
+"Display" = "表示";
+"Language" = "言語";
+"Shortcuts" = "ショートカット";
+"Account" = "アカウント";
+"Software Updates" = "Software Updates";
+"Support" = "サポート";
+"About" = "このアプリについて";
+"About UpworkBuddy" = "UpworkBuddy について";
+
+"Refresh cadence and login behavior" = "更新頻度とログイン動作";
+"Hours and earnings targets, with notifications" = "時間・収益目標と通知";
+"Theme, menu bar, and dashboard" = "テーマ、メニューバー、ダッシュボード";
+"Choose your preferred language" = "使用言語を選択";
+"Global keyboard shortcuts" = "グローバルキーボードショートカット";
+"Connected Upwork session" = "接続中の Upwork セッション";
+"Keep your app up to date" = "アプリを最新の状態に保つ";
+"Support the project" = "プロジェクトを応援する";
+
+// MARK: - General page
+"Sync" = "同期";
+"Startup" = "起動";
+"Launch at login" = "ログイン時に起動";
+"Open UpworkBuddy automatically when you sign in." = "サインイン時に UpworkBuddy を自動的に開きます。";
+"Refresh Interval" = "更新間隔";
+"How often UpworkBuddy polls for new earnings" = "UpworkBuddy が収益データを取得する頻度";
+"Refresh interval" = "更新間隔";
+"1 min" = "1 分";
+"30 min" = "30 分";
+"1 minute" = "1 分";
+"%d minutes" = "%d 分";
+
+// MARK: - Goals page
+"Targets" = "目標値";
+"Notifications" = "通知";
+"Celebration" = "祝賀";
+"Confetti when a goal is hit" = "目標達成時に紙吹雪";
+"Plays a quick burst when any target reaches 100%." = "いずれかの目標が 100% に達すると短いアニメーションが流れます。";
+"Goal tracking" = "目標トラッキング";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "日・週・月・年のペースを維持。目標を超えたらバナー通知が届きます。";
+"Tracking off" = "トラッキングオフ";
+"Notifications on" = "通知オン";
+"Notifications blocked — check System Settings" = "通知がブロックされています — システム設定を確認してください";
+"Awaiting permission" = "許可待ち";
+"Notifications unavailable" = "通知を利用できません";
+"Alert Thresholds" = "マイルストーン";
+"Custom Thresholds" = "カスタムマイルストーン";
+"e.g. 50" = "例: 50";
+"Sound" = "サウンド";
+"Tap a value to type directly" = "値をタップして直接入力";
+"Enable tracking to edit" = "編集するにはトラッキングを有効にしてください";
+"Get notified about usage milestones" = "目標達成を一緒に応援";
+"Goal celebration animation" = "目標達成アニメーション";
+
+// MARK: - Display page
+"Theme" = "テーマ";
+"Used across dashboard, menu bar, and settings" = "ダッシュボード、メニューバー、設定全体に適用";
+"Dashboard" = "ダッシュボード";
+"Primary metric" = "メイン指標";
+"Renders large in the popover header." = "ポップオーバーのヘッダーに大きく表示されます。";
+"Hide sensitive amounts" = "金額を非表示にする";
+"Masks earnings, rates, and totals across the app." = "アプリ全体の収益・レート・合計を隠します。";
+"Currency" = "通貨";
+"Display currency" = "表示通貨";
+"FX support coming in v2." = "通貨換算は v2 で対応予定。";
+
+// MARK: - Shortcuts page
+"Bindings" = "キー割り当て";
+"Esc cancels recording" = "Esc でキャンセル";
+"Global shortcuts" = "グローバルショートカット";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "ショートカットはどのアプリからでも使用できます。各ショートカットには修飾キー（⌘、⌥、⌃、⇧）を少なくとも 1 つ含める必要があります。";
+
+// MARK: - Account page
+"Connection" = "接続";
+"Signed in via OAuth." = "OAuth でサインイン済み。";
+"Not connected." = "未接続。";
+"Danger zone" = "危険な操作";
+"Disconnect" = "切断";
+"Sign out and clear cached earnings on this Mac." = "このMacでのサインアウトとキャッシュされた収益データの消去。";
+
+// MARK: - Menu bar
+"Menu bar" = "メニューバー";
+"Choose which targets surface in the status bar" = "ステータスバーに表示する目標を選択";
+"Today target" = "今日の目標";
+"Daily progress in the menu bar" = "メニューバーの日次進捗";
+"Weekly target" = "週間目標";
+"Weekly progress in the menu bar" = "メニューバーの週次進捗";
+"Icon Style" = "アイコンスタイル";
+"Display Mode" = "表示モード";
+"Display style" = "表示スタイル";
+"Add a goal target" = "目標を追加";
+
+// MARK: - Menu bar enums
+"Icon + value" = "アイコン + 値";
+"Icon only" = "アイコンのみ";
+"Value only" = "値のみ";
+"Icon + primary metric" = "アイコン + メイン指標";
+"Icon + percentage" = "アイコン + パーセント";
+"Icon + remaining" = "アイコン + 残り";
+"Glyph only, no value" = "グリフのみ（値なし）";
+"Glyph + current value" = "グリフ + 現在値";
+"Glyph + percent of goal" = "グリフ + 目標達成率";
+"Glyph + amount left to goal" = "グリフ + 目標までの残り";
+"Value only, no glyph" = "値のみ（グリフなし）";
+"Battery (Classic)" = "バッテリー（クラシック）";
+"Progress Bar" = "プログレスバー";
+"Percentage" = "パーセント";
+"Icon with Bar" = "アイコン + バー";
+"Compact" = "コンパクト";
+"Count vs goal" = "カウント vs 目標";
+"Show as percentage (e.g., 60%)" = "パーセントで表示（例: 60%）";
+"Show count vs goal (e.g., 5h/8h)" = "カウント vs 目標で表示（例: 5h/8h）";
+
+// MARK: - Language page
+"Select Language" = "言語を選択";
+"Language changes will take effect after restarting the app" = "言語の変更はアプリを再起動後に反映されます";
+
+// MARK: - About page
+"Reset App Data?" = "アプリデータをリセットしますか？";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "このMacでのサインアウト、キャッシュされた収益データの消去、すべての設定のリセットを行います。この操作は取り消せません。";
+"Version %@" = "バージョン %@";
+"Check for Updates" = "アップデートを確認";
+"Created By" = "作成者";
+"Links" = "リンク";
+"Send Feedback" = "フィードバックを送る";
+"Reset App Data" = "アプリデータをリセット";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "進行中の Upwork プロジェクト、時間、収益をメニューバーから直接確認。";
+"Connect Upwork" = "Upwork に接続";
+"A browser window will open for sign-in." = "サインイン用のブラウザウィンドウが開きます。";
+
+// MARK: - Dashboard
+"Show amounts" = "金額を表示";
+"Hide amounts" = "金額を非表示";
+"Refresh now" = "今すぐ更新";
+
+// MARK: - Feedback
+"Help Us Improve" = "改善にご協力ください";
+"Your feedback shapes the future of this app" = "あなたのフィードバックがこのアプリの未来を作ります";
+"Role" = "役職";
+"Tell us anything — feedback, ideas, feature requests…" = "フィードバック、アイデア、機能リクエストなど、なんでもお聞かせください…";
+"Remind Me Later" = "後で通知";
+"Don't Ask Again" = "今後表示しない";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy フィードバック — %@";
+"Developer" = "開発者";
+"Designer" = "デザイナー";
+"Manager" = "マネージャー";
+"Student" = "学生";
+"Researcher" = "研究者";
+"Other" = "その他";
+
+// MARK: - Projects list
+"Activity" = "アクティビティ";
+"No tracked work in this period." = "この期間に記録された作業はありません。";
+
+// MARK: - Software updates
+"Version Information" = "バージョン情報";
+"Current Version" = "現在のバージョン";
+"Last Checked" = "最終確認";
+"Update Preferences" = "アップデート設定";
+"Automatic Updates" = "自動アップデート";
+"Automatically check for and download updates daily" = "毎日自動的にアップデートを確認してダウンロード";
+"Checking…" = "確認中…";
+"Secure Updates" = "セキュアなアップデート";
+"All updates are cryptographically signed and verified before installation" = "すべてのアップデートはインストール前に暗号署名と検証が行われます";
+
+// MARK: - Support page
+"Support the Project" = "プロジェクトを応援する";
+"UpworkBuddy is free and open source" = "UpworkBuddy は無料のオープンソースです";
+"All Features Are Free" = "すべての機能が無料";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "このアプリのすべての機能は完全無料です。プレミアム、ペイウォール、サブスクリプションは一切ありません。";
+"Open Source" = "オープンソース";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "ソースコードは GitHub で公開されています。コードの閲覧、変更、プロジェクトへの貢献が可能です。";
+"No Tracking" = "トラッキングなし";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "プライバシーを大切にしています。アナリティクス・テレメトリー・データ収集は一切なし。すべてのデータはMac上に留まります。";
+"If you find this app useful, consider supporting its development" = "このアプリが役に立つと感じたら、開発をサポートしてみてください";
+"Buy Me a Coffee" = "コーヒーをおごる";
+"Your support helps keep this project alive and growing" = "あなたのサポートがこのプロジェクトを続ける力になります";
+"You can also support by" = "以下の方法でもサポートできます";
+"Starring on GitHub" = "GitHub でスターを付ける";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "ポップオーバーの表示切り替え";
+"Refresh Now" = "今すぐ更新";
+"Open Settings" = "設定を開く";
+"Show or hide the UpworkBuddy popover" = "UpworkBuddy のポップオーバーを表示/非表示";
+"Fetch the latest earnings data" = "最新の収益データを取得";
+"Open the settings window" = "設定ウィンドウを開く";
+
+// MARK: - Music
+"Music" = "ミュージック";
+"Background music while you work" = "作業中のBGM";
+"Add track" = "トラックを追加";
+"Track URL" = "トラック URL";
+"Paste YouTube, Spotify or audio URL" = "YouTube、Spotify またはオーディオ URL を貼り付け";
+"Unsupported URL" = "非対応の URL";
+"Playlist" = "プレイリスト";
+"Your playlist is empty. Paste a URL above to get started." = "プレイリストが空です。上の入力欄に URL を貼り付けてください。";
+"Playback" = "再生";
+"Loop" = "ループ";
+"Shuffle" = "シャッフル";
+"One" = "1曲";
+"All" = "全曲";
+"Sleep timer" = "スリープタイマー";
+"Stop playback after a delay" = "一定時間後に再生を停止";
+"Stops in %@" = "%@ で停止";
+"Sleep timer %@" = "スリープタイマー %@";
+"15 minutes" = "15 分";
+"30 minutes" = "30 分";
+"1 hour" = "1 時間";
+"2 hours" = "2 時間";
+"Volume" = "音量";
+"Now playing" = "再生中";
+"Play" = "再生";
+"Pause" = "一時停止";
+"Next" = "次へ";
+"Previous" = "前へ";
+"Stop" = "停止";
+"Remove" = "削除";
+"Off" = "オフ";
+"Playback failed: %@" = "再生に失敗しました: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "YouTube、Spotify、SoundCloud、Vimeo、Mixcloud またはオーディオ URL を貼り付け";
+
+// MARK: - Exercises
+"Exercises" = "エクササイズ";
+"Periodic eye rest and standup reminders" = "定期的な目の休憩と立ち上がりリマインダー";
+"Eye break" = "目の休憩";
+"Enable eye break" = "目の休憩を有効にする";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "定期的に Upwork タイマーを一時停止し、スクリーンをロックして目を休ませます（20-20-20 rule）。";
+"Interval (minutes)" = "間隔（分）";
+"How often an eye break is triggered." = "目の休憩を行う頻度。";
+"Break duration (seconds)" = "休憩時間（秒）";
+"How long the lock overlay stays on screen." = "ロックオーバーレイが画面に表示される時間。";
+"On-screen message" = "画面上のメッセージ";
+"Custom text shown over the lock overlay." = "ロックオーバーレイ上に表示するカスタムテキスト。";
+"External displays only" = "外部ディスプレイのみ";
+"Only lock external monitors; keep the main display usable." = "外部モニターのみをロックし、メインディスプレイは使用可能な状態にします。";
+"Preview" = "プレビュー";
+"Preview break now" = "今すぐプレビュー";
+"Shows a 5-second break using the current settings." = "現在の設定で5秒間の休憩をプレビューします。";
+"Look 20 feet away for 20 seconds" = "20フィート先を20秒間見つめてください";
+"Skip break (Esc)" = "休憩をスキップ (Esc)";
+
+// Standup
+"Standup" = "スタンドアップ";
+"Enable standup" = "スタンドアップを有効にする";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "定期的にスクリーンをロックして、立ち上がり、ストレッチし、体を動かします（30分ごとに約2分 — Stanford EHS）。";
+"Standup interval (minutes)" = "スタンドアップ間隔（分）";
+"How often a standup is triggered." = "スタンドアップを行う頻度。";
+"Standup duration (seconds)" = "スタンドアップ時間（秒）";
+"How long the lock overlay stays on screen so you can move." = "体を動かせるようにロックオーバーレイが画面に表示される時間。";
+"Standup message" = "スタンドアップメッセージ";
+"Only lock external monitors during standup." = "スタンドアップ中は外部モニターのみをロックします。";
+"Preview standup now" = "今すぐスタンドアッププレビュー";
+"Shows a 5-second standup using the current settings." = "現在の設定で5秒間のスタンドアップをプレビューします。";
+"Stand up, stretch, and move around" = "立ち上がって、ストレッチして、体を動かしましょう";
