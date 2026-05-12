@@ -1,0 +1,334 @@
+/* Localizable.strings — Korean (ko)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "취소";
+"Reset" = "초기화";
+"Add" = "추가";
+"Submit" = "제출";
+"Connected" = "연결됨";
+"Disconnected" = "연결 끊김";
+"Never" = "없음";
+"Coming soon" = "출시 예정";
+"Quit" = "종료";
+"Quit UpworkBuddy" = "UpworkBuddy 종료";
+"Settings" = "설정";
+
+// MARK: - Period
+"Today" = "오늘";
+"Week" = "이번 주";
+"Month" = "이번 달";
+"Year" = "올해";
+
+// MARK: - Metrics
+"Hours" = "시간";
+"Earnings" = "수입";
+"target" = "목표";
+"Session Reset" = "새로 시작";
+"Enable notifications" = "마일스톤 축하";
+"Receive alerts when approaching usage limits" = "일일 목표에 가까워지면 알림 받기";
+"Enable progress notifications" = "마일스톤 축하 알림 활성화";
+"Remove %d%%" = "%d%% 제거";
+"Add custom threshold" = "사용자 지정 임계값 추가";
+"Notification sound" = "알림음";
+"Light" = "라이트";
+"Dark" = "다크";
+"Auto" = "자동";
+"App appearance" = "앱 외관";
+"Earnings target" = "수입 목표";
+"Hours target" = "시간 목표";
+"Custom threshold percent" = "사용자 지정 임계값 퍼센트";
+"Remove custom threshold" = "사용자 지정 임계값 제거";
+"Remove %d percent threshold" = "%d퍼센트 임계값 제거";
+"%@ at %d percent" = "%@ (%d퍼센트)";
+"Warning" = "거의 다 왔어요";
+"High Usage" = "조금만 더!";
+"Critical" = "마지막 힘을 내세요";
+"Milestone" = "마일스톤";
+"%@ theme" = "%@ 테마";
+"Reset to default" = "기본값으로 재설정";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "오류: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "불러오는 중";
+"Updated %@" = "%@ 업데이트됨";
+"Last updated %@" = "마지막 업데이트: %@";
+"Name" = "이름";
+"Email" = "이메일";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "브라우저에서 후원 페이지 열기";
+"Star on GitHub" = "GitHub에서 별표 누르기";
+"Opens GitHub repo" = "GitHub 저장소 열기";
+"Last %d days" = "최근 %d일";
+"Trend chart, last %d days, total %@" = "추세 차트, 최근 %1$d일, 합계 %2$@";
+"Goal progress %d percent" = "목표 진행률 %d퍼센트";
+"Clear shortcut" = "단축키 지우기";
+"Time period" = "기간";
+
+// MARK: - Settings categories
+"General" = "일반";
+"Goals" = "목표";
+"Display" = "화면";
+"Language" = "언어";
+"Shortcuts" = "단축키";
+"Account" = "계정";
+"Software Updates" = "소프트웨어 업데이트";
+"Support" = "지원";
+"About" = "정보";
+"About UpworkBuddy" = "UpworkBuddy 정보";
+
+"Refresh cadence and login behavior" = "새로 고침 주기 및 로그인 동작";
+"Hours and earnings targets, with notifications" = "시간 및 수입 목표와 알림";
+"Theme, menu bar, and dashboard" = "테마, 메뉴 바 및 대시보드";
+"Choose your preferred language" = "선호하는 언어를 선택하세요";
+"Global keyboard shortcuts" = "전역 키보드 단축키";
+"Connected Upwork session" = "연결된 Upwork 세션";
+"Keep your app up to date" = "앱을 최신 상태로 유지하세요";
+"Support the project" = "프로젝트 후원";
+
+// MARK: - General page
+"Sync" = "동기화";
+"Startup" = "시작";
+"Launch at login" = "로그인 시 실행";
+"Open UpworkBuddy automatically when you sign in." = "로그인하면 UpworkBuddy가 자동으로 열립니다.";
+"Refresh Interval" = "새로 고침 간격";
+"How often UpworkBuddy polls for new earnings" = "UpworkBuddy가 새 수입을 조회하는 빈도";
+"Refresh interval" = "새로 고침 간격";
+"1 min" = "1분";
+"30 min" = "30분";
+"1 minute" = "1분";
+"%d minutes" = "%d분";
+
+// MARK: - Goals page
+"Targets" = "목표값";
+"Notifications" = "알림";
+"Celebration" = "축하";
+"Confetti when a goal is hit" = "목표 달성 시 색종이 효과";
+"Plays a quick burst when any target reaches 100%." = "목표가 100%에 도달하면 짧은 효과음이 재생됩니다.";
+"Goal tracking" = "목표 추적";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "일, 주, 월, 연간 페이스를 유지하세요. 목표를 달성하면 배너가 표시됩니다.";
+"Tracking off" = "추적 꺼짐";
+"Notifications on" = "알림 켜짐";
+"Notifications blocked — check System Settings" = "알림이 차단됨 — 시스템 설정을 확인하세요";
+"Awaiting permission" = "권한 대기 중";
+"Notifications unavailable" = "알림 사용 불가";
+"Alert Thresholds" = "마일스톤 순간";
+"Custom Thresholds" = "사용자 지정 마일스톤";
+"e.g. 50" = "예: 50";
+"Sound" = "소리";
+"Tap a value to type directly" = "값을 탭하여 직접 입력하세요";
+"Enable tracking to edit" = "편집하려면 추적을 활성화하세요";
+"Get notified about usage milestones" = "목표 달성 시 응원 메시지 받기";
+"Goal celebration animation" = "목표 달성 축하 애니메이션";
+
+// MARK: - Display page
+"Theme" = "테마";
+"Used across dashboard, menu bar, and settings" = "대시보드, 메뉴 바 및 설정 전반에 적용됩니다";
+"Dashboard" = "대시보드";
+"Primary metric" = "주요 지표";
+"Renders large in the popover header." = "팝오버 헤더에 크게 표시됩니다.";
+"Hide sensitive amounts" = "민감한 금액 숨기기";
+"Masks earnings, rates, and totals across the app." = "앱 전반에서 수입, 요율, 총액을 가립니다.";
+"Currency" = "통화";
+"Display currency" = "표시 통화";
+"FX support coming in v2." = "v2에서 환율 지원이 추가될 예정입니다.";
+
+// MARK: - Shortcuts page
+"Bindings" = "키 바인딩";
+"Esc cancels recording" = "Esc를 누르면 기록이 취소됩니다";
+"Global shortcuts" = "전역 단축키";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "단축키는 모든 앱에서 동작합니다. 단축키에는 수정 키(⌘, ⌥, ⌃, ⇧)가 하나 이상 포함되어야 합니다.";
+
+// MARK: - Account page
+"Connection" = "연결";
+"Signed in via OAuth." = "OAuth로 로그인됨.";
+"Not connected." = "연결되지 않음.";
+"Danger zone" = "위험 구역";
+"Disconnect" = "연결 끊기";
+"Sign out and clear cached earnings on this Mac." = "이 Mac에서 로그아웃하고 캐시된 수입을 삭제합니다.";
+
+// MARK: - Menu bar
+"Menu bar" = "메뉴 바";
+"Choose which targets surface in the status bar" = "상태 표시줄에 표시할 목표를 선택하세요";
+"Today target" = "오늘 목표";
+"Daily progress in the menu bar" = "메뉴 바에서 일일 진행률 표시";
+"Weekly target" = "주간 목표";
+"Weekly progress in the menu bar" = "메뉴 바에서 주간 진행률 표시";
+"Icon Style" = "아이콘 스타일";
+"Display Mode" = "표시 모드";
+"Display style" = "표시 스타일";
+"Add a goal target" = "목표값 추가";
+
+// MARK: - Menu bar enums
+"Icon + value" = "아이콘 + 값";
+"Icon only" = "아이콘만";
+"Value only" = "값만";
+"Icon + primary metric" = "아이콘 + 주요 지표";
+"Icon + percentage" = "아이콘 + 퍼센트";
+"Icon + remaining" = "아이콘 + 남은 양";
+"Glyph only, no value" = "글리프만, 값 없음";
+"Glyph + current value" = "글리프 + 현재 값";
+"Glyph + percent of goal" = "글리프 + 목표 퍼센트";
+"Glyph + amount left to goal" = "글리프 + 목표 잔여량";
+"Value only, no glyph" = "값만, 글리프 없음";
+"Battery (Classic)" = "배터리 (클래식)";
+"Progress Bar" = "진행 표시줄";
+"Percentage" = "퍼센트";
+"Icon with Bar" = "막대 포함 아이콘";
+"Compact" = "간결";
+"Count vs goal" = "목표 대비 수";
+"Show as percentage (e.g., 60%)" = "퍼센트로 표시 (예: 60%)";
+"Show count vs goal (e.g., 5h/8h)" = "목표 대비 수 표시 (예: 5h/8h)";
+
+// MARK: - Language page
+"Select Language" = "언어 선택";
+"Language changes will take effect after restarting the app" = "언어 변경은 앱을 다시 시작한 후 적용됩니다";
+
+// MARK: - About page
+"Reset App Data?" = "앱 데이터를 초기화할까요?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "이 Mac에서 로그아웃하고 캐시된 수입을 삭제하며 모든 설정을 초기화합니다. 이 작업은 되돌릴 수 없습니다.";
+"Version %@" = "버전 %@";
+"Check for Updates" = "업데이트 확인";
+"Created By" = "제작자";
+"Links" = "링크";
+"Send Feedback" = "피드백 보내기";
+"Reset App Data" = "앱 데이터 초기화";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "메뉴 바에서 바로 활성 Upwork 프로젝트, 시간, 수입을 추적하세요.";
+"Connect Upwork" = "Upwork 연결";
+"A browser window will open for sign-in." = "로그인을 위해 브라우저 창이 열립니다.";
+
+// MARK: - Dashboard
+"Show amounts" = "금액 표시";
+"Hide amounts" = "금액 숨기기";
+"Refresh now" = "지금 새로 고침";
+
+// MARK: - Feedback
+"Help Us Improve" = "개선에 도움을 주세요";
+"Your feedback shapes the future of this app" = "여러분의 피드백이 이 앱의 미래를 만들어갑니다";
+"Role" = "역할";
+"Tell us anything — feedback, ideas, feature requests…" = "무엇이든 알려주세요 — 피드백, 아이디어, 기능 요청…";
+"Remind Me Later" = "나중에 알림";
+"Don't Ask Again" = "다시 묻지 않기";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy 피드백 — %@";
+"Developer" = "개발자";
+"Designer" = "디자이너";
+"Manager" = "매니저";
+"Student" = "학생";
+"Researcher" = "연구자";
+"Other" = "기타";
+
+// MARK: - Projects list
+"Activity" = "활동";
+"No tracked work in this period." = "이 기간에 추적된 작업이 없습니다.";
+
+// MARK: - Software updates
+"Version Information" = "버전 정보";
+"Current Version" = "현재 버전";
+"Last Checked" = "마지막 확인";
+"Update Preferences" = "업데이트 설정";
+"Automatic Updates" = "자동 업데이트";
+"Automatically check for and download updates daily" = "매일 자동으로 업데이트를 확인하고 다운로드";
+"Checking…" = "확인 중…";
+"Secure Updates" = "보안 업데이트";
+"All updates are cryptographically signed and verified before installation" = "모든 업데이트는 설치 전에 암호화 서명 및 검증됩니다";
+
+// MARK: - Support page
+"Support the Project" = "프로젝트 후원하기";
+"UpworkBuddy is free and open source" = "UpworkBuddy는 무료 오픈 소스입니다";
+"All Features Are Free" = "모든 기능이 무료입니다";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "이 앱의 모든 기능은 완전히 무료입니다. 프리미엄 티어, 유료 장벽, 구독 요금이 없습니다.";
+"Open Source" = "오픈 소스";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "소스 코드는 GitHub에 공개되어 있습니다. 프로젝트를 검토하고, 수정하고, 기여할 수 있습니다.";
+"No Tracking" = "추적 없음";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "개인 정보가 중요합니다. 분석, 원격 측정, 데이터 수집이 없습니다. 모든 것은 Mac에 저장됩니다.";
+"If you find this app useful, consider supporting its development" = "이 앱이 유용하다면 개발을 후원해 주세요";
+"Buy Me a Coffee" = "커피 한 잔 사주기";
+"Your support helps keep this project alive and growing" = "여러분의 후원이 이 프로젝트를 계속 성장시킵니다";
+"You can also support by" = "다음 방법으로도 후원할 수 있습니다";
+"Starring on GitHub" = "GitHub에서 별표 누르기";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "팝오버 토글";
+"Refresh Now" = "지금 새로 고침";
+"Open Settings" = "설정 열기";
+"Show or hide the UpworkBuddy popover" = "UpworkBuddy 팝오버 표시 또는 숨기기";
+"Fetch the latest earnings data" = "최신 수입 데이터 가져오기";
+"Open the settings window" = "설정 창 열기";
+
+// MARK: - Music
+"Music" = "음악";
+"Background music while you work" = "작업 중 배경 음악";
+"Add track" = "트랙 추가";
+"Track URL" = "트랙 URL";
+"Paste YouTube, Spotify or audio URL" = "YouTube, Spotify 또는 오디오 URL 붙여넣기";
+"Unsupported URL" = "지원되지 않는 URL";
+"Playlist" = "재생 목록";
+"Your playlist is empty. Paste a URL above to get started." = "재생 목록이 비어 있습니다. 위에 URL을 붙여넣어 시작하세요.";
+"Playback" = "재생";
+"Loop" = "반복";
+"Shuffle" = "셔플";
+"One" = "한 곡";
+"All" = "전체";
+"Sleep timer" = "수면 타이머";
+"Stop playback after a delay" = "일정 시간 후 재생 정지";
+"Stops in %@" = "%@ 후 정지";
+"Sleep timer %@" = "수면 타이머 %@";
+"15 minutes" = "15분";
+"30 minutes" = "30분";
+"1 hour" = "1시간";
+"2 hours" = "2시간";
+"Volume" = "볼륨";
+"Now playing" = "현재 재생 중";
+"Play" = "재생";
+"Pause" = "일시 정지";
+"Next" = "다음";
+"Previous" = "이전";
+"Stop" = "정지";
+"Remove" = "제거";
+"Off" = "끄기";
+"Playback failed: %@" = "재생 실패: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "YouTube, Spotify, SoundCloud, Vimeo, Mixcloud 또는 오디오 URL 붙여넣기";
+
+// MARK: - Exercises
+"Exercises" = "운동";
+"Periodic eye rest and standup reminders" = "주기적인 눈 휴식 및 일어서기 알림";
+"Eye break" = "눈 휴식";
+"Enable eye break" = "눈 휴식 활성화";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "주기적으로 Upwork 타이머를 일시 정지하고 화면을 잠가 눈을 쉬게 합니다 (20-20-20 규칙).";
+"Interval (minutes)" = "간격 (분)";
+"How often an eye break is triggered." = "눈 휴식이 발생하는 빈도입니다.";
+"Break duration (seconds)" = "휴식 지속 시간 (초)";
+"How long the lock overlay stays on screen." = "잠금 오버레이가 화면에 표시되는 시간입니다.";
+"On-screen message" = "화면 메시지";
+"Custom text shown over the lock overlay." = "잠금 오버레이 위에 표시되는 사용자 지정 텍스트입니다.";
+"External displays only" = "외부 디스플레이만";
+"Only lock external monitors; keep the main display usable." = "외부 모니터만 잠급니다. 기본 디스플레이는 계속 사용할 수 있습니다.";
+"Preview" = "미리 보기";
+"Preview break now" = "지금 휴식 미리 보기";
+"Shows a 5-second break using the current settings." = "현재 설정을 사용하여 5초 휴식을 표시합니다.";
+"Look 20 feet away for 20 seconds" = "20피트(약 6m) 거리를 20초 동안 바라보세요";
+"Skip break (Esc)" = "휴식 건너뛰기 (Esc)";
+
+// Standup
+"Standup" = "일어서기";
+"Enable standup" = "일어서기 활성화";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "주기적으로 화면을 잠가 일어서고, 스트레칭하고, 움직이게 합니다 (30분마다 약 2분 — Stanford EHS).";
+"Standup interval (minutes)" = "일어서기 간격 (분)";
+"How often a standup is triggered." = "일어서기가 발생하는 빈도입니다.";
+"Standup duration (seconds)" = "일어서기 지속 시간 (초)";
+"How long the lock overlay stays on screen so you can move." = "움직일 수 있도록 잠금 오버레이가 화면에 표시되는 시간입니다.";
+"Standup message" = "일어서기 메시지";
+"Only lock external monitors during standup." = "일어서기 중에는 외부 모니터만 잠급니다.";
+"Preview standup now" = "지금 일어서기 미리 보기";
+"Shows a 5-second standup using the current settings." = "현재 설정을 사용하여 5초 일어서기를 표시합니다.";
+"Stand up, stretch, and move around" = "일어서서 스트레칭하고 움직이세요";
