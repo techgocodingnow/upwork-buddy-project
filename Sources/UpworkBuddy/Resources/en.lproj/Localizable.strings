@@ -260,3 +260,37 @@
 "Show or hide the UpworkBuddy popover" = "Show or hide the UpworkBuddy popover";
 "Fetch the latest earnings data" = "Fetch the latest earnings data";
 "Open the settings window" = "Open the settings window";
+
+// MARK: - Music
+"Music" = "Music";
+"Background music while you work" = "Background music while you work";
+"Add track" = "Add track";
+"Track URL" = "Track URL";
+"Paste YouTube, Spotify or audio URL" = "Paste YouTube, Spotify or audio URL";
+"Unsupported URL" = "Unsupported URL";
+"Playlist" = "Playlist";
+"Your playlist is empty. Paste a URL above to get started." = "Your playlist is empty. Paste a URL above to get started.";
+"Playback" = "Playback";
+"Loop" = "Loop";
+"Shuffle" = "Shuffle";
+"One" = "One";
+"All" = "All";
+"Sleep timer" = "Sleep timer";
+"Stop playback after a delay" = "Stop playback after a delay";
+"Stops in %@" = "Stops in %@";
+"Sleep timer %@" = "Sleep timer %@";
+"15 minutes" = "15 minutes";
+"30 minutes" = "30 minutes";
+"1 hour" = "1 hour";
+"2 hours" = "2 hours";
+"Volume" = "Volume";
+"Now playing" = "Now playing";
+"Play" = "Play";
+"Pause" = "Pause";
+"Next" = "Next";
+"Previous" = "Previous";
+"Stop" = "Stop";
+"Remove" = "Remove";
+"Off" = "Off";
+"Playback failed: %@" = "Playback failed: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL";

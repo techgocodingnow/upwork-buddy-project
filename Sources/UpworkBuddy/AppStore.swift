@@ -105,6 +105,7 @@ final class AppStore {
     private static let kMenuBarIconStyle = "UpworkBuddyMenuBarIconStyle"
     private static let kShortcuts        = "UpworkBuddyShortcuts"
     private static let kAppTheme         = "UpworkBuddyAppTheme"
+    private static let kAppAppearance    = "UpworkBuddyAppAppearance"
     private static let kTodayMetricEnabled = "UpworkBuddyTodayMetricEnabled"
     private static let kTodayMetricStyle   = "UpworkBuddyTodayMetricStyle"
     private static let kWeekMetricEnabled  = "UpworkBuddyWeekMetricEnabled"
@@ -250,16 +251,25 @@ final class AppStore {
     /// Views observe this to play the confetti animation, then nil it out.
     var celebrationToken: UUID?
 
+    /// Tracks whether the menu bar popover is currently shown on screen.
+    /// AppDelegate updates this via NSPopoverDelegate. Views gate visible-only
+    /// effects (e.g. confetti) on this so animations don't burn through while
+    /// the popover is hidden but the hosting view is still mounted.
+    var popoverVisible: Bool = false
+
     /// Snapshot for the current week. Mirrors `snapshot` when `selectedPeriod == .week`,
     /// else fetched alongside today during refresh so the menu bar can show weekly progress
     /// independent of the dashboard's selected period.
     var weekSnapshot: EarningsSnapshot = .empty
 
     var appTheme: AppTheme {
-        didSet {
-            UserDefaults.standard.set(appTheme.rawValue, forKey: Self.kAppTheme)
-            ThemePalette.current = appTheme.palette
-        }
+        didSet { UserDefaults.standard.set(appTheme.rawValue, forKey: Self.kAppTheme) }
+    }
+
+    /// User-controlled light/dark/system override. The actual palette is
+    /// resolved per-render by `ThemedRoot`.
+    var appAppearance: AppAppearance {
+        didSet { UserDefaults.standard.set(appAppearance.rawValue, forKey: Self.kAppAppearance) }
     }
 
     /// Per-action user-overridable shortcuts. `nil` value means "unbound".
@@ -365,9 +375,10 @@ final class AppStore {
         }
 
         let storedTheme = defaults.string(forKey: Self.kAppTheme).flatMap(AppTheme.init(rawValue:))
-        let theme = storedTheme ?? .codeBurn
-        self.appTheme = theme
-        ThemePalette.current = theme.palette
+        self.appTheme = storedTheme ?? .codeBurn
+
+        let storedAppearance = defaults.string(forKey: Self.kAppAppearance).flatMap(AppAppearance.init(rawValue:))
+        self.appAppearance = storedAppearance ?? .system
 
         let storedLang = defaults.string(forKey: Self.kPreferredLanguage)
         self.preferredLanguage = AppLanguage.resolve(from: storedLang)

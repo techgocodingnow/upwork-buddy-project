@@ -37,11 +37,11 @@ struct AboutPage: View {
                 .frame(width: 96, height: 96)
 
             Text(appName)
-                .font(.system(size: 24, weight: .bold))
+                .font(Theme.body(size: 24, weight: .bold))
                 .foregroundStyle(Theme.textPrimary)
 
             Text(L10n.t("Version %@", appVersion))
-                .font(.system(size: 13))
+                .font(Theme.body(size: 13))
                 .foregroundStyle(Theme.textTertiary)
 
             Button {
@@ -49,9 +49,9 @@ struct AboutPage: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: "arrow.down.circle")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                     Text(loc: "Check for Updates")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                 }
                 .foregroundStyle(Theme.accentDeep)
             }
@@ -74,11 +74,11 @@ struct AboutPage: View {
                     .scaledToFit()
             } else {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: Theme.radius(22), style: .continuous)
                         .fill(Theme.accentDeep)
                     Image(systemName: "briefcase.fill")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundStyle(Color.white)
+                        .font(Theme.body(size: 40, weight: .bold))
+                        .foregroundStyle(Theme.onAccent)
                 }
                 .accessibilityHidden(true)
             }
@@ -90,7 +90,7 @@ struct AboutPage: View {
     private var createdByBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(loc: "Created By")
-                .font(.system(size: 14.5, weight: .semibold))
+                .font(Theme.body(size: 14.5, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
 
             Button {
@@ -101,22 +101,22 @@ struct AboutPage: View {
                         Circle()
                             .fill(Theme.chipBg)
                         Image(systemName: "person.fill")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(Theme.body(size: 16, weight: .semibold))
                             .foregroundStyle(Theme.textSecondary)
                     }
                     .frame(width: 38, height: 38)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(authorName)
-                            .font(.system(size: 13.5, weight: .semibold))
+                            .font(Theme.body(size: 13.5, weight: .semibold))
                             .foregroundStyle(Theme.textPrimary)
                         Text(authorHandle)
-                            .font(.system(size: 11.5))
+                            .font(Theme.body(size: 11.5))
                             .foregroundStyle(Theme.textTertiary)
                     }
                     Spacer(minLength: 8)
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(Theme.body(size: 11, weight: .semibold))
                         .foregroundStyle(Theme.textTertiary)
                 }
                 .padding(12)
@@ -139,7 +139,7 @@ struct AboutPage: View {
     private var linksBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(loc: "Links")
-                .font(.system(size: 14.5, weight: .semibold))
+                .font(Theme.body(size: 14.5, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
 
             VStack(spacing: 0) {
@@ -148,7 +148,7 @@ struct AboutPage: View {
                     label: L10n.t("Send Feedback"),
                     trailing: .arrow
                 ) {
-                    FeedbackWindow.show()
+                    FeedbackWindow.show(store: store)
                 }
                 Divider().background(Theme.divider)
                 AboutLinkRow(
@@ -177,10 +177,10 @@ struct AboutPage: View {
     private var footerBlock: some View {
         VStack(spacing: 4) {
             Text(loc: "MIT License • Open Source")
-                .font(.system(size: 11.5))
+                .font(Theme.body(size: 11.5))
                 .foregroundStyle(Theme.textTertiary)
             Text(verbatim: "© \(currentYear) \(authorName)")
-                .font(.system(size: 11.5))
+                .font(Theme.body(size: 11.5))
                 .foregroundStyle(Theme.textTertiary)
         }
         .padding(.top, 16)
@@ -226,21 +226,19 @@ private struct AboutLinkRow: View {
     let action: () -> Void
 
     @State private var hovering = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
+        let destructiveColor = SeverityColor.critical(colorScheme)
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(destructive
-                                     ? Color(red: 0.85, green: 0.25, blue: 0.25)
-                                     : Theme.textPrimary)
+                    .font(Theme.body(size: 14, weight: .semibold))
+                    .foregroundStyle(destructive ? destructiveColor : Theme.textPrimary)
                     .frame(width: 22)
                 Text(label)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(destructive
-                                     ? Color(red: 0.85, green: 0.25, blue: 0.25)
-                                     : Theme.textPrimary)
+                    .font(Theme.body(size: 13, weight: .medium))
+                    .foregroundStyle(destructive ? destructiveColor : Theme.textPrimary)
                 Spacer(minLength: 8)
                 trailingGlyph
             }
@@ -258,11 +256,11 @@ private struct AboutLinkRow: View {
         switch trailing {
         case .external:
             Image(systemName: "arrow.up.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(Theme.body(size: 11, weight: .semibold))
                 .foregroundStyle(Theme.textTertiary)
         case .arrow:
             Image(systemName: "chevron.right")
-                .font(.system(size: 11, weight: .semibold))
+                .font(Theme.body(size: 11, weight: .semibold))
                 .foregroundStyle(Theme.textTertiary)
         case .none:
             EmptyView()

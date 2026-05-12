@@ -43,7 +43,7 @@ struct MenuBarStylePreview: View {
                 .padding(2)
             }
             Text(label)
-                .font(.system(size: 11, weight: .semibold))
+                .font(Theme.body(size: 11, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -144,7 +144,7 @@ struct MenuBarStylePickerTile: View {
                 .frame(height: 56)
 
                 Text(style.label)
-                    .font(.system(size: 11, weight: isSelected ? .semibold : .medium))
+                    .font(Theme.body(size: 11, weight: isSelected ? .semibold : .medium))
                     .foregroundStyle(isSelected ? Theme.textPrimary : Theme.textSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)

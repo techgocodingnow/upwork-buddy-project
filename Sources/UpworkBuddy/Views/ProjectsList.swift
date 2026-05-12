@@ -14,11 +14,11 @@ struct ProjectsList: View {
                 SectionDotLabel(title: "Activity")
                 Spacer()
                 Text(loc: "Earnings")
-                    .font(.system(size: 11))
+                    .font(Theme.body(size: 11))
                     .foregroundStyle(Theme.textTertiary)
                     .frame(width: 70, alignment: .trailing)
                 Text(loc: "Hours")
-                    .font(.system(size: 11))
+                    .font(Theme.body(size: 11))
                     .foregroundStyle(Theme.textTertiary)
                     .frame(width: 50, alignment: .trailing)
             }
@@ -56,18 +56,18 @@ private struct ProjectRow: View {
                 .accessibilityHidden(true)
 
             Text(project.title)
-                .font(.system(size: 13, weight: .medium))
+                .font(Theme.body(size: 13, weight: .medium))
                 .foregroundStyle(Theme.textPrimary)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(format.compact(project.earnings))
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.body(size: 13, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
                 .frame(width: 70, alignment: .trailing)
 
             Text(project.hours.asHours())
-                .font(.system(size: 12))
+                .font(Theme.body(size: 12))
                 .foregroundStyle(Theme.textSecondary)
                 .frame(width: 50, alignment: .trailing)
         }

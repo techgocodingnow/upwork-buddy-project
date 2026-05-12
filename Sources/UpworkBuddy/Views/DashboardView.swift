@@ -51,6 +51,7 @@ struct DashboardView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
                 }
+                MusicMiniPlayer()
                 Divider().background(Theme.divider)
                 footer
             }
@@ -71,11 +72,26 @@ struct DashboardView: View {
                 .transition(.opacity)
             }
         }
-        .id(store.appTheme)
         .onChange(of: store.celebrationToken) { _, token in
-            guard let token, store.goalCelebrationEnabled else { return }
+            guard let token, store.goalCelebrationEnabled, store.popoverVisible else { return }
             activeCelebration = token
             store.celebrationToken = nil
+        }
+        .onChange(of: store.popoverVisible) { _, visible in
+            guard visible,
+                  let token = store.celebrationToken,
+                  store.goalCelebrationEnabled
+            else { return }
+            activeCelebration = token
+            store.celebrationToken = nil
+        }
+        .onAppear {
+            if store.popoverVisible,
+               let token = store.celebrationToken,
+               store.goalCelebrationEnabled {
+                activeCelebration = token
+                store.celebrationToken = nil
+            }
         }
     }
 
@@ -83,10 +99,10 @@ struct DashboardView: View {
         HStack(spacing: 8) {
             HStack(spacing: 0) {
                 Text(loc: "Upwork")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(Theme.body(size: 15, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "Buddy")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(Theme.body(size: 15, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             .accessibilityElement(children: .combine)
@@ -116,7 +132,7 @@ struct DashboardView: View {
     private func iconButton(systemName: String, help: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 12, weight: .medium))
+                .font(Theme.body(size: 12, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
                 .frame(width: 24, height: 24)
                 .background(
@@ -155,7 +171,7 @@ struct DashboardView: View {
                 NSApp.terminate(nil)
             } label: {
                 Text(loc: "Quit")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(Theme.body(size: 11, weight: .medium))
                     .foregroundStyle(Theme.textSecondary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)

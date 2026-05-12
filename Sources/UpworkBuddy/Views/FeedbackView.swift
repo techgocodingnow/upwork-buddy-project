@@ -6,6 +6,7 @@ import AppKit
 /// no analytics; the message goes through whatever email account the user
 /// already trusts.
 struct FeedbackView: View {
+    @Environment(AppStore.self) private var store
     var onClose: (() -> Void)? = nil
 
     private func dismiss() {
@@ -23,6 +24,12 @@ struct FeedbackView: View {
     @State private var submitting = false
 
     var body: some View {
+        ThemedRoot(store: store) {
+            form
+        }
+    }
+
+    private var form: some View {
         VStack(alignment: .leading, spacing: 18) {
             header
             field(placeholder: L10n.t("Name"), text: $name)
@@ -34,13 +41,14 @@ struct FeedbackView: View {
         }
         .padding(20)
         .frame(width: 480)
+        .background(Theme.bgGradient)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(red: 0.07, green: 0.08, blue: 0.10))
+            RoundedRectangle(cornerRadius: Theme.radius(16), style: .continuous)
+                .fill(Theme.surface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.6)
+            RoundedRectangle(cornerRadius: Theme.radius(16), style: .continuous)
+                .strokeBorder(Theme.divider, lineWidth: 0.6)
         )
     }
 
@@ -49,23 +57,23 @@ struct FeedbackView: View {
     private var header: some View {
         HStack(alignment: .top, spacing: 14) {
             ZStack {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color(red: 0.76, green: 0.38, blue: 0.11).opacity(0.18))
+                RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                    .fill(Theme.accentMuted)
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(Color(red: 0.95, green: 0.50, blue: 0.20))
+                    .font(Theme.body(size: 22, weight: .semibold))
+                    .foregroundStyle(Theme.accentDeep)
             }
             .frame(width: 50, height: 50)
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(loc: "Help Us Improve")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(Color.white)
+                    .font(Theme.body(size: 16, weight: .bold))
+                    .foregroundStyle(Theme.textPrimary)
                     .accessibilityAddTraits(.isHeader)
                 Text(loc: "Your feedback shapes the future of this app")
-                    .font(.system(size: 12.5))
-                    .foregroundStyle(Color.white.opacity(0.65))
+                    .font(Theme.body(size: 12.5))
+                    .foregroundStyle(Theme.textSecondary)
             }
             Spacer(minLength: 0)
         }
@@ -77,20 +85,20 @@ struct FeedbackView: View {
                        text: Binding<String>,
                        keyboard: PlatformKeyboard = .default) -> some View {
         TextField("", text: text, prompt: Text(placeholder)
-            .foregroundStyle(Color.white.opacity(0.45))
+            .foregroundStyle(Theme.textTertiary)
         )
             .textFieldStyle(.plain)
-            .font(.system(size: 13))
-            .foregroundStyle(Color.white)
+            .font(Theme.body(size: 13))
+            .foregroundStyle(Theme.textPrimary)
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.white.opacity(0.05))
+                RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                    .fill(Theme.chipBg.opacity(0.55))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+                RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                    .strokeBorder(Theme.divider, lineWidth: 0.6)
             )
             .accessibilityLabel(placeholder)
     }
@@ -98,8 +106,8 @@ struct FeedbackView: View {
     private var roleField: some View {
         HStack {
             Text(loc: "Role")
-                .font(.system(size: 13))
-                .foregroundStyle(Color.white.opacity(0.75))
+                .font(Theme.body(size: 13))
+                .foregroundStyle(Theme.textSecondary)
             Spacer()
             Picker("", selection: $role) {
                 ForEach(FeedbackRole.allCases) { option in
@@ -108,32 +116,32 @@ struct FeedbackView: View {
             }
             .pickerStyle(.menu)
             .labelsHidden()
-            .tint(Color(red: 0.95, green: 0.50, blue: 0.20))
+            .tint(Theme.accent)
             .frame(maxWidth: 220)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.white.opacity(0.05))
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .fill(Theme.chipBg.opacity(0.55))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .strokeBorder(Theme.divider, lineWidth: 0.6)
         )
     }
 
     private var messageField: some View {
         ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.white.opacity(0.05))
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .fill(Theme.chipBg.opacity(0.55))
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .strokeBorder(Theme.divider, lineWidth: 0.6)
 
             if message.isEmpty {
                 Text(loc: "Tell us anything — feedback, ideas, feature requests…")
-                    .font(.system(size: 13))
-                    .foregroundStyle(Color.white.opacity(0.45))
+                    .font(Theme.body(size: 13))
+                    .foregroundStyle(Theme.textTertiary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                     .allowsHitTesting(false)
@@ -141,8 +149,8 @@ struct FeedbackView: View {
             }
 
             TextEditor(text: $message)
-                .font(.system(size: 13))
-                .foregroundStyle(Color.white)
+                .font(Theme.body(size: 13))
+                .foregroundStyle(Theme.textPrimary)
                 .scrollContentBackground(.hidden)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
@@ -160,17 +168,17 @@ struct FeedbackView: View {
                 dismiss()
             } label: {
                 Text(loc: "Remind Me Later")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.white)
+                    .font(Theme.body(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 11)
                     .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.white.opacity(0.08))
+                        RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                            .fill(Theme.chipBg.opacity(0.75))
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+                        RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                            .strokeBorder(Theme.divider, lineWidth: 0.6)
                     )
             }
             .buttonStyle(.plain)
@@ -178,16 +186,16 @@ struct FeedbackView: View {
             Button(action: submit) {
                 HStack(spacing: 8) {
                     Image(systemName: "paperplane.fill")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                     Text(loc: "Submit")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                 }
-                .foregroundStyle(canSubmit ? Color.white : Color.white.opacity(0.55))
+                .foregroundStyle(canSubmit ? Color.white : Color.white.opacity(0.65))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(red: 0.55, green: 0.23, blue: 0.06)
+                    RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                        .fill(Theme.accentDeep
                             .opacity(canSubmit ? 1 : 0.55))
                 )
             }
@@ -204,8 +212,8 @@ struct FeedbackView: View {
                 dismiss()
             } label: {
                 Text(loc: "Don't Ask Again")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(0.7))
+                    .font(Theme.body(size: 12, weight: .medium))
+                    .foregroundStyle(Theme.textSecondary)
                     .underline()
             }
             .buttonStyle(.plain)
@@ -335,15 +343,18 @@ enum FeedbackPrefs {
 @MainActor
 enum FeedbackWindow {
     private static var window: NSWindow?
+    private static var observationToken: Any?
 
-    static func show() {
+    static func show(store: AppStore) {
         if let existing = window {
+            applyAppearance(existing, store: store)
             existing.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
             return
         }
 
         let view = FeedbackView(onClose: { close() })
+            .environment(store)
         let hosting = NSHostingController(rootView: view)
         let win = NSWindow(contentViewController: hosting)
         win.setContentSize(NSSize(width: 520, height: 560))
@@ -353,6 +364,9 @@ enum FeedbackWindow {
         win.isReleasedWhenClosed = false
         win.center()
         win.delegate = FeedbackWindowDelegate.shared
+
+        applyAppearance(win, store: store)
+        observeAppearance(window: win, store: store)
 
         window = win
         NSApp.activate(ignoringOtherApps: true)
@@ -367,6 +381,22 @@ enum FeedbackWindow {
         window?.close()
         window = nil
     }
+
+    private static func applyAppearance(_ win: NSWindow, store: AppStore) {
+        win.appearance = nsAppearance(for: store.appAppearance)
+    }
+
+    private static func observeAppearance(window win: NSWindow, store: AppStore) {
+        withObservationTracking {
+            _ = store.appAppearance
+        } onChange: {
+            DispatchQueue.main.async {
+                guard let current = window else { return }
+                applyAppearance(current, store: store)
+                observeAppearance(window: current, store: store)
+            }
+        }
+    }
 }
 
 @MainActor
@@ -374,5 +404,16 @@ private final class FeedbackWindowDelegate: NSObject, NSWindowDelegate {
     static let shared = FeedbackWindowDelegate()
     func windowWillClose(_ notification: Notification) {
         FeedbackWindow.didClose()
+    }
+}
+
+/// Maps the user's appearance override to an `NSAppearance` for `NSWindow.appearance`.
+/// `.system` returns nil so AppKit follows macOS.
+@MainActor
+func nsAppearance(for appearance: AppAppearance) -> NSAppearance? {
+    switch appearance {
+    case .system: return nil
+    case .light:  return NSAppearance(named: .aqua)
+    case .dark:   return NSAppearance(named: .darkAqua)
     }
 }

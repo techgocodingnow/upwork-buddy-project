@@ -8,17 +8,26 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
     case general
     case goals
     case display
+    case music
     case language
     case shortcuts
     case account
     case softwareUpdates
     case support
     case about
+    #if DEBUG
+    case debug
+    #endif
 
     var id: String { rawValue }
 
     /// Categories that appear in the main sidebar list with ⌘1…⌘N shortcuts.
-    static let primaryCases: [SettingsCategory] = [.general, .goals, .display, .language, .shortcuts, .account, .softwareUpdates]
+    static let primaryCases: [SettingsCategory] = [.general, .goals, .display, .music, .language, .shortcuts, .account, .softwareUpdates]
+
+    #if DEBUG
+    /// Developer-only categories surfaced under a separate sidebar group.
+    static let developerCases: [SettingsCategory] = [.debug]
+    #endif
 
     /// English source string used as the localization key for the sidebar /
     /// page header label.
@@ -27,12 +36,16 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .general:         return L10n.t("General")
         case .goals:           return L10n.t("Goals")
         case .display:         return L10n.t("Display")
+        case .music:           return L10n.t("Music")
         case .language:        return L10n.t("Language")
         case .shortcuts:       return L10n.t("Shortcuts")
         case .account:         return L10n.t("Account")
         case .softwareUpdates: return L10n.t("Software Updates")
         case .support:         return L10n.t("Support")
         case .about:           return L10n.t("About")
+        #if DEBUG
+        case .debug:           return L10n.t("Debug")
+        #endif
         }
     }
 
@@ -42,12 +55,16 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .general:         return L10n.t("Refresh cadence and login behavior")
         case .goals:           return L10n.t("Hours and earnings targets, with notifications")
         case .display:         return L10n.t("Theme, menu bar, and dashboard")
+        case .music:           return L10n.t("Background music while you work")
         case .language:        return L10n.t("Choose your preferred language")
         case .shortcuts:       return L10n.t("Global keyboard shortcuts")
         case .account:         return L10n.t("Connected Upwork session")
         case .softwareUpdates: return L10n.t("Keep your app up to date")
         case .support:         return L10n.t("Support the project")
         case .about:           return L10n.t("About UpworkBuddy")
+        #if DEBUG
+        case .debug:           return L10n.t("Manual triggers for development builds")
+        #endif
         }
     }
 
@@ -56,12 +73,16 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .general:         return "gearshape"
         case .goals:           return "target"
         case .display:         return "rectangle.on.rectangle"
+        case .music:           return "music.note.list"
         case .language:        return "globe"
         case .shortcuts:       return "command"
         case .account:         return "person.crop.circle"
         case .softwareUpdates: return "arrow.down.circle"
         case .support:         return "heart"
         case .about:           return "info.circle"
+        #if DEBUG
+        case .debug:           return "ladybug"
+        #endif
         }
     }
 }
@@ -73,6 +94,12 @@ struct SettingsRootView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
+        ThemedRoot(store: store) {
+            settingsBody
+        }
+    }
+
+    private var settingsBody: some View {
         HStack(spacing: 0) {
             SettingsSidebar(selection: $selection)
                 .frame(width: 212)
@@ -82,7 +109,6 @@ struct SettingsRootView: View {
         }
         .background(Theme.bgGradient.ignoresSafeArea())
         .frame(minWidth: 760, minHeight: 520)
-        .id(store.appTheme)
         .focusEffectDisabled()
         .background {
             // Hidden command pads register ⌘1…⌘5 for sidebar jumps.
@@ -115,6 +141,9 @@ private struct SettingsSidebar: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     sidebarGroup(title: "Settings", items: SettingsCategory.primaryCases)
+                    #if DEBUG
+                    sidebarGroup(title: "Developer", items: SettingsCategory.developerCases, keyHints: false)
+                    #endif
                 }
                 .padding(.horizontal, 10)
                 .padding(.top, 14)
@@ -146,7 +175,7 @@ private struct SettingsSidebar: View {
                     .fill(Theme.accent.opacity(0.16))
                     .frame(width: 26, height: 26)
                 Image(systemName: "briefcase.fill")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(Theme.body(size: 12, weight: .bold))
                     .foregroundStyle(Theme.accentDeep)
             }
             .accessibilityHidden(true)
@@ -157,11 +186,11 @@ private struct SettingsSidebar: View {
                     + Text(loc: "Buddy")
                         .foregroundStyle(Theme.accentDeep)
                 )
-                .font(.system(size: 13.5, weight: .semibold))
+                .font(Theme.body(size: 13.5, weight: .semibold))
                 .accessibilityLabel(L10n.t("Upwork Buddy"))
                 .accessibilityAddTraits(.isHeader)
                 Text(loc: "Settings")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(Theme.body(size: 10, weight: .medium))
                     .tracking(0.7)
                     .foregroundStyle(Theme.textTertiary)
             }
@@ -171,12 +200,12 @@ private struct SettingsSidebar: View {
         .padding(.vertical, 16)
     }
 
-    private func sidebarGroup(title: String, items: [SettingsCategory]) -> some View {
+    private func sidebarGroup(title: String, items: [SettingsCategory], keyHints: Bool = true) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 Rectangle().fill(Theme.accent).frame(width: 10, height: 1)
                 Text(L10n.t(title).uppercased(with: .current))
-                    .font(.system(size: 9.5, weight: .semibold))
+                    .font(Theme.body(size: 9.5, weight: .semibold))
                     .tracking(1.1)
                     .foregroundStyle(Theme.textTertiary)
             }
@@ -187,7 +216,7 @@ private struct SettingsSidebar: View {
                 SidebarRow(
                     label: item.label,
                     systemImage: item.systemImage,
-                    keyHint: "⌘\(idx + 1)",
+                    keyHint: keyHints ? "⌘\(idx + 1)" : "",
                     isSelected: selection == item
                 ) {
                     selection = item
@@ -242,10 +271,10 @@ private struct SidebarRow: View {
         Button(action: action) {
             HStack(spacing: 10) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.body(size: 12, weight: .medium))
                     .frame(width: 18)
                 Text(L10n.t(label))
-                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                    .font(Theme.body(size: 13, weight: isSelected ? .semibold : .regular))
                 Spacer()
                 Text(keyHint)
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
@@ -294,10 +323,10 @@ private struct FooterIcon: View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(Theme.body(size: 14, weight: .medium))
                     .frame(height: 18)
                 Text(L10n.t(label))
-                    .font(.system(size: 10.5, weight: .medium))
+                    .font(Theme.body(size: 10.5, weight: .medium))
                     .lineLimit(1)
             }
             .foregroundStyle(foreground)
@@ -369,12 +398,16 @@ private struct SettingsContent: View {
                     case .general:         GeneralPage(store: store)
                     case .goals:           GoalsPage(store: store)
                     case .display:         DisplayPage(store: store)
+                    case .music:           MusicSettingsView()
                     case .language:        LanguagePage(store: store)
                     case .shortcuts:       ShortcutsPage()
                     case .account:         AccountPage(store: store)
                     case .softwareUpdates: SoftwareUpdatesPage()
                     case .support:         SupportPage()
                     case .about:           AboutPage()
+                    #if DEBUG
+                    case .debug:           DebugPage(store: store)
+                    #endif
                     }
                 }
                 .id(category)
@@ -397,13 +430,13 @@ private struct SettingsPageHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(category.label)
-                .font(.system(size: 26, weight: .bold))
+                .font(Theme.body(size: 26, weight: .bold))
                 .tracking(-0.5)
                 .foregroundStyle(Theme.textPrimary)
             HStack(spacing: 8) {
                 Rectangle().fill(Theme.accent).frame(width: 18, height: 1.5)
                 Text(category.subtitle)
-                    .font(.system(size: 13))
+                    .font(Theme.body(size: 13))
                     .foregroundStyle(Theme.textSecondary)
             }
         }
@@ -421,7 +454,7 @@ private struct SettingsSection<Content: View>: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(L10n.t(title).uppercased(with: .current))
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(Theme.body(size: 10, weight: .semibold))
                     .tracking(1.2)
                     .foregroundStyle(Theme.textTertiary)
                 Rectangle().fill(Theme.divider).frame(height: 1)
@@ -475,7 +508,7 @@ private struct SettingsCard<Content: View>: View {
         Group {
             if let systemImage {
                 Image(systemName: systemImage)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(Theme.body(size: 14, weight: .medium))
                     .foregroundStyle(Theme.accentDeep)
                     .frame(width: 28, height: 28)
                     .background(
@@ -489,7 +522,7 @@ private struct SettingsCard<Content: View>: View {
     private var titleBlock: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(L10n.t(title))
-                .font(.system(size: 13.5, weight: .semibold))
+                .font(Theme.body(size: 13.5, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
                 .lineLimit(1)
             if let subtitle {
@@ -570,7 +603,7 @@ private struct RefreshIntervalCard: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(loc: "Refresh Interval")
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(Theme.body(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "How often UpworkBuddy polls for new earnings")
                     .font(.caption)
@@ -587,10 +620,10 @@ private struct RefreshIntervalCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
                     Image(systemName: "clock")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(Theme.body(size: 16, weight: .medium))
                         .foregroundStyle(.orange)
                     Text(valueLabel)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(Theme.body(size: 18, weight: .bold))
                         .foregroundStyle(Theme.textPrimary)
                         .contentTransition(.numericText())
                         .animation(.snappy, value: minutes)
@@ -713,15 +746,15 @@ private struct GoalsHeroStrip: View {
                     .fill(Theme.accent.opacity(0.14))
                     .frame(width: 44, height: 44)
                 Image(systemName: "target")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(Theme.body(size: 20, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text(loc: "Goal tracking")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(Theme.body(size: 16, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "Stay on pace day, week, month, and year. Get a banner when you cross a target.")
-                    .font(.system(size: 12))
+                    .font(Theme.body(size: 12))
                     .foregroundStyle(Theme.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 NotificationStatusChip(status: notificationStatus, enabled: store.goalsEnabled)
@@ -782,10 +815,10 @@ private struct NotificationStatusChip: View {
         let (label, color, icon) = display
         HStack(spacing: 5) {
             Image(systemName: icon)
-                .font(.system(size: 10, weight: .bold))
+                .font(Theme.body(size: 10, weight: .bold))
                 .foregroundStyle(color)
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(Theme.body(size: 11, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
         }
         .accessibilityElement(children: .combine)
@@ -845,7 +878,7 @@ private struct PeriodGoalCard: View {
         HStack(alignment: .center, spacing: 8) {
             Circle().fill(Theme.accent).frame(width: 5, height: 5)
             Text(period.label)
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.body(size: 13, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
             Spacer()
             if let chip = progressChipText {
@@ -963,11 +996,11 @@ private struct NumericGoalField: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 11.5, weight: .medium))
+                .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textTertiary)
                 .frame(width: 16)
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(Theme.body(size: 12, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
@@ -990,7 +1023,7 @@ private struct NumericGoalField: View {
 
                 if !suffix.isEmpty {
                     Text(suffix)
-                        .font(.system(size: 11.5, weight: .medium))
+                        .font(Theme.body(size: 11.5, weight: .medium))
                         .foregroundStyle(Theme.textTertiary)
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
@@ -1047,6 +1080,7 @@ private struct NumericGoalField: View {
 
 private struct NotificationsCard: View {
     @Bindable var store: AppStore
+    @Environment(\.colorScheme) private var colorScheme
     @State private var customDraft: String = ""
     @FocusState private var customFocused: Bool
 
@@ -1082,15 +1116,15 @@ private struct NotificationsCard: View {
                     .fill(Theme.accent.opacity(0.14))
                     .frame(width: 32, height: 32)
                 Image(systemName: "bell.badge")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.body(size: 14, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(loc: "Enable notifications")
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(Theme.body(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "Receive alerts when approaching usage limits")
-                    .font(.system(size: 11.5))
+                    .font(Theme.body(size: 11.5))
                     .foregroundStyle(Theme.textSecondary)
             }
             Spacer(minLength: 8)
@@ -1105,7 +1139,7 @@ private struct NotificationsCard: View {
     private var thresholdsBlock: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(loc: "Alert Thresholds")
-                .font(.system(size: 11.5, weight: .medium))
+                .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
 
             VStack(spacing: 8) {
@@ -1125,7 +1159,7 @@ private struct NotificationsCard: View {
                 ThresholdRow(
                     percent: 0,
                     label: L10n.t("Session Reset"),
-                    color: Color.green.opacity(0.8),
+                    color: SeverityColor.sessionReset(colorScheme),
                     isOn: $store.notifyOnSessionReset,
                     canRemove: false,
                     onRemove: {}
@@ -1138,7 +1172,7 @@ private struct NotificationsCard: View {
     private var customBlock: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(loc: "Custom Thresholds")
-                .font(.system(size: 11.5, weight: .medium))
+                .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
             HStack(spacing: 8) {
                 TextField("", text: $customDraft, prompt: Text(loc: "e.g. 50"))
@@ -1162,7 +1196,7 @@ private struct NotificationsCard: View {
                     .onSubmit(commitCustom)
                     .accessibilityLabel(L10n.t("Custom threshold percent"))
                 Text(verbatim: "%")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.body(size: 12, weight: .medium))
                     .foregroundStyle(Theme.textTertiary)
                 Button(L10n.t("Add"), action: commitCustom)
                     .buttonStyle(.borderedProminent)
@@ -1178,11 +1212,11 @@ private struct NotificationsCard: View {
     private var soundRow: some View {
         HStack(spacing: 10) {
             Image(systemName: store.notificationSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                .font(.system(size: 13, weight: .medium))
+                .font(Theme.body(size: 13, weight: .medium))
                 .foregroundStyle(store.notificationSoundEnabled ? Theme.accent : Theme.textTertiary)
                 .frame(width: 18)
             Text(loc: "Sound")
-                .font(.system(size: 13, weight: .medium))
+                .font(Theme.body(size: 13, weight: .medium))
                 .foregroundStyle(Theme.textPrimary)
             Spacer()
             Toggle("", isOn: $store.notificationSoundEnabled)
@@ -1218,9 +1252,9 @@ private struct NotificationsCard: View {
 
     private func thresholdColor(for pct: Int) -> Color {
         switch pct {
-        case ..<80:  return Color.yellow.opacity(0.9)
-        case 80..<95: return Color.orange
-        case 95...:   return Color.red.opacity(0.9)
+        case ..<80:   return SeverityColor.warning(colorScheme)
+        case 80..<95: return SeverityColor.high(colorScheme)
+        case 95...:   return SeverityColor.critical(colorScheme)
         default:      return Theme.accent
         }
     }
@@ -1244,13 +1278,13 @@ private struct ThresholdRow: View {
                 .foregroundStyle(Theme.textPrimary)
                 .frame(minWidth: 38, alignment: .leading)
             Text(label)
-                .font(.system(size: 12.5))
+                .font(Theme.body(size: 12.5))
                 .foregroundStyle(Theme.textSecondary)
             Spacer(minLength: 6)
             if canRemove {
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 13))
+                        .font(Theme.body(size: 13))
                         .foregroundStyle(Theme.textTertiary)
                 }
                 .buttonStyle(.plain)
@@ -1274,10 +1308,21 @@ private struct DisplayPage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             SettingsSection(
+                title: "Appearance",
+                caption: "Match macOS or force a mode"
+            ) {
+                AppearancePicker(selection: $store.appAppearance)
+            }
+
+            SettingsSection(
                 title: "Theme",
                 caption: "Used across dashboard, menu bar, and settings"
             ) {
-                HStack(spacing: 14) {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 96, maximum: 110), spacing: 14)],
+                    alignment: .leading,
+                    spacing: 14
+                ) {
                     ForEach(AppTheme.allCases) { theme in
                         ThemeSwatch(theme: theme, isSelected: store.appTheme == theme)
                             .onTapGesture {
@@ -1288,7 +1333,6 @@ private struct DisplayPage: View {
                             .accessibilityLabel(L10n.t("%@ theme", theme.label))
                             .accessibilityAddTraits(store.appTheme == theme ? .isSelected : [])
                     }
-                    Spacer()
                 }
                 .padding(.vertical, 4)
                 .padding(.leading, 4)
@@ -1365,11 +1409,11 @@ private struct ShortcutsPage: View {
 
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "info.circle.fill")
-                    .font(.system(size: 14))
+                    .font(Theme.body(size: 14))
                     .foregroundStyle(Theme.accentDeep)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(loc: "Global shortcuts")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                         .foregroundStyle(Theme.textPrimary)
                     Text(loc: "Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧).")
                         .font(.caption)
@@ -1438,7 +1482,7 @@ private struct AccountPage: View {
                             .fill(store.isAuthenticated ? Color.green : Color.gray)
                             .frame(width: 8, height: 8)
                         Text(loc: store.isAuthenticated ? "Connected" : "Disconnected")
-                            .font(.system(size: 12.5, weight: .medium))
+                            .font(Theme.body(size: 12.5, weight: .medium))
                             .foregroundStyle(Theme.textPrimary)
                     }
                 }
@@ -1592,15 +1636,15 @@ private struct MenuBarMetricCard: View {
                     .fill(Theme.accent.opacity(0.14))
                     .frame(width: 32, height: 32)
                 Image(systemName: systemImage)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.body(size: 14, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(L10n.t(title))
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(Theme.body(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(L10n.t(subtitle))
-                    .font(.system(size: 11.5))
+                    .font(Theme.body(size: 11.5))
                     .foregroundStyle(Theme.textSecondary)
             }
             Spacer(minLength: 8)
@@ -1614,7 +1658,7 @@ private struct MenuBarMetricCard: View {
     private var iconStylePicker: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(loc: "Icon Style")
-                .font(.system(size: 11.5, weight: .medium))
+                .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
             HStack(spacing: 10) {
                 ForEach(MenuBarMetricStyle.allCases) { option in
@@ -1649,7 +1693,7 @@ private struct DisplayModePicker: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(loc: "Display Mode")
-                .font(.system(size: 11.5, weight: .medium))
+                .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -1688,10 +1732,10 @@ private struct DisplayModeRow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L10n.t(mode.label))
-                        .font(.system(size: 12.5, weight: isSelected ? .semibold : .medium))
+                        .font(Theme.body(size: 12.5, weight: isSelected ? .semibold : .medium))
                         .foregroundStyle(Theme.textPrimary)
                     Text(L10n.t(mode.subtitle))
-                        .font(.system(size: 11))
+                        .font(Theme.body(size: 11))
                         .foregroundStyle(Theme.textSecondary)
                 }
                 Spacer(minLength: 0)
@@ -1707,9 +1751,10 @@ private struct DisplayModeRow: View {
 private struct ThemeSwatch: View {
     let theme: AppTheme
     let isSelected: Bool
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        let palette = theme.palette
+        let palette = theme.palette(for: colorScheme)
         VStack(spacing: 8) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -1731,9 +1776,167 @@ private struct ThemeSwatch: View {
             .shadow(color: isSelected ? palette.accent.opacity(0.18) : .clear, radius: 6, y: 2)
 
             Text(L10n.t(theme.label))
-                .font(.system(size: 11.5, weight: isSelected ? .semibold : .regular))
+                .font(Theme.body(size: 11.5, weight: isSelected ? .semibold : .regular))
                 .foregroundStyle(Theme.textSecondary)
         }
         .contentShape(Rectangle())
     }
 }
+
+// MARK: - Appearance picker
+
+private struct AppearancePicker: View {
+    @Binding var selection: AppAppearance
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ForEach(AppAppearance.allCases) { option in
+                AppearanceTile(
+                    option: option,
+                    isSelected: selection == option
+                ) {
+                    withAnimation(.smooth(duration: 0.2)) {
+                        selection = option
+                    }
+                }
+            }
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(.leading, 4)
+    }
+}
+
+private struct AppearanceTile: View {
+    let option: AppAppearance
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: option.systemImage)
+                    .font(Theme.body(size: 13, weight: .medium))
+                    .foregroundStyle(isSelected ? Theme.accentDeep : Theme.textSecondary)
+                Text(option.label)
+                    .font(Theme.body(size: 12.5, weight: isSelected ? .semibold : .medium))
+                    .foregroundStyle(isSelected ? Theme.textPrimary : Theme.textSecondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(isSelected ? Theme.accentMuted : Theme.chipBg.opacity(0.55))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .strokeBorder(isSelected ? Theme.accent : Theme.divider,
+                                  lineWidth: isSelected ? 1.2 : 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(L10n.t("%@ appearance", option.label))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+#if DEBUG
+// MARK: - Debug Page
+
+private struct DebugPage: View {
+    @Bindable var store: AppStore
+    @State private var lastAction: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            SettingsSection(
+                title: "Manual triggers",
+                caption: "Available only in debug builds"
+            ) {
+                SettingsCard(
+                    title: "Trigger confetti",
+                    subtitle: "Fires the celebration overlay on the dashboard. Open the menu bar popover to see it.",
+                    systemImage: "sparkles"
+                ) {
+                    debugButton(label: "Trigger") {
+                        store.celebrationToken = UUID()
+                        lastAction = "Confetti token fired"
+                    }
+                }
+
+                SettingsCard(
+                    title: "Send test notification",
+                    subtitle: "Posts a silent local notification through UNUserNotificationCenter.",
+                    systemImage: "bell.badge"
+                ) {
+                    debugButton(label: "Send") {
+                        Task { await sendTestNotification(withSound: false) }
+                        lastAction = "Notification dispatched"
+                    }
+                }
+
+                SettingsCard(
+                    title: "Play notification sound",
+                    subtitle: "Plays the system notification sound and posts a notification with sound.",
+                    systemImage: "speaker.wave.2"
+                ) {
+                    debugButton(label: "Play") {
+                        NSSound.beep()
+                        Task { await sendTestNotification(withSound: true) }
+                        lastAction = "Sound played"
+                    }
+                }
+            }
+
+            if let lastAction {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Theme.accentDeep)
+                    Text(lastAction)
+                        .font(Theme.body(size: 12, weight: .medium))
+                        .foregroundStyle(Theme.textSecondary)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Theme.accent.opacity(0.08))
+                )
+            }
+        }
+    }
+
+    private func debugButton(label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(L10n.t(label))
+                .font(Theme.body(size: 12, weight: .semibold))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.small)
+        .accessibilityLabel(L10n.t(label))
+    }
+
+    private func sendTestNotification(withSound: Bool) async {
+        guard Bundle.main.bundleIdentifier != nil else { return }
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        if settings.authorizationStatus == .notDetermined {
+            _ = try? await center.requestAuthorization(options: [.alert, .sound])
+        }
+        let content = UNMutableNotificationContent()
+        content.title = "UpworkBuddy debug"
+        content.body = withSound
+            ? "Test notification with sound."
+            : "Test notification (silent)."
+        if withSound { content.sound = .default }
+        let request = UNNotificationRequest(
+            identifier: "debug-\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        try? await center.add(request)
+    }
+}
+#endif

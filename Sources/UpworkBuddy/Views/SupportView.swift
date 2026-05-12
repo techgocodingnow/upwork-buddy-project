@@ -5,9 +5,36 @@ private let supportRepoURL    = URL(string: "https://github.com/anthropics/claud
 private let supportIssuesURL  = URL(string: "https://github.com/anthropics/claude-code/issues")!
 private let buyMeACoffeeURL   = URL(string: "https://buymeacoffee.com/")!
 
+/// Scheme-aware tint colors for Support page feature rows. Brighter on dark,
+/// deeper on light — keeps WCAG contrast on both themes.
+private enum SupportTint {
+    static func success(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color(red: 0.42, green: 0.88, blue: 0.60)
+            : Color(red: 0.16, green: 0.62, blue: 0.36)
+    }
+    static func info(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color(red: 0.52, green: 0.74, blue: 1.00)
+            : Color(red: 0.22, green: 0.48, blue: 0.86)
+    }
+    static func privacy(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color(red: 1.00, green: 0.66, blue: 0.32)
+            : Color(red: 0.86, green: 0.45, blue: 0.16)
+    }
+    static func heart(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color(red: 1.00, green: 0.50, blue: 0.56)
+            : Color(red: 0.92, green: 0.20, blue: 0.28)
+    }
+}
+
 /// Inline Support page rendered inside `SettingsContent`. Inherits the
 /// active theme background from the parent container.
 struct SupportPage: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(spacing: 24) {
             heroBlock
@@ -24,23 +51,23 @@ struct SupportPage: View {
         VStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(Color.red.opacity(0.18))
+                    .fill(SupportTint.heart(colorScheme).opacity(0.18))
                     .frame(width: 88, height: 88)
                     .blur(radius: 18)
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 44, weight: .bold))
-                    .foregroundStyle(Color(red: 1.0, green: 0.30, blue: 0.36))
-                    .shadow(color: Color.red.opacity(0.45), radius: 10, y: 2)
+                    .font(Theme.body(size: 44, weight: .bold))
+                    .foregroundStyle(SupportTint.heart(colorScheme))
+                    .shadow(color: SupportTint.heart(colorScheme).opacity(0.40), radius: 10, y: 2)
             }
             .accessibilityHidden(true)
 
             Text(loc: "Support the Project")
-                .font(.system(size: 26, weight: .bold))
+                .font(Theme.body(size: 26, weight: .bold))
                 .foregroundStyle(Theme.textPrimary)
                 .accessibilityAddTraits(.isHeader)
 
             Text(loc: "UpworkBuddy is free and open source")
-                .font(.system(size: 13.5))
+                .font(Theme.body(size: 13.5))
                 .foregroundStyle(Theme.textSecondary)
         }
         .padding(.top, 8)
@@ -52,19 +79,19 @@ struct SupportPage: View {
         VStack(alignment: .leading, spacing: 22) {
             FeatureRow(
                 icon: "checkmark.circle.fill",
-                tint: Color(red: 0.20, green: 0.78, blue: 0.46),
+                tint: SupportTint.success(colorScheme),
                 title: L10n.t("All Features Are Free"),
                 detail: L10n.t("Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions.")
             )
             FeatureRow(
                 icon: "lock.open.fill",
-                tint: Color(red: 0.30, green: 0.60, blue: 1.0),
+                tint: SupportTint.info(colorScheme),
                 title: L10n.t("Open Source"),
                 detail: L10n.t("The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project.")
             )
             FeatureRow(
                 icon: "hand.raised.fill",
-                tint: Color(red: 1.0, green: 0.55, blue: 0.20),
+                tint: SupportTint.privacy(colorScheme),
                 title: L10n.t("No Tracking"),
                 detail: L10n.t("Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac.")
             )
@@ -86,7 +113,7 @@ struct SupportPage: View {
     private var supportBlock: some View {
         VStack(spacing: 14) {
             Text(loc: "If you find this app useful, consider supporting its development")
-                .font(.system(size: 12.5))
+                .font(Theme.body(size: 12.5))
                 .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -96,9 +123,9 @@ struct SupportPage: View {
             } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "cup.and.saucer.fill")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(Theme.body(size: 14, weight: .bold))
                     Text(loc: "Buy Me a Coffee")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(Theme.body(size: 14, weight: .bold))
                 }
                 .foregroundStyle(Color.black)
                 .padding(.horizontal, 26)
@@ -113,7 +140,7 @@ struct SupportPage: View {
             .accessibilityHint(L10n.t("Opens donation page in browser"))
 
             Text(loc: "Your support helps keep this project alive and growing")
-                .font(.system(size: 11.5))
+                .font(Theme.body(size: 11.5))
                 .foregroundStyle(Theme.textTertiary)
                 .multilineTextAlignment(.center)
         }
@@ -124,7 +151,7 @@ struct SupportPage: View {
     private var githubBlock: some View {
         VStack(spacing: 12) {
             Text(loc: "You can also support by")
-                .font(.system(size: 12.5))
+                .font(Theme.body(size: 12.5))
                 .foregroundStyle(Theme.textSecondary)
 
             Button {
@@ -132,9 +159,9 @@ struct SupportPage: View {
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 13, weight: .bold))
+                        .font(Theme.body(size: 13, weight: .bold))
                     Text(loc: "Starring on GitHub")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                 }
                 .foregroundStyle(Color.white)
                 .padding(.horizontal, 22)
@@ -165,7 +192,7 @@ private struct FeatureRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
+                .font(Theme.body(size: 20, weight: .semibold))
                 .foregroundStyle(tint)
                 .frame(width: 26, alignment: .center)
                 .padding(.top, 2)
@@ -173,10 +200,10 @@ private struct FeatureRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.system(size: 14.5, weight: .semibold))
+                    .font(Theme.body(size: 14.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(detail)
-                    .font(.system(size: 12.5))
+                    .font(Theme.body(size: 12.5))
                     .foregroundStyle(Theme.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }

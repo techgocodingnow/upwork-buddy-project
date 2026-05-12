@@ -25,7 +25,7 @@ struct GoalRing: View {
 
             VStack(spacing: 0) {
                 Text(label)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(Theme.body(size: 12, weight: .semibold))
                     .foregroundStyle(isOver ? Theme.accentDeep : Theme.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)

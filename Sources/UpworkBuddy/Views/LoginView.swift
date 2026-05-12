@@ -9,7 +9,7 @@ struct LoginView: View {
         VStack(spacing: 20) {
             Spacer()
             Image(systemName: "briefcase.fill")
-                .font(.system(size: 56, weight: .light))
+                .font(Theme.body(size: 56, weight: .light))
                 .foregroundStyle(Theme.accent)
                 .accessibilityHidden(true)
             VStack(spacing: 6) {
@@ -35,7 +35,7 @@ struct LoginView: View {
                 } icon: {
                     Image(systemName: "link")
                 }
-                .font(.system(size: 13, weight: .semibold))
+                .font(Theme.body(size: 13, weight: .semibold))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 9)
                 .foregroundStyle(.white)

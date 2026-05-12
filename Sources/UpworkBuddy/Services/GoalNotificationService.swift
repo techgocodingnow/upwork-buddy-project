@@ -36,12 +36,14 @@ final class GoalNotificationService {
     ///   • a goal-hit notification + confetti trigger at 100%
     ///   • an optional "session reset" notification when a new bucket begins
     func evaluate(store: AppStore) async {
-        guard canUseNotifications, store.goalsEnabled else { return }
+        guard store.goalsEnabled else { return }
 
-        let center = UNUserNotificationCenter.current()
-        let settings = await center.notificationSettings()
-        let authorized = (settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional)
-        guard authorized else { return }
+        let notificationsAllowed: Bool = await {
+            guard canUseNotifications else { return false }
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            return settings.authorizationStatus == .authorized
+                || settings.authorizationStatus == .provisional
+        }()
 
         var lastMap = loadMap(Self.kLastNotified)
         var resetMap = loadMap(Self.kLastResetSeen)
@@ -68,7 +70,7 @@ final class GoalNotificationService {
                     // First sighting — record without firing.
                     resetMap[resetKey] = bucket
                 } else if prior != bucket {
-                    if store.progressNotificationsEnabled && store.notifyOnSessionReset {
+                    if notificationsAllowed && store.progressNotificationsEnabled && store.notifyOnSessionReset {
                         let body = "New \(period.label.lowercased()) — your goal resets to 0%."
                         await send(
                             title: "Fresh start",
@@ -93,7 +95,7 @@ final class GoalNotificationService {
                 let metricLabel = (metric == .hours) ? "Hours" : "Earnings"
 
                 // Progress thresholds (sub-100). Always-evaluated 100% threshold is below.
-                if store.progressNotificationsEnabled {
+                if notificationsAllowed && store.progressNotificationsEnabled {
                     for threshold in store.enabledThresholds.sorted() where threshold < 100 && pct >= threshold {
                         let key = "prog-\(metric.rawValue)-\(period.rawValue)-\(threshold)"
                         if lastMap[key] == bucket { continue }
@@ -114,13 +116,15 @@ final class GoalNotificationService {
                 if pct >= 100 {
                     let mapKey = "\(metric.rawValue)-\(period.rawValue)"
                     if lastMap[mapKey] != bucket {
-                        let body = "\(period.label) target reached — \(actualText) of \(targetText)."
-                        await send(
-                            title: "\(metricLabel) goal hit",
-                            body: body,
-                            identifier: "\(mapKey)-\(bucket)",
-                            withSound: store.notificationSoundEnabled
-                        )
+                        if notificationsAllowed {
+                            let body = "\(period.label) target reached — \(actualText) of \(targetText)."
+                            await send(
+                                title: "\(metricLabel) goal hit",
+                                body: body,
+                                identifier: "\(mapKey)-\(bucket)",
+                                withSound: store.notificationSoundEnabled
+                            )
+                        }
                         lastMap[mapKey] = bucket
                         Log.goals.info("Goal hit \(mapKey, privacy: .public) bucket \(bucket, privacy: .public)")
                         if store.goalCelebrationEnabled {

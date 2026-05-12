@@ -11,12 +11,12 @@ struct PeriodSegmentedControl: View {
                     onSelect(period)
                 } label: {
                     Text(period.label)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(Theme.body(size: 12, weight: .semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 7)
                         .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(selection == period ? Color.white : Theme.chipBg.opacity(0.6))
+                            RoundedRectangle(cornerRadius: Theme.radius(8))
+                                .fill(selection == period ? Theme.surface : Theme.chipBg.opacity(0.6))
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)

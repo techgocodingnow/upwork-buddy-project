@@ -24,7 +24,19 @@ echo "▸ Assembling dev bundle..."
 rm -rf "${BUNDLE}"
 mkdir -p "${BUNDLE}/Contents/MacOS"
 mkdir -p "${BUNDLE}/Contents/Resources"
+mkdir -p "${BUNDLE}/Contents/Frameworks"
 cp "${BUILT_BINARY}" "${BUNDLE}/Contents/MacOS/${EXECUTABLE_NAME}"
+
+# Embed dynamic frameworks that the binary links against via @rpath.
+if [[ -d "${BIN_PATH}/Sparkle.framework" ]]; then
+  cp -R "${BIN_PATH}/Sparkle.framework" "${BUNDLE}/Contents/Frameworks/"
+fi
+
+# SwiftPM debug binary only carries `@loader_path` rpath, which would look
+# for frameworks next to the binary (Contents/MacOS). Add the standard
+# bundle layout rpath so dyld finds Contents/Frameworks/*.framework.
+install_name_tool -add_rpath "@executable_path/../Frameworks" \
+  "${BUNDLE}/Contents/MacOS/${EXECUTABLE_NAME}" 2>/dev/null || true
 
 RESOURCE_BUNDLE="${BIN_PATH}/UpworkBuddy_UpworkBuddy.bundle"
 if [[ -d "${RESOURCE_BUNDLE}" ]]; then
@@ -75,6 +87,14 @@ cat > "${BUNDLE}/Contents/Info.plist" <<'PLIST'
         </array>
       </dict>
     </array>
+    <key>SUFeedURL</key>
+    <string>https://techgocodingnow.github.io/upwork-buddy-project/appcast.xml</string>
+    <key>SUEnableAutomaticChecks</key>
+    <false/>
+    <key>SUEnableInstallerLauncherService</key>
+    <false/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>86400</integer>
 </dict>
 </plist>
 PLIST
@@ -83,7 +103,9 @@ cat > "${BUNDLE}/Contents/PkgInfo" <<'PKG'
 APPL????
 PKG
 
-codesign --force --sign - --deep "${BUNDLE}" 2>/dev/null || true
+codesign --force --sign - --deep \
+  --entitlements "${ROOT}/Scripts/UpworkBuddy.entitlements" \
+  "${BUNDLE}" 2>/dev/null || true
 
 echo "✓ Built ${BUNDLE}"
 echo "  open ${BUNDLE}"

@@ -9,6 +9,7 @@ struct HeroSection: View {
     var primary: MenuBarMetric = .earnings
     /// Target value for the current `primary` metric. 0 hides the ring.
     var goalTarget: Double = 0
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         let format = CurrencyFormat(code: currency, masked: masked)
@@ -21,12 +22,12 @@ struct HeroSection: View {
                 Circle().fill(Theme.accent).frame(width: 5, height: 5)
                     .accessibilityHidden(true)
                 Text(period.label)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.body(size: 12, weight: .medium))
                     .foregroundStyle(Theme.textPrimary)
                 Text("·").foregroundStyle(Theme.textTertiary)
                     .accessibilityHidden(true)
                 Text(headerSubtitle)
-                    .font(.system(size: 12))
+                    .font(Theme.body(size: 12))
                     .foregroundStyle(Theme.textTertiary)
                 deltaChip(format: format)
             }
@@ -51,10 +52,10 @@ struct HeroSection: View {
                 }
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(primary == .earnings ? hoursText : earningsText)
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(Theme.body(size: 13, weight: .semibold))
                         .foregroundStyle(Theme.textSecondary)
                     Text(projectsText)
-                        .font(.system(size: 12))
+                        .font(Theme.body(size: 12))
                         .foregroundStyle(Theme.textTertiary)
                 }
                 .accessibilityElement(children: .combine)
@@ -81,16 +82,20 @@ struct HeroSection: View {
             let tooltip = deltaTooltip(delta: delta, format: format)
             HStack(spacing: 3) {
                 Image(systemName: positive ? "arrow.up.right" : "arrow.down.right")
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(Theme.body(size: 9, weight: .semibold))
                     .accessibilityHidden(true)
                 Text(String(format: "%@%.0f%%", positive ? "+" : "", pct))
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(Theme.body(size: 11, weight: .semibold))
             }
-            .foregroundStyle(positive ? Color.green.opacity(0.9) : Color.red.opacity(0.9))
+            .foregroundStyle(positive
+                ? SeverityColor.positive(colorScheme)
+                : SeverityColor.critical(colorScheme))
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
             .background(
-                Capsule().fill((positive ? Color.green : Color.red).opacity(0.12))
+                Capsule().fill((positive
+                    ? SeverityColor.positive(colorScheme)
+                    : SeverityColor.critical(colorScheme)).opacity(0.14))
             )
             .help(tooltip)
             .accessibilityElement(children: .combine)

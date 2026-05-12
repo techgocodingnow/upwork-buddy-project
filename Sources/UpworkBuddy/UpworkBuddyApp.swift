@@ -74,6 +74,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
         Task { await store.bootstrap() }
         Task { await GoalNotificationService.shared.requestAuthorizationIfNeeded() }
 
+        // Eagerly instantiate the music service so persisted playlist /
+        // last-track restore happens on launch and MPRemoteCommandCenter
+        // bindings exist before any media-key press.
+        _ = MusicPlayerService.shared
+
         // Updates: register custom category, become UN delegate so the
         // "Install" action button on the update notification surfaces
         // Sparkle's update window. Instantiating the service kicks off the
@@ -192,6 +197,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
             _ = store.goalHoursWeekly
             _ = store.goalEarningsDaily
             _ = store.goalEarningsWeekly
+            _ = store.appAppearance
+            _ = store.appTheme
         } onChange: { [weak self] in
             DispatchQueue.main.async {
                 self?.refreshStatusButton()
@@ -306,6 +313,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
             }
         }()
 
+        // Bake the metric view at whatever color scheme the user prefers — if
+        // `appAppearance == .system`, fall back to AppKit's current effective
+        // appearance so the icon matches the menu bar.
+        let bakeScheme: ColorScheme = store.appAppearance.preferredColorScheme
+            ?? (NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? .dark : .light)
+
+        // Theme.* proxies read from ThemePalette.current — snapshot, force the
+        // palette to match `bakeScheme`, render, then restore so a concurrent
+        // ThemedRoot (e.g. an open popover) isn't disturbed.
+        let savedPalette = ThemePalette.current
+        ThemePalette.current = store.appTheme.palette(for: bakeScheme)
+        defer { ThemePalette.current = savedPalette }
+
         let preview = MenuBarStylePreview(
             style: style,
             progress: progress,
@@ -313,6 +334,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
             width: previewWidth(for: style),
             height: 18
         )
+        .environment(\.colorScheme, bakeScheme)
 
         let renderer = ImageRenderer(content: preview)
         renderer.scale = NSScreen.main?.backingScaleFactor ?? 2
@@ -367,6 +389,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             popover.contentViewController?.view.window?.makeKey()
             startOutsideClickMonitor()
+            store.popoverVisible = true
         }
     }
 
@@ -413,6 +436,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
 
     func popoverDidClose(_ notification: Notification) {
         stopOutsideClickMonitor()
+        store.popoverVisible = false
         guard pendingStatusRefresh else { return }
         pendingStatusRefresh = false
         refreshStatusButton()

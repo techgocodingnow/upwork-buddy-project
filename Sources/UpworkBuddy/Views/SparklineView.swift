@@ -19,10 +19,10 @@ struct SparklineView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L10n.t("Last %d days", points.count))
-                        .font(.system(size: 11))
+                        .font(Theme.body(size: 11))
                         .foregroundStyle(Theme.textTertiary)
                     Text(totalText)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(Theme.body(size: 18, weight: .semibold))
                         .foregroundStyle(Theme.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
@@ -116,71 +116,75 @@ struct SparklineView: View {
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(f.string(from: point.date))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .font(Theme.body(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
                 if isPayoutOnly {
                     Text("payout")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(Theme.body(size: 9, weight: .medium))
+                        .foregroundStyle(Theme.textTertiary)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)
                         .background(
                             RoundedRectangle(cornerRadius: 3)
-                                .fill(.white.opacity(0.12))
+                                .fill(Theme.chipBg.opacity(0.6))
                         )
                 }
                 Spacer(minLength: 12)
                 Text(format.compact(point.earnings))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(Theme.accentSoft)
+                    .font(Theme.body(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.accent)
             }
             if !rows.isEmpty {
-                Rectangle().fill(.white.opacity(0.18)).frame(height: 0.5)
+                Rectangle().fill(Theme.divider).frame(height: 0.5)
                 ForEach(rows) { row in
                     HStack(spacing: 8) {
                         Circle().fill(Theme.accent).frame(width: 4, height: 4)
                         Text(row.label)
-                            .font(.system(size: 11))
-                            .foregroundStyle(.white)
+                            .font(Theme.body(size: 11))
+                            .foregroundStyle(Theme.textPrimary)
                             .lineLimit(1)
                             .truncationMode(.tail)
                         Spacer(minLength: 8)
                         Text(format.compact(row.earnings))
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Theme.accentSoft)
+                            .font(Theme.body(size: 11, weight: .semibold))
+                            .foregroundStyle(Theme.accent)
                         if row.hours > 0.01 {
                             Text(row.hours.asHours())
-                                .font(.system(size: 11))
-                                .foregroundStyle(.white.opacity(0.7))
+                                .font(Theme.body(size: 11))
+                                .foregroundStyle(Theme.textSecondary)
                                 .frame(width: 52, alignment: .trailing)
                         } else {
                             Text("—")
-                                .font(.system(size: 11))
-                                .foregroundStyle(.white.opacity(0.4))
+                                .font(Theme.body(size: 11))
+                                .foregroundStyle(Theme.textTertiary)
                                 .frame(width: 52, alignment: .trailing)
                         }
                     }
                 }
                 if point.breakdown.count > rows.count {
                     Text("+\(point.breakdown.count - rows.count) more")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(Theme.body(size: 10))
+                        .foregroundStyle(Theme.textTertiary)
                 }
             } else {
                 Text(point.hours.asHours())
-                    .font(.system(size: 11))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .font(Theme.body(size: 11))
+                    .foregroundStyle(Theme.textSecondary)
             }
         }
         .frame(width: 320, alignment: .leading)
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.black.opacity(0.92))
+            RoundedRectangle(cornerRadius: Theme.radius(8))
+                .fill(Theme.surface)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.radius(8))
+                .strokeBorder(Theme.divider, lineWidth: 0.5)
         )
         .fixedSize(horizontal: false, vertical: true)
-        .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
+        .shadow(color: Color.black.opacity(0.22), radius: 8, y: 2)
     }
 
     private func tooltipX(idx: Int, barW: CGFloat, gap: CGFloat, width: CGFloat) -> CGFloat {

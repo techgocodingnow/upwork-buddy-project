@@ -69,17 +69,17 @@ struct TodayPulse: View {
     private func pulseCard(label: String, primary: String, secondary: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
-                .font(.system(size: 10, weight: .medium))
+                .font(Theme.body(size: 10, weight: .medium))
                 .foregroundStyle(Theme.textTertiary)
                 .textCase(.uppercase)
                 .tracking(0.6)
             Text(primary)
-                .font(.system(size: 16, weight: .semibold))
+                .font(Theme.body(size: 16, weight: .semibold))
                 .foregroundStyle(tint)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             Text(secondary)
-                .font(.system(size: 11))
+                .font(Theme.body(size: 11))
                 .foregroundStyle(Theme.textSecondary)
                 .lineLimit(1)
         }

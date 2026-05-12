@@ -17,7 +17,7 @@ struct LanguagePage: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(loc: "Select Language")
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(Theme.body(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textSecondary)
                 Rectangle().fill(Theme.divider).frame(height: 1)
             }
@@ -47,10 +47,10 @@ struct LanguagePage: View {
     private var restartNotice: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: "info.circle.fill")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.accentColor)
+                .font(Theme.body(size: 14, weight: .semibold))
+                .foregroundStyle(Theme.accent)
             Text(loc: "Language changes will take effect after restarting the app")
-                .font(.system(size: 12.5))
+                .font(Theme.body(size: 12.5))
                 .foregroundStyle(Theme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
@@ -59,11 +59,11 @@ struct LanguagePage: View {
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.accentColor.opacity(0.08))
+                .fill(Theme.accent.opacity(0.08))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.accentColor.opacity(0.25), lineWidth: 0.5)
+                .strokeBorder(Theme.accent.opacity(0.25), lineWidth: 0.5)
         )
     }
 }
@@ -79,11 +79,11 @@ private struct LanguageRow: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Text(language.flag)
-                    .font(.system(size: 26))
+                    .font(Theme.body(size: 26))
                     .frame(width: 36, alignment: .center)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(language.nativeName)
-                        .font(.system(size: 13.5, weight: .semibold))
+                        .font(Theme.body(size: 13.5, weight: .semibold))
                         .foregroundStyle(Theme.textPrimary)
                     Text(language.englishName)
                         .font(.caption)
@@ -96,7 +96,7 @@ private struct LanguageRow: View {
                             .fill(Theme.accent)
                             .frame(width: 22, height: 22)
                         Image(systemName: "checkmark")
-                            .font(.system(size: 11, weight: .bold))
+                            .font(Theme.body(size: 11, weight: .bold))
                             .foregroundStyle(Color.white)
                     }
                     .accessibilityHidden(true)

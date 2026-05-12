@@ -7,6 +7,7 @@ enum SettingsWindow {
 
     static func show(store: AppStore) {
         if let existing = window {
+            applyAppearance(existing, store: store)
             existing.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
             return
@@ -27,6 +28,9 @@ enum SettingsWindow {
         win.center()
         win.delegate = SettingsWindowDelegate.shared
 
+        applyAppearance(win, store: store)
+        observeAppearance(window: win, store: store)
+
         window = win
         NSApp.activate(ignoringOtherApps: true)
         win.makeKeyAndOrderFront(nil)
@@ -34,6 +38,22 @@ enum SettingsWindow {
 
     static func didClose() {
         window = nil
+    }
+
+    private static func applyAppearance(_ win: NSWindow, store: AppStore) {
+        win.appearance = nsAppearance(for: store.appAppearance)
+    }
+
+    private static func observeAppearance(window win: NSWindow, store: AppStore) {
+        withObservationTracking {
+            _ = store.appAppearance
+        } onChange: {
+            DispatchQueue.main.async {
+                guard let current = window else { return }
+                applyAppearance(current, store: store)
+                observeAppearance(window: current, store: store)
+            }
+        }
     }
 }
 

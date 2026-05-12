@@ -7,6 +7,7 @@ import AppKit
 struct SoftwareUpdatesPage: View {
     @State private var service = UpdateService.shared
     @State private var hoveringCheck = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -44,11 +45,11 @@ struct SoftwareUpdatesPage: View {
                     .fill(Theme.accent.opacity(0.14))
                     .frame(width: 32, height: 32)
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.body(size: 14, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             Text(label)
-                .font(.system(size: 13.5, weight: .semibold))
+                .font(Theme.body(size: 13.5, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
             Spacer(minLength: 8)
             Text(value)
@@ -78,15 +79,15 @@ struct SoftwareUpdatesPage: View {
                     .fill(Theme.accent.opacity(0.14))
                     .frame(width: 32, height: 32)
                 Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.body(size: 14, weight: .semibold))
                     .foregroundStyle(Theme.accentDeep)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(loc: "Automatic Updates")
-                    .font(.system(size: 13.5, weight: .semibold))
+                    .font(Theme.body(size: 13.5, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "Automatically check for and download updates daily")
-                    .font(.system(size: 11.5))
+                    .font(Theme.body(size: 11.5))
                     .foregroundStyle(Theme.textSecondary)
             }
             Spacer(minLength: 8)
@@ -123,10 +124,10 @@ struct SoftwareUpdatesPage: View {
                         .tint(.white)
                 } else {
                     Image(systemName: "arrow.down.circle.fill")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(Theme.body(size: 15, weight: .semibold))
                 }
                 Text(loc: service.isCheckingForUpdates ? "Checking…" : "Check for Updates")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(Theme.body(size: 14, weight: .semibold))
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
@@ -152,16 +153,17 @@ struct SoftwareUpdatesPage: View {
     // MARK: - Secure notice
 
     private var secureUpdatesNotice: some View {
-        HStack(alignment: .top, spacing: 12) {
+        let info = SeverityColor.info(colorScheme)
+        return HStack(alignment: .top, spacing: 12) {
             Image(systemName: "info.circle.fill")
-                .font(.system(size: 14))
-                .foregroundStyle(Color.blue)
+                .font(Theme.body(size: 14))
+                .foregroundStyle(info)
             VStack(alignment: .leading, spacing: 4) {
                 Text(loc: "Secure Updates")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(Theme.body(size: 13, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 Text(loc: "All updates are cryptographically signed and verified before installation")
-                    .font(.system(size: 11.5))
+                    .font(Theme.body(size: 11.5))
                     .foregroundStyle(Theme.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -169,12 +171,12 @@ struct SoftwareUpdatesPage: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color.blue.opacity(0.08))
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .fill(info.opacity(colorScheme == .dark ? 0.12 : 0.08))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .strokeBorder(Color.blue.opacity(0.25), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: Theme.radius(10), style: .continuous)
+                .strokeBorder(info.opacity(0.30), lineWidth: 0.5)
         )
     }
 
@@ -182,7 +184,7 @@ struct SoftwareUpdatesPage: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(L10n.t(text))
-            .font(.system(size: 13.5, weight: .semibold))
+            .font(Theme.body(size: 13.5, weight: .semibold))
             .foregroundStyle(Theme.textPrimary)
             .padding(.top, 4)
     }
