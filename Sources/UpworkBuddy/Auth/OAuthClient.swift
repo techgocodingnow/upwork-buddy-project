@@ -205,11 +205,21 @@ actor OAuthClient {
         return ClientCredentials(id: id, secret: AppConfig.string(.clientSecret))
     }
 
+    /// Charset for `application/x-www-form-urlencoded` per WHATWG URL §5. Allows
+    /// RFC 3986 unreserved chars only — every other byte gets percent-encoded.
+    /// Critically, `&`, `=`, `+`, `:` must all be escaped inside values or they
+    /// merge into adjacent params on the server side.
+    private static let formUnreserved: CharacterSet = {
+        var c = CharacterSet.alphanumerics
+        c.insert(charactersIn: "-._~")
+        return c
+    }()
+
     static func formEncode(_ params: [String: String]) -> String {
         params
             .map { key, value in
-                let encKey = key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? key
-                let encVal = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
+                let encKey = key.addingPercentEncoding(withAllowedCharacters: formUnreserved) ?? key
+                let encVal = value.addingPercentEncoding(withAllowedCharacters: formUnreserved) ?? value
                 return "\(encKey)=\(encVal)"
             }
             .joined(separator: "&")

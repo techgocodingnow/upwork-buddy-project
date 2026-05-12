@@ -31,34 +31,34 @@ struct TodayPulse: View {
             .max(by: { $0.date < $1.date })
 
         VStack(alignment: .leading, spacing: 10) {
-            SectionDotLabel(title: "Today's pulse")
+            SectionDotLabel(title: L10n.t("Today's pulse"))
 
             HStack(spacing: 8) {
                 pulseCard(
-                    label: "Vs yesterday",
+                    label: L10n.t("Vs yesterday"),
                     primary: deltaText(today: todayEarn, prior: yesterdayEarn, format: format),
-                    secondary: format.compact(yesterdayEarn) + " yest.",
+                    secondary: L10n.t("%@ yest.", format.compact(yesterdayEarn)),
                     tint: deltaTint(today: todayEarn, prior: yesterdayEarn)
                 )
                 pulseCard(
-                    label: "Week so far",
+                    label: L10n.t("Week so far"),
                     primary: format.compact(weekTotal),
-                    secondary: "last 7 days",
+                    secondary: L10n.t("last 7 days"),
                     tint: Theme.textPrimary
                 )
             }
 
             HStack(spacing: 8) {
                 pulseCard(
-                    label: "Hours today",
+                    label: L10n.t("Hours today"),
                     primary: snapshot.totalHours.asHours(),
                     secondary: hoursContext(today: snapshot.totalHours, yesterday: yesterdayPt?.hours ?? 0),
                     tint: Theme.textPrimary
                 )
                 pulseCard(
-                    label: "Last activity",
+                    label: L10n.t("Last activity"),
                     primary: lastActivity.map(relativeDay) ?? "—",
-                    secondary: lastActivity.map { format.compact($0.earnings) } ?? "no recent work",
+                    secondary: lastActivity.map { format.compact($0.earnings) } ?? L10n.t("no recent work"),
                     tint: Theme.textPrimary
                 )
             }
@@ -114,15 +114,16 @@ struct TodayPulse: View {
         if yesterday <= 0 { return "—" }
         let diff = today - yesterday
         let prefix = diff >= 0 ? "+" : "−"
-        return "\(prefix)\(abs(diff).asHours()) vs yest."
+        return L10n.t("%@ vs yest.", "\(prefix)\(abs(diff).asHours())")
     }
 
     private func relativeDay(_ point: DailyPoint) -> String {
         let cal = Calendar.current
-        if cal.isDateInToday(point.date) { return "Today" }
-        if cal.isDateInYesterday(point.date) { return "Yesterday" }
+        if cal.isDateInToday(point.date) { return L10n.t("Today") }
+        if cal.isDateInYesterday(point.date) { return L10n.t("Yesterday") }
         let f = DateFormatter()
-        f.dateFormat = "EEE MMM d"
+        f.locale = L10n.currentLocale
+        f.setLocalizedDateFormatFromTemplate("EEE MMM d")
         return f.string(from: point.date)
     }
 }

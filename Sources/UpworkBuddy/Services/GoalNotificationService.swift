@@ -128,7 +128,7 @@ final class GoalNotificationService {
                         lastMap[mapKey] = bucket
                         Log.goals.info("Goal hit \(mapKey, privacy: .public) bucket \(bucket, privacy: .public)")
                         if store.goalCelebrationEnabled {
-                            store.celebrationToken = UUID()
+                            store.celebrate()
                         }
                     }
                 }
@@ -168,11 +168,18 @@ final class GoalNotificationService {
     }
 
     private func bucketKey(for period: Period, on date: Date) -> String {
+        Self.bucketKey(for: period, on: date, timeZone: .current)
+    }
+
+    /// Period-aligned identifier used to dedupe notifications within a single
+    /// day/week/month/year. Exposed for testing — `timeZone` lets tests pin
+    /// behavior independently of the host machine's zone.
+    static func bucketKey(for period: Period, on date: Date, timeZone: TimeZone = .current) -> String {
         var cal = Calendar(identifier: .iso8601)
-        cal.timeZone = .current
+        cal.timeZone = timeZone
         let f = DateFormatter()
         f.calendar = cal
-        f.timeZone = .current
+        f.timeZone = timeZone
         f.locale = Locale(identifier: "en_US_POSIX")
         switch period {
         case .today:

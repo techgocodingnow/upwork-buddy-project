@@ -126,6 +126,7 @@ struct MusicSettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
+                    .tint(Theme.accent)
                     .frame(maxWidth: 200)
                 }
 
@@ -134,6 +135,7 @@ struct MusicSettingsView: View {
                     Toggle("", isOn: $service.shuffleEnabled)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .tint(Theme.accent)
                         .accessibilityLabel(L10n.t("Shuffle"))
                 }
             }
@@ -303,7 +305,7 @@ private struct PlaylistRow: View {
                     .lineLimit(1)
                 HStack(spacing: 6) {
                     Text(sourceBadge)
-                        .font(.system(size: 9.5, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundStyle(Theme.accentDeep)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 1)

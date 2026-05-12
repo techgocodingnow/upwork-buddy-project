@@ -6,27 +6,34 @@ import SwiftUI
 /// Resources/<lang>.lproj/Localizable.strings and can be translated by
 /// adding new .lproj folders.
 ///
-/// All strings resolve against `Bundle.module` so they survive being run
-/// from a SwiftPM-built bundle.
+/// Strings resolve against `L10n.currentBundle`, which points at a specific
+/// `<lang>.lproj` inside `Bundle.module`. Views remount via `.id(store.preferredLanguage)`
+/// so a language switch re-binds Text to the new bundle without restart.
 enum L10n {
-    /// Programmatic lookup. Use this when assembling Strings outside SwiftUI
-    /// (model layer, services, formatting, accessibility labels coerced to
-    /// `String`, alert message bodies, etc.).
+    nonisolated(unsafe) static var currentBundle: Bundle = .module
+    nonisolated(unsafe) static var currentLocale: Locale = .current
+
+    static func setLanguage(_ code: String) {
+        if let path = Bundle.module.path(forResource: code, ofType: "lproj"),
+           let b = Bundle(path: path) {
+            currentBundle = b
+        } else {
+            currentBundle = .module
+        }
+        currentLocale = Locale(identifier: code)
+    }
+
     static func t(_ key: String, _ args: CVarArg...) -> String {
-        let format = NSLocalizedString(key, tableName: nil, bundle: .module, value: key, comment: "")
+        let format = NSLocalizedString(key, tableName: nil, bundle: currentBundle, value: key, comment: "")
         if args.isEmpty { return format }
-        // Bridge Swift String args to NSString so %@ format specifiers work.
         let bridged: [CVarArg] = args.map { ($0 as? String).map { $0 as NSString } ?? $0 }
         return String(format: format, locale: .current, arguments: bridged)
     }
 }
 
 extension Text {
-    /// SwiftUI-native localized text bound to Bundle.module. Prefer this over
-    /// `Text("literal")` so strings are guaranteed to be looked up in the
-    /// app's catalog rather than the host bundle.
     init(loc key: String) {
-        self.init(LocalizedStringKey(key), bundle: .module)
+        self.init(LocalizedStringKey(key), bundle: L10n.currentBundle)
     }
 }
 

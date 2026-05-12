@@ -65,7 +65,8 @@ struct DashboardView: View {
                         .yellow,
                         .pink,
                         .mint
-                    ]
+                    ],
+                    style: store.celebrationStyle
                 ) {
                     if activeCelebration == token { activeCelebration = nil }
                 }
@@ -132,9 +133,9 @@ struct DashboardView: View {
     private func iconButton(systemName: String, help: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(Theme.body(size: 12, weight: .medium))
+                .font(Theme.body(size: 13, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
-                .frame(width: 24, height: 24)
+                .frame(width: 28, height: 28)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
                         .fill(Theme.chipBg.opacity(0.5))
@@ -191,6 +192,7 @@ struct DashboardView: View {
         if date == .distantPast { return "—" }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
+        formatter.locale = L10n.currentLocale
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 }

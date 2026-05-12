@@ -15,7 +15,8 @@ struct HeroSection: View {
         let format = CurrencyFormat(code: currency, masked: masked)
         let earningsText = format.string(snapshot.totalEarnings)
         let hoursText = snapshot.totalHours.asHours()
-        let projectsText = "\(snapshot.projects.count) project\(snapshot.projects.count == 1 ? "" : "s")"
+        let count = snapshot.projects.count
+        let projectsText = count == 1 ? L10n.t("%d project", count) : L10n.t("%d projects", count)
 
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
@@ -67,7 +68,8 @@ struct HeroSection: View {
 
     private var headerSubtitle: String {
         let f = DateFormatter()
-        f.dateFormat = "EEE MMM d"
+        f.locale = L10n.currentLocale
+        f.setLocalizedDateFormatFromTemplate("EEE MMM d")
         return f.string(from: Date())
     }
 

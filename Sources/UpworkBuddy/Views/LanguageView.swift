@@ -9,7 +9,6 @@ struct LanguagePage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             languageList
-            restartNotice
         }
     }
 
@@ -22,17 +21,19 @@ struct LanguagePage: View {
                 Rectangle().fill(Theme.divider).frame(height: 1)
             }
 
-            VStack(spacing: 8) {
-                ForEach(AppLanguage.allCases) { language in
-                    LanguageRow(
-                        language: language,
-                        isSelected: store.preferredLanguage == language
-                    ) {
-                        store.preferredLanguage = language
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(AppLanguage.allCases) { language in
+                        LanguageRow(
+                            language: language,
+                            isSelected: store.preferredLanguage == language
+                        ) {
+                            store.preferredLanguage = language
+                        }
                     }
                 }
+                .padding(12)
             }
-            .padding(12)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Theme.surface.opacity(0.55))
@@ -97,7 +98,7 @@ private struct LanguageRow: View {
                             .frame(width: 22, height: 22)
                         Image(systemName: "checkmark")
                             .font(Theme.body(size: 11, weight: .bold))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(Theme.onAccent)
                     }
                     .accessibilityHidden(true)
                 }

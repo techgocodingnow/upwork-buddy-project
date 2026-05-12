@@ -50,6 +50,47 @@ enum MenuBarMetricFormatter {
         }
     }
 
+    /// Primary metric value alone (e.g. "5h" or "$200"), no goal context.
+    /// Falls back to `formatHours` for hours, `compact` for earnings, based on
+    /// `store.menuBarMetric`.
+    static func primaryLabel(snapshot: EarningsSnapshot,
+                             store: AppStore) -> String {
+        switch store.menuBarMetric {
+        case .hours:
+            return formatHours(snapshot.totalHours)
+        case .earnings:
+            let f = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
+            return f.compact(snapshot.totalEarnings)
+        }
+    }
+
+    /// Percentage of goal as "60%". Returns "—" when no goal is set.
+    static func percentageLabel(snapshot: EarningsSnapshot,
+                                period: Period,
+                                store: AppStore) -> String {
+        label(snapshot: snapshot, period: period, store: store, mode: .percentage)
+    }
+
+    /// Compact "remaining to goal" label — "3h" for hours, "$200" for earnings.
+    /// Returns "—" when no goal is configured for the active `menuBarMetric`.
+    static func remainingLabel(snapshot: EarningsSnapshot,
+                               period: Period,
+                               store: AppStore) -> String {
+        switch store.menuBarMetric {
+        case .hours:
+            let target = store.goalTarget(for: .hours, period: period)
+            if target <= 0 { return "—" }
+            let remaining = max(0, target - snapshot.totalHours)
+            return formatHours(remaining)
+        case .earnings:
+            let target = store.goalTarget(for: .earnings, period: period)
+            if target <= 0 { return "—" }
+            let remaining = max(0, target - snapshot.totalEarnings)
+            let f = CurrencyFormat(code: store.currency, masked: store.hideSensitive)
+            return f.compact(remaining)
+        }
+    }
+
     private static func formatHours(_ hours: Double) -> String {
         if hours <= 0 { return "0h" }
         let whole = Int(hours)

@@ -36,10 +36,10 @@
 "Hours" = "Hours";
 "Earnings" = "Earnings";
 "target" = "target";
-"Session Reset" = "Session Reset";
-"Enable notifications" = "Enable notifications";
-"Receive alerts when approaching usage limits" = "Receive alerts when approaching usage limits";
-"Enable progress notifications" = "Enable progress notifications";
+"Session Reset" = "Fresh start";
+"Enable notifications" = "Celebrate milestones";
+"Receive alerts when approaching usage limits" = "Get a nudge as you near your daily goal";
+"Enable progress notifications" = "Enable milestone celebrations";
 "Remove %d%%" = "Remove %d%%";
 "Add custom threshold" = "Add custom threshold";
 "Notification sound" = "Notification sound";
@@ -53,9 +53,9 @@
 "Remove custom threshold" = "Remove custom threshold";
 "Remove %d percent threshold" = "Remove %d percent threshold";
 "%@ at %d percent" = "%@ at %d percent";
-"Warning" = "Warning";
-"High Usage" = "High Usage";
-"Critical" = "Critical";
+"Warning" = "Almost there";
+"High Usage" = "So close!";
+"Critical" = "One last push";
 "Milestone" = "Milestone";
 "%@ theme" = "%@ theme";
 "Reset to default" = "Reset to default";
@@ -125,13 +125,13 @@
 "Notifications blocked — check System Settings" = "Notifications blocked — check System Settings";
 "Awaiting permission" = "Awaiting permission";
 "Notifications unavailable" = "Notifications unavailable";
-"Alert Thresholds" = "Alert Thresholds";
-"Custom Thresholds" = "Custom Thresholds";
+"Alert Thresholds" = "Milestone Moments";
+"Custom Thresholds" = "Custom Milestones";
 "e.g. 50" = "e.g. 50";
 "Sound" = "Sound";
 "Tap a value to type directly" = "Tap a value to type directly";
 "Enable tracking to edit" = "Enable tracking to edit";
-"Get notified about usage milestones" = "Get notified about usage milestones";
+"Get notified about usage milestones" = "Cheer you on as you hit your goal";
 "Goal celebration animation" = "Goal celebration animation";
 
 // MARK: - Display page
@@ -169,11 +169,21 @@
 "Weekly progress in the menu bar" = "Weekly progress in the menu bar";
 "Icon Style" = "Icon Style";
 "Display Mode" = "Display Mode";
+"Display style" = "Display style";
+"Add a goal target" = "Add a goal target";
 
 // MARK: - Menu bar enums
 "Icon + value" = "Icon + value";
 "Icon only" = "Icon only";
 "Value only" = "Value only";
+"Icon + primary metric" = "Icon + primary metric";
+"Icon + percentage" = "Icon + percentage";
+"Icon + remaining" = "Icon + remaining";
+"Glyph only, no value" = "Glyph only, no value";
+"Glyph + current value" = "Glyph + current value";
+"Glyph + percent of goal" = "Glyph + percent of goal";
+"Glyph + amount left to goal" = "Glyph + amount left to goal";
+"Value only, no glyph" = "Value only, no glyph";
 "Battery (Classic)" = "Battery (Classic)";
 "Progress Bar" = "Progress Bar";
 "Percentage" = "Percentage";
@@ -294,3 +304,51 @@
 "Off" = "Off";
 "Playback failed: %@" = "Playback failed: %@";
 "Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL";
+
+// MARK: - Exercises
+"Exercises" = "Exercises";
+"Periodic eye rest and standup reminders" = "Periodic eye rest and standup reminders";
+"Eye break" = "Eye break";
+"Enable eye break" = "Enable eye break";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule).";
+"Interval (minutes)" = "Interval (minutes)";
+"How often an eye break is triggered." = "How often an eye break is triggered.";
+"Break duration (seconds)" = "Break duration (seconds)";
+"How long the lock overlay stays on screen." = "How long the lock overlay stays on screen.";
+"On-screen message" = "On-screen message";
+"Custom text shown over the lock overlay." = "Custom text shown over the lock overlay.";
+"External displays only" = "External displays only";
+"Only lock external monitors; keep the main display usable." = "Only lock external monitors; keep the main display usable.";
+"Preview" = "Preview";
+"Preview break now" = "Preview break now";
+"Shows a 5-second break using the current settings." = "Shows a 5-second break using the current settings.";
+"Look 20 feet away for 20 seconds" = "Look 20 feet away for 20 seconds";
+"Skip break (Esc)" = "Skip break (Esc)";
+
+// Standup
+"Standup" = "Standup";
+"Enable standup" = "Enable standup";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS).";
+"Standup interval (minutes)" = "Standup interval (minutes)";
+"How often a standup is triggered." = "How often a standup is triggered.";
+"Standup duration (seconds)" = "Standup duration (seconds)";
+"How long the lock overlay stays on screen so you can move." = "How long the lock overlay stays on screen so you can move.";
+"Standup message" = "Standup message";
+"Only lock external monitors during standup." = "Only lock external monitors during standup.";
+"Preview standup now" = "Preview standup now";
+"Shows a 5-second standup using the current settings." = "Shows a 5-second standup using the current settings.";
+"Stand up, stretch, and move around" = "Stand up, stretch, and move around";
+
+// MARK: - Today's pulse cards
+"Today's pulse" = "Today's pulse";
+"Vs yesterday" = "Vs yesterday";
+"Week so far" = "Week so far";
+"Hours today" = "Hours today";
+"Last activity" = "Last activity";
+"last 7 days" = "last 7 days";
+"no recent work" = "no recent work";
+"Yesterday" = "Yesterday";
+"%@ yest." = "%@ yest.";
+"%@ vs yest." = "%@ vs yest.";
+"%d project" = "%d project";
+"%d projects" = "%d projects";

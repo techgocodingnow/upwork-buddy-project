@@ -23,7 +23,7 @@ struct LoginView: View {
                 .accessibilityAddTraits(.isHeader)
                 Text(loc: "Track your active Upwork projects, hours, and earnings — right from the menu bar.")
                     .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -57,7 +57,7 @@ struct LoginView: View {
             Spacer()
             Text(loc: "A browser window will open for sign-in.")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Theme.textTertiary)
                 .padding(.bottom, 12)
         }
         }

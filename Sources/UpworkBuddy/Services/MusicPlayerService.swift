@@ -187,8 +187,18 @@ final class MusicPlayerService {
         }
         guard let track = currentTrack else { return }
         if case .directURL = track.source {
+            // Lazily attach AVPlayerItem if we restored a selection without loading it.
+            if avPlayer.currentItem == nil {
+                startCurrent()
+                return
+            }
             avPlayer.play()
         } else {
+            // Web engine never auto-loaded restored selection — initialize now.
+            if !webEngine.hasLoadedSource {
+                startCurrent()
+                return
+            }
             webEngine.play()
         }
         isPlaying = true

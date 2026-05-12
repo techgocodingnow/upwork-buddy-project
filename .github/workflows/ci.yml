@@ -42,5 +42,17 @@ jobs:
           swift build --product UpworkBuddy
 
       - name: Run tests
+        run: swift test --enable-code-coverage
+
+      - name: Coverage summary
+        if: always()
         run: |
-          swift test || echo "::warning::no tests or tests failed"
+          PROF=$(find .build -name default.profdata | head -n 1)
+          BIN=$(find .build -path '*UpworkBuddyPackageTests.xctest/Contents/MacOS/UpworkBuddyPackageTests' | head -n 1)
+          if [ -n "$PROF" ] && [ -n "$BIN" ]; then
+            xcrun llvm-cov report "$BIN" \
+              -instr-profile="$PROF" \
+              -ignore-filename-regex='(Tests|\.build|checkouts)' || true
+          else
+            echo "::warning::coverage artifacts not found"
+          fi

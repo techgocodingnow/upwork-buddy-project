@@ -310,7 +310,7 @@ extension ThemePalette {
     // hot-red primary, vivid yellow secondary, soft-violet muted.
 
     static let brutalistLight = ThemePalette(
-        accent:        Color(red: 1.000, green: 0.420, blue: 0.420), // #FF6B6B hot red
+        accent:        Color(red: 0.863, green: 0.149, blue: 0.149), // #DC2626 deepened red — white passes 4.5:1
         accentDeep:    Color(red: 0.000, green: 0.000, blue: 0.000), // black ink
         accentSoft:    Color(red: 1.000, green: 0.851, blue: 0.239), // #FFD93D vivid yellow
         accentMuted:   Color(red: 0.769, green: 0.710, blue: 0.992), // #C4B5FD soft violet
@@ -318,7 +318,7 @@ extension ThemePalette {
         bgBottom:      Color(red: 0.976, green: 0.965, blue: 0.929),
         surface:       Color(red: 1.000, green: 1.000, blue: 1.000), // contrast panel white
         chipBg:        Color(red: 1.000, green: 0.851, blue: 0.239), // yellow chip
-        chipActive:    Color(red: 1.000, green: 0.420, blue: 0.420),
+        chipActive:    Color(red: 0.863, green: 0.149, blue: 0.149),
         trackBg:       Color(red: 0.898, green: 0.890, blue: 0.847),
         divider:       Color(red: 0.000, green: 0.000, blue: 0.000), // hard black
         textPrimary:   Color(red: 0.000, green: 0.000, blue: 0.000),
@@ -348,7 +348,7 @@ extension ThemePalette {
         textSecondary: Color(red: 0.882, green: 0.882, blue: 0.882),
         textTertiary:  Color(red: 0.706, green: 0.706, blue: 0.706),
         cornerRadiusScale: 0.0,
-        onAccent:      Color.white
+        onAccent:      Color.black                                    // black reads on both bright red + white ink
     )
 
     // MARK: sunset — light (warm peach → magenta)
@@ -367,7 +367,8 @@ extension ThemePalette {
         divider:       Color(red: 0.910, green: 0.788, blue: 0.776).opacity(0.7),
         textPrimary:   Color(red: 0.235, green: 0.106, blue: 0.137), // deep wine
         textSecondary: Color(red: 0.420, green: 0.243, blue: 0.275),
-        textTertiary:  Color(red: 0.561, green: 0.388, blue: 0.412)
+        textTertiary:  Color(red: 0.490, green: 0.318, blue: 0.349),  // deepened from 0.561/0.388/0.412 for 4.5:1
+        onAccent:      Color(red: 0.235, green: 0.106, blue: 0.137)   // wine ink on bright accents
     )
 
     // MARK: sunset — dark
@@ -386,7 +387,8 @@ extension ThemePalette {
         divider:       Color(red: 0.349, green: 0.220, blue: 0.255).opacity(0.6),
         textPrimary:   Color(red: 0.992, green: 0.945, blue: 0.945),
         textSecondary: Color(red: 0.831, green: 0.733, blue: 0.749),
-        textTertiary:  Color(red: 0.616, green: 0.510, blue: 0.541)
+        textTertiary:  Color(red: 0.616, green: 0.510, blue: 0.541),
+        onAccent:      Color(red: 0.122, green: 0.063, blue: 0.082)   // deep wine on peach/coral
     )
 
     // MARK: forest — light (deep green + amber)

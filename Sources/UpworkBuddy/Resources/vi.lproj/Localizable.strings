@@ -333,3 +333,17 @@
 "Preview standup now" = "Xem trước đứng dậy ngay";
 "Shows a 5-second standup using the current settings." = "Hiển thị đứng dậy 5 giây với cài đặt hiện tại.";
 "Stand up, stretch, and move around" = "Đứng dậy, giãn cơ và đi lại";
+
+// MARK: - Today's pulse cards
+"Today's pulse" = "Nhịp hôm nay";
+"Vs yesterday" = "So với hôm qua";
+"Week so far" = "Tuần này";
+"Hours today" = "Giờ hôm nay";
+"Last activity" = "Hoạt động gần nhất";
+"last 7 days" = "7 ngày gần đây";
+"no recent work" = "không có hoạt động gần đây";
+"Yesterday" = "Hôm qua";
+"%@ yest." = "%@ hôm qua";
+"%@ vs yest." = "%@ so với hôm qua";
+"%d project" = "%d dự án";
+"%d projects" = "%d dự án";

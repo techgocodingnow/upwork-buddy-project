@@ -21,8 +21,10 @@ final class WebPlaybackEngine: NSObject {
     var onEvent: (@MainActor (Event) -> Void)?
 
     private var webView: WKWebView?
-    private var hostWindow: NSWindow?
-    private var currentSource: TrackSource?
+    private var hostWindow: NSPanel?
+    private(set) var currentSource: TrackSource?
+
+    var hasLoadedSource: Bool { currentSource != nil }
 
     // MARK: - Public surface
 
@@ -33,7 +35,9 @@ final class WebPlaybackEngine: NSObject {
         switch source {
         case .youtube(let id):
             html = Self.youTubeHTML(videoId: id)
-            baseURL = URL(string: "https://www.youtube.com")
+            // Must NOT be youtube.com — IFrame API rejects with error 152
+            // (embedding-disabled) when origin matches youtube.com itself.
+            baseURL = URL(string: "https://upworkbuddy.local")
         case .spotify(let uri):
             html = Self.spotifyHTML(uri: uri)
             baseURL = URL(string: "https://open.spotify.com")
@@ -125,27 +129,28 @@ final class WebPlaybackEngine: NSObject {
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15"
         webView = view
 
-        // Host inside an offscreen NSWindow. macOS gates WKWebView media
-        // playback on the view being attached to a window — a detached
-        // WebProcess often suspends audio playback silently. Off-screen
-        // borderless window keeps it active without showing chrome.
-        let window = NSWindow(
+        // Host inside an offscreen non-activating NSPanel. macOS gates WKWebView
+        // media playback on the view being attached to a window — a detached
+        // WebProcess suspends audio. Non-activating panel ordered front does
+        // not steal key/main status from the app's transient popover, which
+        // would otherwise dismiss it on play-tap.
+        let panel = NSPanel(
             contentRect: NSRect(x: -10000, y: -10000, width: 320, height: 200),
-            styleMask: [.borderless],
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
-        window.isReleasedWhenClosed = false
-        window.level = .floating
-        window.alphaValue = 0
-        window.ignoresMouseEvents = true
-        window.collectionBehavior = [.transient, .ignoresCycle, .stationary]
-        window.contentView = view
-        window.orderOut(nil)
-        // Briefly order in (then off-screen) so the WebProcess attaches.
-        // Without this, some macOS versions never wake the media pipeline.
-        window.orderFront(nil)
-        hostWindow = window
+        panel.isReleasedWhenClosed = false
+        panel.level = .normal
+        panel.alphaValue = 0
+        panel.ignoresMouseEvents = true
+        panel.hidesOnDeactivate = false
+        panel.collectionBehavior = [.transient, .ignoresCycle, .stationary, .canJoinAllSpaces]
+        panel.contentView = view
+        // orderFrontRegardless attaches WebContent without activating the app
+        // or stealing focus from the menu-bar popover.
+        panel.orderFrontRegardless()
+        hostWindow = panel
         return view
     }
 
@@ -179,7 +184,7 @@ final class WebPlaybackEngine: NSObject {
             window.player = new YT.Player('player', {
               height: '180', width: '320',
               videoId: '\(videoId)',
-              playerVars: { autoplay: 1, controls: 0, playsinline: 1, modestbranding: 1, origin: 'https://www.youtube.com' },
+              playerVars: { autoplay: 1, controls: 0, playsinline: 1, modestbranding: 1, origin: window.location.origin },
               events: {
                 onReady: function(e) { post('ready'); e.target.playVideo(); },
                 onStateChange: function(e) {

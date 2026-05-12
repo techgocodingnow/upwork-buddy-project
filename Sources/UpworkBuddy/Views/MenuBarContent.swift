@@ -14,6 +14,7 @@ struct MenuBarContent: View {
             }
             .frame(width: 380, height: 600)
             .task { await store.bootstrap() }
+            .id(store.preferredLanguage)
         }
     }
 }

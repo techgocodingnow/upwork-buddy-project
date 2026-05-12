@@ -110,7 +110,8 @@ struct SparklineView: View {
 
     private func tooltip(for point: DailyPoint, format: CurrencyFormat) -> some View {
         let f = DateFormatter()
-        f.dateFormat = "EEE MMM d"
+        f.locale = L10n.currentLocale
+        f.setLocalizedDateFormatFromTemplate("EEE MMM d")
         let rows = Array(point.breakdown.prefix(5))
         let isPayoutOnly = point.earnings > 0 && point.hours <= 0.01
         return VStack(alignment: .leading, spacing: 4) {

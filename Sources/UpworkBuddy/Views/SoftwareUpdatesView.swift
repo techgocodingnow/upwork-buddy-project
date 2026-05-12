@@ -97,6 +97,7 @@ struct SoftwareUpdatesPage: View {
             ))
             .labelsHidden()
             .toggleStyle(.switch)
+            .tint(Theme.accent)
             .accessibilityLabel(L10n.t("Automatic Updates"))
         }
         .padding(.horizontal, 14)

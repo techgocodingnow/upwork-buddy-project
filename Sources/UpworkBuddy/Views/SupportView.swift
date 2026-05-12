@@ -163,7 +163,7 @@ struct SupportPage: View {
                     Text(loc: "Starring on GitHub")
                         .font(Theme.body(size: 13, weight: .semibold))
                 }
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Theme.onAccent)
                 .padding(.horizontal, 22)
                 .padding(.vertical, 10)
                 .background(

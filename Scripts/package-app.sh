@@ -40,9 +40,16 @@ rm -rf "${DIST_DIR}"
 mkdir -p "${DIST_DIR}"
 
 echo "▸ Building universal binary (arm64 + x86_64)..."
-swift build -c release --arch arm64 --arch x86_64
+# DEBUG=1 keeps `#if DEBUG` sections (debug settings menu, dev tools) in the
+# release-optimized bundle. Off by default for public builds.
+BUILD_FLAGS=(-c release --arch arm64 --arch x86_64)
+if [[ "${DEBUG:-0}" == "1" ]]; then
+  echo "  (DEBUG=1 → adding -DDEBUG compile flag)"
+  BUILD_FLAGS+=(-Xswiftc -DDEBUG)
+fi
+swift build "${BUILD_FLAGS[@]}"
 
-BIN_PATH=$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)
+BIN_PATH=$(swift build "${BUILD_FLAGS[@]}" --show-bin-path)
 BUILT_BINARY="${BIN_PATH}/${EXECUTABLE_NAME}"
 if [[ ! -x "${BUILT_BINARY}" ]]; then
   echo "Binary not found at ${BUILT_BINARY}" >&2
@@ -53,7 +60,20 @@ echo "▸ Assembling ${BUNDLE_NAME}..."
 BUNDLE="${DIST_DIR}/${BUNDLE_NAME}"
 mkdir -p "${BUNDLE}/Contents/MacOS"
 mkdir -p "${BUNDLE}/Contents/Resources"
+mkdir -p "${BUNDLE}/Contents/lib"
 cp "${BUILT_BINARY}" "${BUNDLE}/Contents/MacOS/${EXECUTABLE_NAME}"
+
+# Copy Sparkle.framework (rpath = @executable_path/../lib).
+SPARKLE_SRC="${ROOT}/.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework"
+if [[ ! -d "${SPARKLE_SRC}" ]]; then
+  SPARKLE_SRC="${BIN_PATH}/Sparkle.framework"
+fi
+if [[ -d "${SPARKLE_SRC}" ]]; then
+  cp -R "${SPARKLE_SRC}" "${BUNDLE}/Contents/lib/"
+else
+  echo "ERROR: Sparkle.framework not found" >&2
+  exit 1
+fi
 
 # Copy SwiftPM-generated resource bundle (contains Config.plist) into the app bundle.
 RESOURCE_BUNDLE="${BIN_PATH}/UpworkBuddy_UpworkBuddy.bundle"
@@ -120,12 +140,23 @@ SIGN_IDENTITY="${SIGN_IDENTITY:-Developer ID Application: I Le Duc (L23PD654Q3)}
 
 if security find-identity -v -p codesigning | grep -qF "${SIGN_IDENTITY}"; then
   echo "▸ Signing with: ${SIGN_IDENTITY}"
-  # Sign nested resource bundles first, then the app bundle.
+  # Sign nested resource bundles first, then frameworks, then the app bundle.
   find "${BUNDLE}/Contents/Resources" -name "*.bundle" -type d -print0 2>/dev/null | \
     while IFS= read -r -d '' nested; do
       codesign --force --options runtime --timestamp \
         --sign "${SIGN_IDENTITY}" "${nested}"
     done
+  for fw in "${BUNDLE}/Contents/lib/"*.framework; do
+    [[ -d "${fw}" ]] || continue
+    # Sign nested XPC/helpers inside framework.
+    find "${fw}" \( -name "*.xpc" -o -name "*.app" \) -type d -print0 2>/dev/null | \
+      while IFS= read -r -d '' helper; do
+        codesign --force --options runtime --timestamp \
+          --sign "${SIGN_IDENTITY}" "${helper}"
+      done
+    codesign --force --options runtime --timestamp \
+      --sign "${SIGN_IDENTITY}" "${fw}"
+  done
   codesign --force --options runtime --timestamp \
     --entitlements "${ENTITLEMENTS}" \
     --sign "${SIGN_IDENTITY}" "${BUNDLE}"

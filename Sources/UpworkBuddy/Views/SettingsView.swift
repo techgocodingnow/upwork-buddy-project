@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import UserNotifications
+import UniformTypeIdentifiers
 
 // MARK: - Categories
 
@@ -9,6 +10,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
     case goals
     case display
     case music
+    case exercises
     case language
     case shortcuts
     case account
@@ -22,7 +24,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
     var id: String { rawValue }
 
     /// Categories that appear in the main sidebar list with ⌘1…⌘N shortcuts.
-    static let primaryCases: [SettingsCategory] = [.general, .goals, .display, .music, .language, .shortcuts, .account, .softwareUpdates]
+    static let primaryCases: [SettingsCategory] = [.general, .goals, .display, .music, .exercises, .language, .shortcuts, .account, .softwareUpdates]
 
     #if DEBUG
     /// Developer-only categories surfaced under a separate sidebar group.
@@ -37,6 +39,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .goals:           return L10n.t("Goals")
         case .display:         return L10n.t("Display")
         case .music:           return L10n.t("Music")
+        case .exercises:       return L10n.t("Exercises")
         case .language:        return L10n.t("Language")
         case .shortcuts:       return L10n.t("Shortcuts")
         case .account:         return L10n.t("Account")
@@ -56,6 +59,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .goals:           return L10n.t("Hours and earnings targets, with notifications")
         case .display:         return L10n.t("Theme, menu bar, and dashboard")
         case .music:           return L10n.t("Background music while you work")
+        case .exercises:       return L10n.t("Periodic eye rest and standup reminders")
         case .language:        return L10n.t("Choose your preferred language")
         case .shortcuts:       return L10n.t("Global keyboard shortcuts")
         case .account:         return L10n.t("Connected Upwork session")
@@ -74,6 +78,7 @@ enum SettingsCategory: String, CaseIterable, Identifiable, Hashable {
         case .goals:           return "target"
         case .display:         return "rectangle.on.rectangle"
         case .music:           return "music.note.list"
+        case .exercises:       return "figure.run"
         case .language:        return "globe"
         case .shortcuts:       return "command"
         case .account:         return "person.crop.circle"
@@ -96,6 +101,7 @@ struct SettingsRootView: View {
     var body: some View {
         ThemedRoot(store: store) {
             settingsBody
+                .id(store.preferredLanguage)
         }
     }
 
@@ -277,14 +283,14 @@ private struct SidebarRow: View {
                     .font(Theme.body(size: 13, weight: isSelected ? .semibold : .regular))
                 Spacer()
                 Text(keyHint)
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(isSelected
-                                     ? Color.white.opacity(0.9)
+                                     ? Theme.onAccent.opacity(0.9)
                                      : Theme.textTertiary.opacity(hovering ? 0.95 : 0.55))
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
-            .foregroundStyle(isSelected ? Color.white : Theme.textPrimary)
+            .foregroundStyle(isSelected ? Theme.onAccent : Theme.textPrimary)
             .background(
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(rowFill)
@@ -399,6 +405,7 @@ private struct SettingsContent: View {
                     case .goals:           GoalsPage(store: store)
                     case .display:         DisplayPage(store: store)
                     case .music:           MusicSettingsView()
+                    case .exercises:       ExercisesPage(store: store)
                     case .language:        LanguagePage(store: store)
                     case .shortcuts:       ShortcutsPage()
                     case .account:         AccountPage(store: store)
@@ -580,6 +587,7 @@ private struct GeneralPage: View {
                     Toggle("", isOn: $store.launchAtLogin)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .tint(Theme.accent)
                         .accessibilityLabel(L10n.t("Launch at login"))
                 }
             }
@@ -715,8 +723,78 @@ private struct GoalsPage: View {
                     Toggle("", isOn: $store.goalCelebrationEnabled)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .tint(Theme.accent)
                         .accessibilityLabel(L10n.t("Goal celebration animation"))
                 }
+
+                SettingsCard(
+                    title: "Style",
+                    subtitle: "Pick the visual style of the celebration overlay.",
+                    systemImage: "wand.and.stars"
+                ) {
+                    Picker("", selection: $store.celebrationStyle) {
+                        ForEach(CelebrationStyle.allCases) { style in
+                            Text(L10n.t(style.displayName)).tag(style)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                    .frame(maxWidth: 180)
+                    .disabled(!store.goalCelebrationEnabled)
+                    .accessibilityLabel(L10n.t("Celebration style"))
+                }
+                .opacity(store.goalCelebrationEnabled ? 1 : 0.45)
+
+                SettingsCard(
+                    title: "Sound",
+                    subtitle: "System sound played alongside the animation.",
+                    systemImage: "speaker.wave.2"
+                ) {
+                    HStack(spacing: 8) {
+                        Picker("", selection: $store.celebrationSound) {
+                            ForEach(CelebrationSound.allCases) { snd in
+                                Text(L10n.t(snd.displayName)).tag(snd)
+                            }
+                        }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
+                        .frame(maxWidth: 160)
+                        .disabled(!store.goalCelebrationEnabled)
+                        .accessibilityLabel(L10n.t("Celebration sound"))
+
+                        Button {
+                            CelebrationOverlayController.shared.previewSound(
+                                store.celebrationSound,
+                                customSource: store.celebrationCustomSource
+                            )
+                        } label: {
+                            Image(systemName: "play.circle")
+                        }
+                        .buttonStyle(.borderless)
+                        .disabled(!store.goalCelebrationEnabled || store.celebrationSound == .off)
+                        .accessibilityLabel(L10n.t("Preview sound"))
+                    }
+                }
+                .opacity(store.goalCelebrationEnabled ? 1 : 0.45)
+
+                if store.celebrationSound == .custom {
+                    CustomSoundCard(store: store)
+                        .opacity(store.goalCelebrationEnabled ? 1 : 0.45)
+                }
+
+                SettingsCard(
+                    title: "Preview celebration",
+                    subtitle: "Fires the overlay across every connected display.",
+                    systemImage: "sparkle"
+                ) {
+                    Button {
+                        store.celebrate()
+                    } label: {
+                        Text(L10n.t("Preview"))
+                    }
+                    .disabled(!store.goalCelebrationEnabled)
+                }
+                .opacity(store.goalCelebrationEnabled ? 1 : 0.45)
             }
         }
         .onAppear { animateGrid = true }
@@ -764,6 +842,7 @@ private struct GoalsHeroStrip: View {
             Toggle("", isOn: $store.goalsEnabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(Theme.accent)
                 .controlSize(.large)
                 .accessibilityLabel(L10n.t("Goal tracking"))
         }
@@ -883,7 +962,7 @@ private struct PeriodGoalCard: View {
             Spacer()
             if let chip = progressChipText {
                 Text(chip)
-                    .font(.system(size: 10.5, weight: .medium, design: .monospaced))
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(Theme.textSecondary)
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
@@ -1131,6 +1210,7 @@ private struct NotificationsCard: View {
             Toggle("", isOn: $store.progressNotificationsEnabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(Theme.accent)
                 .accessibilityLabel(L10n.t("Enable progress notifications"))
         }
         .padding(14)
@@ -1222,6 +1302,7 @@ private struct NotificationsCard: View {
             Toggle("", isOn: $store.notificationSoundEnabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(Theme.accent)
                 .accessibilityLabel(L10n.t("Notification sound"))
         }
         .padding(.horizontal, 14)
@@ -1294,6 +1375,7 @@ private struct ThresholdRow: View {
             Toggle("", isOn: $isOn)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(Theme.accent)
                 .controlSize(.mini)
                 .accessibilityLabel(L10n.t("%@ at %d percent", label, percent))
         }
@@ -1352,6 +1434,7 @@ private struct DisplayPage: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
+                    .tint(Theme.accent)
                     .frame(maxWidth: 220)
                 }
 
@@ -1363,6 +1446,7 @@ private struct DisplayPage: View {
                     Toggle("", isOn: $store.hideSensitive)
                         .labelsHidden()
                         .toggleStyle(.switch)
+                        .tint(Theme.accent)
                         .accessibilityLabel(L10n.t("Hide sensitive amounts"))
                 }
             }
@@ -1527,10 +1611,10 @@ private struct MenuBarMetricsSection: View {
                 subtitle: "Daily progress in the menu bar",
                 systemImage: "clock.fill",
                 enabled: $store.todayMetricEnabled,
-                style: $store.todayMetricStyle,
-                displayMode: nil,
-                sampleProgress: todayProgress,
-                sampleLabel: todayLabel(for: store.todayMetricStyle, mode: .percentage)
+                style: $store.todayDisplayStyle,
+                snapshot: store.todaySnapshot,
+                period: .today,
+                store: store
             )
 
             MenuBarMetricCard(
@@ -1538,56 +1622,12 @@ private struct MenuBarMetricsSection: View {
                 subtitle: "Weekly progress in the menu bar",
                 systemImage: "calendar",
                 enabled: $store.weekMetricEnabled,
-                style: $store.weekMetricStyle,
-                displayMode: $store.weekMetricMode,
-                sampleProgress: weekProgress,
-                sampleLabel: weekLabel(for: store.weekMetricStyle, mode: store.weekMetricMode)
+                style: $store.weekDisplayStyle,
+                snapshot: store.weekSnapshot,
+                period: .week,
+                store: store
             )
         }
-        }
-    }
-
-    // MARK: - Sample data
-
-    private var todayProgress: Double {
-        progress(snapshot: store.todaySnapshot, period: .today)
-    }
-
-    private var weekProgress: Double {
-        progress(snapshot: store.weekSnapshot, period: .week)
-    }
-
-    private func progress(snapshot: EarningsSnapshot, period: Period) -> Double {
-        let target = store.goalTarget(for: .hours, period: period)
-        if target > 0 { return snapshot.totalHours / target }
-        let earnTarget = store.goalTarget(for: .earnings, period: period)
-        if earnTarget > 0 { return snapshot.totalEarnings / earnTarget }
-        return 0.6   // sample fill so previews still illustrate the style
-    }
-
-    private func todayLabel(for style: MenuBarMetricStyle, mode: MenuBarDisplayMode) -> String {
-        previewLabel(snapshot: store.todaySnapshot, period: .today, style: style, mode: mode, periodCaption: "Today")
-    }
-
-    private func weekLabel(for style: MenuBarMetricStyle, mode: MenuBarDisplayMode) -> String {
-        previewLabel(snapshot: store.weekSnapshot, period: .week, style: style, mode: mode, periodCaption: "Week")
-    }
-
-    private func previewLabel(snapshot: EarningsSnapshot,
-                              period: Period,
-                              style: MenuBarMetricStyle,
-                              mode: MenuBarDisplayMode,
-                              periodCaption: String) -> String {
-        switch style {
-        case .batteryClassic: return periodCaption
-        case .progressBar, .compact: return ""
-        case .percentage, .iconWithBar:
-            return MenuBarMetricFormatter.label(
-                snapshot: snapshot,
-                period: period,
-                store: store,
-                mode: mode
-            )
         }
     }
 }
@@ -1597,22 +1637,17 @@ private struct MenuBarMetricCard: View {
     let subtitle: String
     let systemImage: String
     @Binding var enabled: Bool
-    @Binding var style: MenuBarMetricStyle
-    let displayMode: Binding<MenuBarDisplayMode>?
-    let sampleProgress: Double
-    let sampleLabel: String
+    @Binding var style: MenuBarTodayDisplay
+    let snapshot: EarningsSnapshot
+    let period: Period
+    let store: AppStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             cardHeader
             if enabled {
                 Divider().background(Theme.divider.opacity(0.4))
-                iconStylePicker
-                if let displayMode {
-                    Divider().background(Theme.divider.opacity(0.4))
-                    DisplayModePicker(selection: displayMode)
-                        .padding(14)
-                }
+                displayStylePicker
             }
         }
         .background(
@@ -1651,38 +1686,111 @@ private struct MenuBarMetricCard: View {
             Toggle("", isOn: $enabled)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .tint(Theme.accent)
         }
         .padding(14)
     }
 
-    private var iconStylePicker: some View {
+    private var displayStylePicker: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(loc: "Icon Style")
+            Text(loc: "Display style")
                 .font(Theme.body(size: 11.5, weight: .medium))
                 .foregroundStyle(Theme.textSecondary)
-            HStack(spacing: 10) {
-                ForEach(MenuBarMetricStyle.allCases) { option in
-                    MenuBarStylePickerTile(
-                        style: option,
-                        isSelected: style == option,
-                        sampleProgress: sampleProgress,
-                        sampleLabel: tileSampleLabel(for: option),
-                        action: { style = option }
-                    )
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(MenuBarTodayDisplay.allCases) { option in
+                        TodayDisplayPickerTile(
+                            option: option,
+                            isSelected: style == option,
+                            disabled: option.requiresGoal && !hasGoal,
+                            sampleValue: sampleValue(for: option),
+                            action: { style = option }
+                        )
+                    }
                 }
             }
         }
         .padding(14)
     }
 
-    private func tileSampleLabel(for option: MenuBarMetricStyle) -> String {
+    private var hasGoal: Bool {
+        store.goalTarget(for: store.menuBarMetric, period: period) > 0
+    }
+
+    private func sampleValue(for option: MenuBarTodayDisplay) -> String {
         switch option {
-        case .batteryClassic:
-            // English "Week"/"Today" still works because `title` is the
-            // English source key passed in by the call site.
-            return title.contains("Week") ? L10n.t("Week") : L10n.t("Today")
-        case .percentage:     return "60%"
-        case .iconWithBar, .compact, .progressBar: return ""
+        case .iconOnly: return ""
+        case .iconAndPrimary, .valueOnly:
+            return MenuBarMetricFormatter.primaryLabel(snapshot: snapshot, store: store)
+        case .iconAndPercentage:
+            return hasGoal
+                ? MenuBarMetricFormatter.percentageLabel(snapshot: snapshot, period: period, store: store)
+                : "60%"   // illustrative sample when no goal is set
+        case .iconAndRemaining:
+            return hasGoal
+                ? MenuBarMetricFormatter.remainingLabel(snapshot: snapshot, period: period, store: store)
+                : (store.menuBarMetric == .hours ? "3h" : "$200")
+        }
+    }
+}
+
+private struct TodayDisplayPickerTile: View {
+    let option: MenuBarTodayDisplay
+    let isSelected: Bool
+    let disabled: Bool
+    let sampleValue: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                preview
+                    .frame(width: 96, height: 28)
+                    .padding(.horizontal, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(Color.black.opacity(0.18))
+                    )
+
+                Text(L10n.t(option.label))
+                    .font(Theme.body(size: 11.5, weight: isSelected ? .semibold : .medium))
+                    .foregroundStyle(Theme.textPrimary)
+                    .lineLimit(1)
+                    .frame(width: 112, alignment: .leading)
+            }
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(isSelected ? Theme.accent.opacity(0.16) : Theme.chipBg.opacity(0.45))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? Theme.accent : Theme.divider,
+                        lineWidth: isSelected ? 1.4 : 0.5
+                    )
+            )
+            .opacity(disabled ? 0.45 : 1)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var preview: some View {
+        HStack(spacing: 4) {
+            if option != .valueOnly {
+                Image(systemName: "briefcase.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+            }
+            if !sampleValue.isEmpty {
+                Text(sampleValue)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Theme.textPrimary)
+                    .lineLimit(1)
+            }
+            Spacer(minLength: 0)
         }
     }
 }
@@ -1859,8 +1967,8 @@ private struct DebugPage: View {
                     systemImage: "sparkles"
                 ) {
                     debugButton(label: "Trigger") {
-                        store.celebrationToken = UUID()
-                        lastAction = "Confetti token fired"
+                        store.celebrate()
+                        lastAction = "Confetti fired (popover + all monitors)"
                     }
                 }
 
@@ -1940,3 +2048,330 @@ private struct DebugPage: View {
     }
 }
 #endif
+
+// MARK: - Exercises
+
+/// Settings page for periodic screen-break exercises. Today: Eye Break + Standup.
+/// Adding a new exercise = new `SettingsSection` card here + new service + new
+/// `ExerciseCoordinator.Kind` case.
+private struct ExercisesPage: View {
+    @Bindable var store: AppStore
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            EyeBreakExerciseSection(store: store)
+            StandupExerciseSection(store: store)
+        }
+    }
+}
+
+private struct EyeBreakExerciseSection: View {
+    @Bindable var store: AppStore
+
+    var body: some View {
+        SettingsSection(title: "Eye break") {
+            SettingsCard(
+                title: "Enable eye break",
+                subtitle: "Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule).",
+                systemImage: "eye"
+            ) {
+                Toggle("", isOn: $store.eyeBreakEnabled)
+                    .labelsHidden()
+                    .toggleStyle(.switch)
+                    .tint(Theme.accent)
+                    .accessibilityLabel(L10n.t("Enable eye break"))
+            }
+
+            SettingsCard(
+                title: "Interval (minutes)",
+                subtitle: "How often an eye break is triggered.",
+                systemImage: "clock",
+                layout: .stacked
+            ) {
+                Stepper(
+                    value: $store.eyeBreakIntervalMinutes,
+                    in: 1...180,
+                    step: 1
+                ) {
+                    Text("\(store.eyeBreakIntervalMinutes) min")
+                        .font(Theme.body(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .monospacedDigit()
+                }
+                .disabled(!store.eyeBreakEnabled)
+            }
+
+            SettingsCard(
+                title: "Break duration (seconds)",
+                subtitle: "How long the lock overlay stays on screen.",
+                systemImage: "hourglass",
+                layout: .stacked
+            ) {
+                Stepper(
+                    value: $store.eyeBreakDurationSeconds,
+                    in: 5...600,
+                    step: 5
+                ) {
+                    Text("\(store.eyeBreakDurationSeconds) s")
+                        .font(Theme.body(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .monospacedDigit()
+                }
+                .disabled(!store.eyeBreakEnabled)
+            }
+
+            SettingsCard(
+                title: "On-screen message",
+                subtitle: "Custom text shown over the lock overlay.",
+                systemImage: "text.bubble",
+                layout: .stacked
+            ) {
+                TextField(
+                    L10n.t("Look 20 feet away for 20 seconds"),
+                    text: $store.eyeBreakCustomText,
+                    axis: .vertical
+                )
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(2...4)
+                .disabled(!store.eyeBreakEnabled)
+            }
+
+            SettingsCard(
+                title: "External displays only",
+                subtitle: "Only lock external monitors; keep the main display usable.",
+                systemImage: "display.2"
+            ) {
+                Toggle("", isOn: $store.eyeBreakExternalDisplaysOnly)
+                    .labelsHidden()
+                    .toggleStyle(.switch)
+                    .tint(Theme.accent)
+                    .disabled(!store.eyeBreakEnabled)
+                    .accessibilityLabel(L10n.t("External displays only"))
+            }
+
+            SettingsCard(
+                title: "Preview break now",
+                subtitle: "Shows a 5-second break using the current settings.",
+                systemImage: "play.circle"
+            ) {
+                Button {
+                    EyeBreakService.shared.triggerBreak(durationOverride: 5)
+                } label: {
+                    Text(loc: "Preview")
+                        .font(Theme.body(size: 13, weight: .semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.accent)
+                .disabled(store.isEyeBreakActive)
+            }
+        }
+    }
+}
+
+private struct StandupExerciseSection: View {
+    @Bindable var store: AppStore
+
+    var body: some View {
+        SettingsSection(title: "Standup") {
+            SettingsCard(
+                title: "Enable standup",
+                subtitle: "Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS).",
+                systemImage: "figure.stand"
+            ) {
+                Toggle("", isOn: $store.standupEnabled)
+                    .labelsHidden()
+                    .toggleStyle(.switch)
+                    .tint(Theme.accent)
+                    .accessibilityLabel(L10n.t("Enable standup"))
+            }
+
+            SettingsCard(
+                title: "Standup interval (minutes)",
+                subtitle: "How often a standup is triggered.",
+                systemImage: "clock",
+                layout: .stacked
+            ) {
+                Stepper(
+                    value: $store.standupIntervalMinutes,
+                    in: 5...180,
+                    step: 5
+                ) {
+                    Text("\(store.standupIntervalMinutes) min")
+                        .font(Theme.body(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .monospacedDigit()
+                }
+                .disabled(!store.standupEnabled)
+            }
+
+            SettingsCard(
+                title: "Standup duration (seconds)",
+                subtitle: "How long the lock overlay stays on screen so you can move.",
+                systemImage: "hourglass",
+                layout: .stacked
+            ) {
+                Stepper(
+                    value: $store.standupDurationSeconds,
+                    in: 30...600,
+                    step: 15
+                ) {
+                    Text("\(store.standupDurationSeconds) s")
+                        .font(Theme.body(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .monospacedDigit()
+                }
+                .disabled(!store.standupEnabled)
+            }
+
+            SettingsCard(
+                title: "Standup message",
+                subtitle: "Custom text shown over the lock overlay.",
+                systemImage: "text.bubble",
+                layout: .stacked
+            ) {
+                TextField(
+                    L10n.t("Stand up, stretch, and move around"),
+                    text: $store.standupCustomText,
+                    axis: .vertical
+                )
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(2...4)
+                .disabled(!store.standupEnabled)
+            }
+
+            SettingsCard(
+                title: "External displays only",
+                subtitle: "Only lock external monitors during standup.",
+                systemImage: "display.2"
+            ) {
+                Toggle("", isOn: $store.standupExternalDisplaysOnly)
+                    .labelsHidden()
+                    .toggleStyle(.switch)
+                    .tint(Theme.accent)
+                    .disabled(!store.standupEnabled)
+                    .accessibilityLabel(L10n.t("External displays only"))
+            }
+
+            SettingsCard(
+                title: "Preview standup now",
+                subtitle: "Shows a 5-second standup using the current settings.",
+                systemImage: "play.circle"
+            ) {
+                Button {
+                    StandupService.shared.triggerBreak(durationOverride: 5)
+                } label: {
+                    Text(loc: "Preview")
+                        .font(Theme.body(size: 13, weight: .semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.accent)
+                .disabled(store.isStandupActive)
+            }
+        }
+    }
+}
+
+/// Inline editor shown when `CelebrationSound == .custom`. Lets the user
+/// either point at a local audio file (via NSOpenPanel) or paste a remote
+/// URL (cached on first play under Application Support).
+private struct CustomSoundCard: View {
+    @Bindable var store: AppStore
+    @State private var urlInput: String = ""
+    @State private var status: String = ""
+
+    var body: some View {
+        SettingsCard(
+            title: "Custom sound",
+            subtitle: "Pick a local file (.mp3 / .m4a / .wav / .aiff) or paste a URL — remote files are cached after first play.",
+            systemImage: "music.note"
+        ) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Button {
+                        chooseFile()
+                    } label: {
+                        Label(L10n.t("Choose file…"), systemImage: "folder")
+                    }
+
+                    if !store.celebrationCustomSource.isEmpty {
+                        Button(role: .destructive) {
+                            store.celebrationCustomSource = ""
+                            urlInput = ""
+                            status = L10n.t("Cleared")
+                        } label: {
+                            Label(L10n.t("Clear"), systemImage: "trash")
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+
+                HStack(spacing: 6) {
+                    TextField(L10n.t("https://… mp3/m4a/wav URL"), text: $urlInput)
+                        .textFieldStyle(.roundedBorder)
+                        .onSubmit { applyURL() }
+                    Button(L10n.t("Apply")) { applyURL() }
+                        .disabled(urlInput.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+
+                if !store.celebrationCustomSource.isEmpty {
+                    Text(L10n.t("Current: %@", displaySource()))
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                        .lineLimit(2)
+                        .truncationMode(.middle)
+                }
+                if !status.isEmpty {
+                    Text(status)
+                        .font(.caption2)
+                        .foregroundStyle(Theme.textSecondary)
+                }
+
+                Text(L10n.t("Free sound libraries: pixabay.com/sound-effects · mixkit.co/free-sound-effects · freesound.org"))
+                    .font(.caption2)
+                    .foregroundStyle(Theme.textSecondary)
+            }
+        }
+        .onAppear {
+            if let url = URL(string: store.celebrationCustomSource),
+               let scheme = url.scheme?.lowercased(),
+               scheme == "http" || scheme == "https" {
+                urlInput = store.celebrationCustomSource
+            }
+        }
+    }
+
+    private func chooseFile() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [.audio, .mp3, .wav, .aiff, .mpeg4Audio]
+        panel.message = L10n.t("Pick an audio file for celebration")
+        if panel.runModal() == .OK, let url = panel.url {
+            store.celebrationCustomSource = url.absoluteString
+            status = L10n.t("File set")
+        }
+    }
+
+    private func applyURL() {
+        let trimmed = urlInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        guard let url = URL(string: trimmed),
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https" else {
+            status = L10n.t("Invalid URL — must start with http:// or https://")
+            return
+        }
+        store.celebrationCustomSource = url.absoluteString
+        status = L10n.t("URL saved (will download on first play)")
+    }
+
+    private func displaySource() -> String {
+        let s = store.celebrationCustomSource
+        if let url = URL(string: s), url.isFileURL {
+            return url.path
+        }
+        return s
+    }
+}
+

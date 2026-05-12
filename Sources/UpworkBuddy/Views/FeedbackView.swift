@@ -85,7 +85,7 @@ struct FeedbackView: View {
                        text: Binding<String>,
                        keyboard: PlatformKeyboard = .default) -> some View {
         TextField("", text: text, prompt: Text(placeholder)
-            .foregroundStyle(Theme.textTertiary)
+            .foregroundStyle(Theme.textSecondary)
         )
             .textFieldStyle(.plain)
             .font(Theme.body(size: 13))
@@ -141,7 +141,7 @@ struct FeedbackView: View {
             if message.isEmpty {
                 Text(loc: "Tell us anything — feedback, ideas, feature requests…")
                     .font(Theme.body(size: 13))
-                    .foregroundStyle(Theme.textTertiary)
+                    .foregroundStyle(Theme.textSecondary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                     .allowsHitTesting(false)
@@ -190,7 +190,7 @@ struct FeedbackView: View {
                     Text(loc: "Submit")
                         .font(Theme.body(size: 13, weight: .semibold))
                 }
-                .foregroundStyle(canSubmit ? Color.white : Color.white.opacity(0.65))
+                .foregroundStyle(canSubmit ? Theme.onAccent : Theme.onAccent.opacity(0.65))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(

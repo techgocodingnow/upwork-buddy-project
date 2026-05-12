@@ -1,9 +1,105 @@
 import Foundation
 import Observation
+import SwiftUI
 
 enum MenuBarMetric: String, CaseIterable, Sendable {
     case hours
     case earnings
+}
+
+/// Visual style for the goal-celebration overlay. Each case renders with a
+/// distinct particle trajectory in `ConfettiView`.
+enum CelebrationStyle: String, CaseIterable, Sendable, Identifiable {
+    // All styles render through Vortex (twostraws/Vortex, MIT). Each maps to
+    // either a built-in preset or a small custom VortexSystem.
+    case fireworks
+    case confettiRain
+    case moneyRain
+    case stars
+    case sideBursts
+    case fire
+    case fireflies
+    case snow
+    case rain
+    case spark
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .fireworks:    return "Fireworks 🎆"
+        case .confettiRain: return "Confetti burst 🎊"
+        case .moneyRain:    return "Money rain 💵"
+        case .stars:        return "Magic stars ✨"
+        case .sideBursts:   return "Side bursts 🎇"
+        case .fire:         return "Fire 🔥"
+        case .fireflies:    return "Fireflies 🪲"
+        case .snow:         return "Snow ❄️"
+        case .rain:         return "Rain 🌧️"
+        case .spark:        return "Sparks ⚡"
+        }
+    }
+}
+
+/// System sound to play alongside the celebration overlay. Backed by the
+/// `/System/Library/Sounds` bundled set so we don't ship audio assets.
+/// Audio cue played alongside the celebration overlay. Procedurally-generated
+/// cases (`applause`, `cheer`, `fanfare`, `magic`, `drumroll`) are synthesized
+/// on the fly by `CelebrationSoundPlayer` — no bundled audio assets. System
+/// cases play `NSSound(named:)` from `/System/Library/Sounds`.
+enum CelebrationSound: String, CaseIterable, Sendable, Identifiable {
+    case off
+    // Fun / encouraging — procedurally synthesized.
+    case applause  = "applause"
+    case cheer     = "cheer"
+    case fanfare   = "fanfare"
+    case magic     = "magic"
+    case drumroll  = "drumroll"
+    // macOS bundled system sounds.
+    case glass     = "Glass"
+    case hero      = "Hero"
+    case submarine = "Submarine"
+    case ping      = "Ping"
+    case funk      = "Funk"
+    case pop       = "Pop"
+    // User-supplied audio (local file path or remote URL persisted in
+    // AppStore.customSoundSource).
+    case custom    = "custom"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .off:       return "Off"
+        case .applause:  return "Applause 👏"
+        case .cheer:     return "Cheer 🎉"
+        case .fanfare:   return "Fanfare 🎺"
+        case .magic:     return "Magic ✨"
+        case .drumroll:  return "Drum roll 🥁"
+        case .glass:     return "Glass"
+        case .hero:      return "Hero"
+        case .submarine: return "Submarine"
+        case .ping:      return "Ping"
+        case .funk:      return "Funk"
+        case .pop:       return "Pop"
+        case .custom:    return "Custom…"
+        }
+    }
+
+    var isProcedural: Bool {
+        switch self {
+        case .applause, .cheer, .fanfare, .magic, .drumroll: return true
+        default: return false
+        }
+    }
+
+    /// NSSound name for system sounds; nil for procedural / off / custom.
+    var systemName: String? {
+        switch self {
+        case .glass, .hero, .submarine, .ping, .funk, .pop: return rawValue
+        default: return nil
+        }
+    }
 }
 
 /// Wrapper that lets us encode an `Optional<Shortcut>` inside a JSON dictionary.
@@ -43,6 +139,44 @@ enum MenuBarMetricStyle: String, CaseIterable, Sendable, Identifiable {
         case .iconWithBar:    return L10n.t("Icon with Bar")
         case .compact:        return L10n.t("Compact")
         }
+    }
+}
+
+/// User-facing content layout for a menu-bar metric slot. Replaces the old
+/// `MenuBarMetricStyle` + `MenuBarDisplayMode` pickers with a single 5-option
+/// content-shape picker (briefcase icon + value variants).
+enum MenuBarTodayDisplay: String, CaseIterable, Sendable, Identifiable {
+    case iconOnly
+    case iconAndPrimary      // default: briefcase + raw primary metric
+    case iconAndPercentage   // briefcase + "60%"
+    case iconAndRemaining    // briefcase + "3h" / "$200"
+    case valueOnly           // raw primary metric, no icon
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .iconOnly:          return L10n.t("Icon only")
+        case .iconAndPrimary:    return L10n.t("Icon + primary metric")
+        case .iconAndPercentage: return L10n.t("Icon + percentage")
+        case .iconAndRemaining:  return L10n.t("Icon + remaining")
+        case .valueOnly:         return L10n.t("Value only")
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .iconOnly:          return L10n.t("Glyph only, no value")
+        case .iconAndPrimary:    return L10n.t("Glyph + current value")
+        case .iconAndPercentage: return L10n.t("Glyph + percent of goal")
+        case .iconAndRemaining:  return L10n.t("Glyph + amount left to goal")
+        case .valueOnly:         return L10n.t("Value only, no glyph")
+        }
+    }
+
+    /// Whether this layout needs a configured goal target to be meaningful.
+    var requiresGoal: Bool {
+        self == .iconAndPercentage || self == .iconAndRemaining
     }
 }
 
@@ -111,12 +245,27 @@ final class AppStore {
     private static let kWeekMetricEnabled  = "UpworkBuddyWeekMetricEnabled"
     private static let kWeekMetricStyle    = "UpworkBuddyWeekMetricStyle"
     private static let kWeekMetricMode     = "UpworkBuddyWeekMetricMode"
+    private static let kTodayDisplayStyle  = "UpworkBuddyTodayDisplayStyle"
+    private static let kWeekDisplayStyle   = "UpworkBuddyWeekDisplayStyle"
     private static let kProgressNotifEnabled = "UpworkBuddyProgressNotifEnabled"
     private static let kEnabledThresholds    = "UpworkBuddyEnabledThresholds"
     private static let kKnownThresholds      = "UpworkBuddyKnownThresholds"
     private static let kNotifySessionReset   = "UpworkBuddyNotifySessionReset"
     private static let kNotifySoundEnabled   = "UpworkBuddyNotifySoundEnabled"
     private static let kGoalCelebrationEnabled = "UpworkBuddyGoalCelebrationEnabled"
+    private static let kCelebrationStyle       = "UpworkBuddyCelebrationStyle"
+    private static let kCelebrationSound       = "UpworkBuddyCelebrationSound"
+    private static let kCelebrationCustomSrc   = "UpworkBuddyCelebrationCustomSource"
+    private static let kEyeBreakEnabled            = "UpworkBuddyEyeBreakEnabled"
+    private static let kEyeBreakIntervalMinutes    = "UpworkBuddyEyeBreakIntervalMinutes"
+    private static let kEyeBreakDurationSeconds    = "UpworkBuddyEyeBreakDurationSeconds"
+    private static let kEyeBreakCustomText         = "UpworkBuddyEyeBreakCustomText"
+    private static let kEyeBreakExternalOnly       = "UpworkBuddyEyeBreakExternalOnly"
+    private static let kStandupEnabled             = "UpworkBuddyStandupEnabled"
+    private static let kStandupIntervalMinutes     = "UpworkBuddyStandupIntervalMinutes"
+    private static let kStandupDurationSeconds     = "UpworkBuddyStandupDurationSeconds"
+    private static let kStandupCustomText          = "UpworkBuddyStandupCustomText"
+    private static let kStandupExternalOnly        = "UpworkBuddyStandupExternalOnly"
     static let kPreferredLanguage = "UpworkBuddyPreferredLanguage"
 
     static let defaultThresholds: [Int] = [75, 90, 95]
@@ -215,6 +364,16 @@ final class AppStore {
         didSet { UserDefaults.standard.set(weekMetricMode.rawValue, forKey: Self.kWeekMetricMode) }
     }
 
+    /// User-chosen content layout for the Today menu-bar slot.
+    var todayDisplayStyle: MenuBarTodayDisplay {
+        didSet { UserDefaults.standard.set(todayDisplayStyle.rawValue, forKey: Self.kTodayDisplayStyle) }
+    }
+
+    /// User-chosen content layout for the Week menu-bar slot.
+    var weekDisplayStyle: MenuBarTodayDisplay {
+        didSet { UserDefaults.standard.set(weekDisplayStyle.rawValue, forKey: Self.kWeekDisplayStyle) }
+    }
+
     // MARK: - Progress notifications
 
     /// Master switch for progress notifications (threshold crossings + session resets).
@@ -247,9 +406,125 @@ final class AppStore {
         didSet { UserDefaults.standard.set(goalCelebrationEnabled, forKey: Self.kGoalCelebrationEnabled) }
     }
 
+    /// Visual style for the celebration overlay.
+    var celebrationStyle: CelebrationStyle {
+        didSet { UserDefaults.standard.set(celebrationStyle.rawValue, forKey: Self.kCelebrationStyle) }
+    }
+
+    /// System sound played alongside the celebration overlay. `.off` mutes it.
+    var celebrationSound: CelebrationSound {
+        didSet { UserDefaults.standard.set(celebrationSound.rawValue, forKey: Self.kCelebrationSound) }
+    }
+
+    /// Persisted source for `CelebrationSound.custom`. Accepts:
+    ///   • a `file://` URL pointing at a user-picked audio file, or
+    ///   • a `http(s)://` URL the player will cache + replay.
+    /// Empty string clears it.
+    var celebrationCustomSource: String {
+        didSet { UserDefaults.standard.set(celebrationCustomSource, forKey: Self.kCelebrationCustomSrc) }
+    }
+
+    // MARK: - Eye break
+
+    /// Master switch for periodic eye-break sessions. When on, the
+    /// `EyeBreakService` schedules a fullscreen break overlay every
+    /// `eyeBreakIntervalMinutes`, pausing the Upwork refresh task for
+    /// `eyeBreakDurationSeconds`.
+    var eyeBreakEnabled: Bool {
+        didSet { UserDefaults.standard.set(eyeBreakEnabled, forKey: Self.kEyeBreakEnabled) }
+    }
+
+    /// Minutes between breaks. Clamped to 1…180 by the settings UI.
+    var eyeBreakIntervalMinutes: Int {
+        didSet { UserDefaults.standard.set(eyeBreakIntervalMinutes, forKey: Self.kEyeBreakIntervalMinutes) }
+    }
+
+    /// Break duration in seconds. Clamped to 5…600 by the settings UI.
+    var eyeBreakDurationSeconds: Int {
+        didSet { UserDefaults.standard.set(eyeBreakDurationSeconds, forKey: Self.kEyeBreakDurationSeconds) }
+    }
+
+    /// User-customizable message shown on the lock overlay during a break.
+    var eyeBreakCustomText: String {
+        didSet { UserDefaults.standard.set(eyeBreakCustomText, forKey: Self.kEyeBreakCustomText) }
+    }
+
+    /// When true, only external (non-main) displays are covered by the
+    /// lock overlay so the user can keep working/reading on the laptop screen.
+    var eyeBreakExternalDisplaysOnly: Bool {
+        didSet { UserDefaults.standard.set(eyeBreakExternalDisplaysOnly, forKey: Self.kEyeBreakExternalOnly) }
+    }
+
+    /// Runtime flag — true while a break overlay is on screen. Not persisted.
+    var isEyeBreakActive: Bool = false
+
+    /// Remaining seconds in the current break. Drives the on-screen countdown.
+    var eyeBreakRemainingSeconds: Int = 0
+
+    // MARK: - Standup
+
+    /// Master switch for periodic standup / movement sessions. When on, the
+    /// `StandupService` schedules a fullscreen break overlay every
+    /// `standupIntervalMinutes`, pausing the Upwork refresh task for
+    /// `standupDurationSeconds`.
+    var standupEnabled: Bool {
+        didSet { UserDefaults.standard.set(standupEnabled, forKey: Self.kStandupEnabled) }
+    }
+
+    /// Minutes between standup prompts. Clamped to 5…180 by the settings UI.
+    var standupIntervalMinutes: Int {
+        didSet { UserDefaults.standard.set(standupIntervalMinutes, forKey: Self.kStandupIntervalMinutes) }
+    }
+
+    /// Standup duration in seconds. Clamped to 30…600 by the settings UI.
+    var standupDurationSeconds: Int {
+        didSet { UserDefaults.standard.set(standupDurationSeconds, forKey: Self.kStandupDurationSeconds) }
+    }
+
+    /// User-customizable message shown on the lock overlay during a standup.
+    var standupCustomText: String {
+        didSet { UserDefaults.standard.set(standupCustomText, forKey: Self.kStandupCustomText) }
+    }
+
+    /// When true, only external (non-main) displays are covered by the
+    /// lock overlay during a standup.
+    var standupExternalDisplaysOnly: Bool {
+        didSet { UserDefaults.standard.set(standupExternalDisplaysOnly, forKey: Self.kStandupExternalOnly) }
+    }
+
+    /// Runtime flag — true while a standup overlay is on screen. Not persisted.
+    var isStandupActive: Bool = false
+
+    /// Remaining seconds in the current standup. Drives the on-screen countdown.
+    var standupRemainingSeconds: Int = 0
+
     /// Set by GoalNotificationService when a goal first crosses 100% in a bucket.
     /// Views observe this to play the confetti animation, then nil it out.
     var celebrationToken: UUID?
+
+    /// Trigger a celebration: spawns the in-popover confetti (via observed
+    /// token) AND a full-display overlay across every connected monitor.
+    /// All entry points (auto goal-hit, manual settings trigger) should call
+    /// this rather than writing `celebrationToken` directly so the overlay
+    /// stays in sync.
+    func celebrate() {
+        let token = UUID()
+        celebrationToken = token
+        CelebrationOverlayController.shared.fire(
+            token: token,
+            style: celebrationStyle,
+            sound: celebrationSound,
+            customSource: celebrationCustomSource,
+            palette: [
+                Theme.accent,
+                Theme.accentDeep,
+                Theme.accentSoft,
+                .yellow,
+                .pink,
+                .mint
+            ]
+        )
+    }
 
     /// Tracks whether the menu bar popover is currently shown on screen.
     /// AppDelegate updates this via NSPopoverDelegate. Views gate visible-only
@@ -284,6 +559,7 @@ final class AppStore {
         didSet {
             UserDefaults.standard.set(preferredLanguage.code, forKey: Self.kPreferredLanguage)
             UserDefaults.standard.set([preferredLanguage.code], forKey: "AppleLanguages")
+            L10n.setLanguage(preferredLanguage.code)
         }
     }
 
@@ -349,6 +625,21 @@ final class AppStore {
             .flatMap(MenuBarDisplayMode.init(rawValue:))
         self.weekMetricMode = storedWeekMode ?? .percentage
 
+        // Today/Week display style — migrate from legacy MenuBarMetricStyle when
+        // user has no explicit value yet. `.percentage` → `.iconAndPercentage`,
+        // all other legacy visualizations → `.iconAndPrimary`.
+        let migratedToday: MenuBarTodayDisplay = (storedTodayStyle == .percentage)
+            ? .iconAndPercentage : .iconAndPrimary
+        let storedTodayDisplay = defaults.string(forKey: Self.kTodayDisplayStyle)
+            .flatMap(MenuBarTodayDisplay.init(rawValue:))
+        self.todayDisplayStyle = storedTodayDisplay ?? migratedToday
+
+        let migratedWeek: MenuBarTodayDisplay = (storedWeekStyle == .percentage || storedWeekMode == .percentage)
+            ? .iconAndPercentage : .iconAndPrimary
+        let storedWeekDisplay = defaults.string(forKey: Self.kWeekDisplayStyle)
+            .flatMap(MenuBarTodayDisplay.init(rawValue:))
+        self.weekDisplayStyle = storedWeekDisplay ?? migratedWeek
+
         // Progress notifications. Default on, with [75,90,95] enabled, no reset alert, sound on, celebration on.
         if defaults.object(forKey: Self.kProgressNotifEnabled) == nil {
             self.progressNotificationsEnabled = true
@@ -373,6 +664,33 @@ final class AppStore {
         } else {
             self.goalCelebrationEnabled = defaults.bool(forKey: Self.kGoalCelebrationEnabled)
         }
+        let storedStyle = defaults.string(forKey: Self.kCelebrationStyle).flatMap(CelebrationStyle.init(rawValue:))
+        self.celebrationStyle = storedStyle ?? .fireworks
+        let storedSound = defaults.string(forKey: Self.kCelebrationSound).flatMap(CelebrationSound.init(rawValue:))
+        self.celebrationSound = storedSound ?? .hero
+        self.celebrationCustomSource = defaults.string(forKey: Self.kCelebrationCustomSrc) ?? ""
+
+        // Eye break — default off, 20-20-20 rule values.
+        self.eyeBreakEnabled = defaults.bool(forKey: Self.kEyeBreakEnabled)
+        let storedInterval = defaults.integer(forKey: Self.kEyeBreakIntervalMinutes)
+        self.eyeBreakIntervalMinutes = storedInterval > 0 ? storedInterval : 20
+        let storedDuration = defaults.integer(forKey: Self.kEyeBreakDurationSeconds)
+        self.eyeBreakDurationSeconds = storedDuration > 0 ? storedDuration : 20
+        self.eyeBreakCustomText = defaults.string(forKey: Self.kEyeBreakCustomText)
+            ?? L10n.t("Look 20 feet away for 20 seconds")
+        self.eyeBreakExternalDisplaysOnly = defaults.bool(forKey: Self.kEyeBreakExternalOnly)
+
+        // Standup — default off. 30 min interval / 120 sec duration follow
+        // common ergonomic guidance (Stanford EHS microbreaks; active-microbreak
+        // studies suggest 2–3 min of light movement every 30 min).
+        self.standupEnabled = defaults.bool(forKey: Self.kStandupEnabled)
+        let storedStandupInterval = defaults.integer(forKey: Self.kStandupIntervalMinutes)
+        self.standupIntervalMinutes = storedStandupInterval > 0 ? storedStandupInterval : 30
+        let storedStandupDuration = defaults.integer(forKey: Self.kStandupDurationSeconds)
+        self.standupDurationSeconds = storedStandupDuration > 0 ? storedStandupDuration : 120
+        self.standupCustomText = defaults.string(forKey: Self.kStandupCustomText)
+            ?? L10n.t("Stand up, stretch, and move around")
+        self.standupExternalDisplaysOnly = defaults.bool(forKey: Self.kStandupExternalOnly)
 
         let storedTheme = defaults.string(forKey: Self.kAppTheme).flatMap(AppTheme.init(rawValue:))
         self.appTheme = storedTheme ?? .codeBurn
@@ -381,7 +699,9 @@ final class AppStore {
         self.appAppearance = storedAppearance ?? .system
 
         let storedLang = defaults.string(forKey: Self.kPreferredLanguage)
-        self.preferredLanguage = AppLanguage.resolve(from: storedLang)
+        let resolvedLang = AppLanguage.resolve(from: storedLang)
+        self.preferredLanguage = resolvedLang
+        L10n.setLanguage(resolvedLang.code)
 
         // Shortcuts: load JSON, fall back to per-action defaults.
         var loaded: [ShortcutAction: Shortcut?] = [:]

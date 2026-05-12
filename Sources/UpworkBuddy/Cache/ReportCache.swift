@@ -19,17 +19,22 @@ actor ReportCache {
 
     private var entries: [Key: Entry] = [:]
     private var ttl: TimeInterval = 300 // 5 minutes
+    private let clock: DateProvider
+
+    init(clock: DateProvider = SystemDateProvider()) {
+        self.clock = clock
+    }
 
     func setTTL(_ seconds: TimeInterval) { ttl = seconds }
 
     func get(_ key: Key, force: Bool = false) -> Entry? {
         guard let entry = entries[key], !force else { return nil }
-        guard Date().timeIntervalSince(entry.storedAt) < ttl else { return nil }
+        guard clock.now().timeIntervalSince(entry.storedAt) < ttl else { return nil }
         return entry
     }
 
     func set(_ key: Key, snapshot: EarningsSnapshot, daily: [DailyPoint]) {
-        entries[key] = Entry(snapshot: snapshot, daily: daily, storedAt: Date())
+        entries[key] = Entry(snapshot: snapshot, daily: daily, storedAt: clock.now())
     }
 
     func clear() { entries.removeAll() }

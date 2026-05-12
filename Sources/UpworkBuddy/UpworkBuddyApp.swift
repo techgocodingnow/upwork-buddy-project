@@ -20,6 +20,7 @@ struct UpworkBuddyApp: App {
         if let stored = UserDefaults.standard.string(forKey: AppStore.kPreferredLanguage),
            !stored.isEmpty {
             UserDefaults.standard.set([stored], forKey: "AppleLanguages")
+            L10n.setLanguage(stored)
         }
     }
 
@@ -70,6 +71,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
         startRefreshLoop()
         observeStore()
         registerGlobalHotkey()
+        registerExerciseBridge()
+        EyeBreakService.shared.start(store: store)
+        StandupService.shared.start(store: store)
 
         Task { await store.bootstrap() }
         Task { await GoalNotificationService.shared.requestAuthorizationIfNeeded() }
@@ -178,6 +182,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
         }
     }
 
+    private func pauseRefreshLoop() {
+        refreshTask?.cancel()
+        refreshTask = nil
+    }
+
+    private func registerExerciseBridge() {
+        NotificationCenter.default.addObserver(
+            forName: .exerciseBegan, object: nil, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.pauseRefreshLoop() }
+        }
+        NotificationCenter.default.addObserver(
+            forName: .exerciseEnded, object: nil, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.startRefreshLoop() }
+        }
+    }
+
     private func observeStore() {
         withObservationTracking {
             _ = store.todaySnapshot
@@ -252,32 +274,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
         var appended = 0
 
         if store.todayMetricEnabled {
-            if let attr = makeMetricAttachment(
+            let attr = makeDisplayAttachment(
                 snapshot: store.todaySnapshot,
                 period: .today,
-                style: store.todayMetricStyle,
-                mode: .percentage,                 // today has no display-mode toggle
-                periodCaption: "Today"
-            ) {
-                composed.append(attr)
-                appended += 1
-            }
+                style: store.todayDisplayStyle
+            )
+            composed.append(attr)
+            appended += 1
         }
 
         if store.weekMetricEnabled {
             if appended > 0 {
                 composed.append(NSAttributedString(string: "  "))
             }
-            if let attr = makeMetricAttachment(
+            let attr = makeDisplayAttachment(
                 snapshot: store.weekSnapshot,
                 period: .week,
-                style: store.weekMetricStyle,
-                mode: store.weekMetricMode,
-                periodCaption: "Week"
-            ) {
-                composed.append(attr)
-                appended += 1
-            }
+                style: store.weekDisplayStyle
+            )
+            composed.append(attr)
+            appended += 1
         }
 
         // Nothing enabled — fall back to the brand glyph so the menu item is
@@ -292,6 +308,49 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
         }
 
         button.attributedTitle = composed
+    }
+
+    /// Composes a status-item attachment for the chosen content layout. Falls
+    /// back to `.iconAndPrimary` when the user picked a goal-dependent layout
+    /// (`.iconAndPercentage` / `.iconAndRemaining`) but no goal is configured —
+    /// so the menu bar never shows a meaningless "—" placeholder.
+    private func makeDisplayAttachment(snapshot: EarningsSnapshot,
+                                       period: Period,
+                                       style: MenuBarTodayDisplay) -> NSAttributedString {
+        let goal = store.goalTarget(for: store.menuBarMetric, period: period)
+        let effective: MenuBarTodayDisplay = (style.requiresGoal && goal <= 0) ? .iconAndPrimary : style
+
+        let value: String? = {
+            switch effective {
+            case .iconOnly:          return nil
+            case .iconAndPrimary,
+                 .valueOnly:         return MenuBarMetricFormatter.primaryLabel(snapshot: snapshot, store: store)
+            case .iconAndPercentage: return MenuBarMetricFormatter.percentageLabel(snapshot: snapshot, period: period, store: store)
+            case .iconAndRemaining:  return MenuBarMetricFormatter.remainingLabel(snapshot: snapshot, period: period, store: store)
+            }
+        }()
+
+        let composed = NSMutableAttributedString()
+
+        if effective != .valueOnly, let icon = makeMenuBarIcon() {
+            let attachment = NSTextAttachment()
+            attachment.image = icon
+            attachment.bounds = CGRect(x: 0, y: -3, width: icon.size.width, height: icon.size.height)
+            composed.append(NSAttributedString(attachment: attachment))
+        }
+
+        if let value, !value.isEmpty {
+            if composed.length > 0 {
+                composed.append(NSAttributedString(string: " "))
+            }
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.menuBarFont(ofSize: menubarTitleFontSize),
+                .foregroundColor: NSColor.labelColor
+            ]
+            composed.append(NSAttributedString(string: value, attributes: attrs))
+        }
+
+        return composed
     }
 
     /// Renders one metric (style + label) into an NSAttributedString attachment

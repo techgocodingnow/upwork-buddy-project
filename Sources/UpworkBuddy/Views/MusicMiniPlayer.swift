@@ -122,9 +122,9 @@ struct MusicMiniPlayer: View {
     private func iconButton(_ system: String, help: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: system)
-                .font(Theme.body(size: 11, weight: .semibold))
+                .font(Theme.body(size: 12, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
-                .frame(width: 22, height: 22)
+                .frame(width: 26, height: 26)
                 .background(
                     RoundedRectangle(cornerRadius: 5)
                         .fill(Theme.chipBg.opacity(0.55))
@@ -144,7 +144,7 @@ private struct SleepChip: View {
             Image(systemName: "moon.zzz.fill")
                 .font(.caption2)
             Text(label)
-                .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                .font(.system(size: 11, weight: .semibold, design: .monospaced))
         }
         .foregroundStyle(Theme.accentDeep)
         .padding(.horizontal, 5)
