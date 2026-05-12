@@ -17,6 +17,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
     case traditionalChinese = "zh-Hant"
     case ukrainian = "uk"
     case turkish   = "tr"
+    case vietnamese = "vi"
 
     var id: String { rawValue }
 
@@ -39,6 +40,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         case .traditionalChinese:   return "繁體中文"
         case .ukrainian:            return "Українська"
         case .turkish:              return "Türkçe"
+        case .vietnamese:           return "Tiếng Việt"
         }
     }
 
@@ -58,6 +60,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         case .traditionalChinese:   return "Traditional Chinese"
         case .ukrainian:            return "Ukrainian"
         case .turkish:              return "Turkish"
+        case .vietnamese:           return "Vietnamese"
         }
     }
 
@@ -77,6 +80,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         case .traditionalChinese:   return "🇹🇼"
         case .ukrainian:            return "🇺🇦"
         case .turkish:              return "🇹🇷"
+        case .vietnamese:           return "🇻🇳"
         }
     }
 
@@ -90,6 +94,7 @@ enum AppLanguage: String, CaseIterable, Identifiable, Sendable {
         if lower.hasPrefix("zh-hant") || lower.hasPrefix("zh-tw") || lower.hasPrefix("zh-hk") { return .traditionalChinese }
         if lower.hasPrefix("pt-br") { return .brazilianPortuguese }
         if lower.hasPrefix("pt") { return .portuguese }
+        if lower.hasPrefix("vi") { return .vietnamese }
         let prefix = String(lower.prefix(2))
         return AppLanguage.allCases.first { $0.code.lowercased().hasPrefix(prefix) } ?? .english
     }
