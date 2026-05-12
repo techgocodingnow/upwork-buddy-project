@@ -1,0 +1,334 @@
+/* Localizable.strings — Simplified Chinese (zh-Hans)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "取消";
+"Reset" = "重置";
+"Add" = "添加";
+"Submit" = "提交";
+"Connected" = "已连接";
+"Disconnected" = "已断开";
+"Never" = "从不";
+"Coming soon" = "即将推出";
+"Quit" = "退出";
+"Quit UpworkBuddy" = "退出 UpworkBuddy";
+"Settings" = "设置";
+
+// MARK: - Period
+"Today" = "今天";
+"Week" = "本周";
+"Month" = "本月";
+"Year" = "本年";
+
+// MARK: - Metrics
+"Hours" = "小时";
+"Earnings" = "收入";
+"target" = "目标";
+"Session Reset" = "全新开始";
+"Enable notifications" = "庆祝里程碑";
+"Receive alerts when approaching usage limits" = "当接近每日目标时获得提醒";
+"Enable progress notifications" = "启用里程碑庆祝通知";
+"Remove %d%%" = "移除 %d%%";
+"Add custom threshold" = "添加自定义阈值";
+"Notification sound" = "通知音效";
+"Light" = "浅色";
+"Dark" = "深色";
+"Auto" = "自动";
+"App appearance" = "应用外观";
+"Earnings target" = "收入目标";
+"Hours target" = "小时目标";
+"Custom threshold percent" = "自定义阈值百分比";
+"Remove custom threshold" = "移除自定义阈值";
+"Remove %d percent threshold" = "移除 %d%% 阈值";
+"%@ at %d percent" = "%@ 已达 %d%%";
+"Warning" = "快到了";
+"High Usage" = "非常接近！";
+"Critical" = "最后一把劲";
+"Milestone" = "里程碑";
+"%@ theme" = "%@ 主题";
+"Reset to default" = "恢复默认";
+"Code Burn" = "代码燃烧";
+"Emerald" = "翠绿";
+"Error: %@" = "错误：%@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "加载中";
+"Updated %@" = "已更新 %@";
+"Last updated %@" = "最后更新于 %@";
+"Name" = "姓名";
+"Email" = "邮箱";
+"%@: %@" = "%1$@：%2$@";
+"Opens donation page in browser" = "在浏览器中打开捐赠页面";
+"Star on GitHub" = "在 GitHub 上加星";
+"Opens GitHub repo" = "打开 GitHub 仓库";
+"Last %d days" = "最近 %d 天";
+"Trend chart, last %d days, total %@" = "趋势图，最近 %1$d 天，合计 %2$@";
+"Goal progress %d percent" = "目标进度 %d%%";
+"Clear shortcut" = "清除快捷键";
+"Time period" = "时间段";
+
+// MARK: - Settings categories
+"General" = "通用";
+"Goals" = "目标";
+"Display" = "显示";
+"Language" = "语言";
+"Shortcuts" = "快捷键";
+"Account" = "账户";
+"Software Updates" = "软件更新";
+"Support" = "支持";
+"About" = "关于";
+"About UpworkBuddy" = "关于 UpworkBuddy";
+
+"Refresh cadence and login behavior" = "刷新频率与登录行为";
+"Hours and earnings targets, with notifications" = "小时与收入目标及通知";
+"Theme, menu bar, and dashboard" = "主题、菜单栏与仪表板";
+"Choose your preferred language" = "选择您偏好的语言";
+"Global keyboard shortcuts" = "全局键盘快捷键";
+"Connected Upwork session" = "已连接的 Upwork 会话";
+"Keep your app up to date" = "保持应用更新";
+"Support the project" = "支持本项目";
+
+// MARK: - General page
+"Sync" = "同步";
+"Startup" = "启动";
+"Launch at login" = "登录时启动";
+"Open UpworkBuddy automatically when you sign in." = "登录时自动打开 UpworkBuddy。";
+"Refresh Interval" = "刷新间隔";
+"How often UpworkBuddy polls for new earnings" = "UpworkBuddy 轮询新收入的频率";
+"Refresh interval" = "刷新间隔";
+"1 min" = "1 分钟";
+"30 min" = "30 分钟";
+"1 minute" = "1 分钟";
+"%d minutes" = "%d 分钟";
+
+// MARK: - Goals page
+"Targets" = "目标值";
+"Notifications" = "通知";
+"Celebration" = "庆祝";
+"Confetti when a goal is hit" = "达成目标时撒彩纸";
+"Plays a quick burst when any target reaches 100%." = "当任何目标达到 100% 时播放庆祝动画。";
+"Goal tracking" = "目标追踪";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "按日、周、月、年保持节奏，超过目标时显示横幅。";
+"Tracking off" = "追踪已关闭";
+"Notifications on" = "通知已开启";
+"Notifications blocked — check System Settings" = "通知已被屏蔽——请检查系统设置";
+"Awaiting permission" = "等待授权";
+"Notifications unavailable" = "通知不可用";
+"Alert Thresholds" = "里程碑时刻";
+"Custom Thresholds" = "自定义里程碑";
+"e.g. 50" = "例如 50";
+"Sound" = "声音";
+"Tap a value to type directly" = "点击数值直接输入";
+"Enable tracking to edit" = "启用追踪后方可编辑";
+"Get notified about usage milestones" = "为您的目标加油打气";
+"Goal celebration animation" = "目标庆祝动画";
+
+// MARK: - Display page
+"Theme" = "主题";
+"Used across dashboard, menu bar, and settings" = "应用于仪表板、菜单栏和设置";
+"Dashboard" = "仪表板";
+"Primary metric" = "主要指标";
+"Renders large in the popover header." = "在弹出窗口标题中以大字显示。";
+"Hide sensitive amounts" = "隐藏敏感金额";
+"Masks earnings, rates, and totals across the app." = "在应用中遮罩收入、费率和合计。";
+"Currency" = "货币";
+"Display currency" = "显示货币";
+"FX support coming in v2." = "汇率支持将在 v2 中推出。";
+
+// MARK: - Shortcuts page
+"Bindings" = "绑定";
+"Esc cancels recording" = "按 Esc 取消录制";
+"Global shortcuts" = "全局快捷键";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "快捷键在任何应用中均可使用。每个快捷键至少需包含一个修饰键（⌘、⌥、⌃ 或 ⇧）。";
+
+// MARK: - Account page
+"Connection" = "连接";
+"Signed in via OAuth." = "已通过 OAuth 登录。";
+"Not connected." = "未连接。";
+"Danger zone" = "危险操作";
+"Disconnect" = "断开连接";
+"Sign out and clear cached earnings on this Mac." = "退出登录并清除此 Mac 上缓存的收入数据。";
+
+// MARK: - Menu bar
+"Menu bar" = "菜单栏";
+"Choose which targets surface in the status bar" = "选择在状态栏中显示的目标";
+"Today target" = "今日目标";
+"Daily progress in the menu bar" = "菜单栏中的每日进度";
+"Weekly target" = "每周目标";
+"Weekly progress in the menu bar" = "菜单栏中的每周进度";
+"Icon Style" = "图标样式";
+"Display Mode" = "显示模式";
+"Display style" = "显示样式";
+"Add a goal target" = "添加目标值";
+
+// MARK: - Menu bar enums
+"Icon + value" = "图标 + 数值";
+"Icon only" = "仅图标";
+"Value only" = "仅数值";
+"Icon + primary metric" = "图标 + 主要指标";
+"Icon + percentage" = "图标 + 百分比";
+"Icon + remaining" = "图标 + 剩余";
+"Glyph only, no value" = "仅字形，无数值";
+"Glyph + current value" = "字形 + 当前值";
+"Glyph + percent of goal" = "字形 + 目标百分比";
+"Glyph + amount left to goal" = "字形 + 距目标剩余";
+"Value only, no glyph" = "仅数值，无字形";
+"Battery (Classic)" = "电池（经典）";
+"Progress Bar" = "进度条";
+"Percentage" = "百分比";
+"Icon with Bar" = "图标加进度条";
+"Compact" = "紧凑";
+"Count vs goal" = "数量 vs 目标";
+"Show as percentage (e.g., 60%)" = "以百分比显示（如 60%）";
+"Show count vs goal (e.g., 5h/8h)" = "以数量 vs 目标显示（如 5h/8h）";
+
+// MARK: - Language page
+"Select Language" = "选择语言";
+"Language changes will take effect after restarting the app" = "语言更改将在重启应用后生效";
+
+// MARK: - About page
+"Reset App Data?" = "重置应用数据？";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "退出登录、清除缓存收入并重置此 Mac 上的所有偏好设置。此操作无法撤销。";
+"Version %@" = "版本 %@";
+"Check for Updates" = "检查更新";
+"Created By" = "作者";
+"Links" = "链接";
+"Send Feedback" = "发送反馈";
+"Reset App Data" = "重置应用数据";
+"MIT License • Open Source" = "MIT License • 开源";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "直接从菜单栏追踪您的 Upwork 项目、工时和收入。";
+"Connect Upwork" = "连接 Upwork";
+"A browser window will open for sign-in." = "将打开浏览器窗口进行登录。";
+
+// MARK: - Dashboard
+"Show amounts" = "显示金额";
+"Hide amounts" = "隐藏金额";
+"Refresh now" = "立即刷新";
+
+// MARK: - Feedback
+"Help Us Improve" = "帮助我们改进";
+"Your feedback shapes the future of this app" = "您的反馈决定这款应用的未来";
+"Role" = "角色";
+"Tell us anything — feedback, ideas, feature requests…" = "告诉我们任何内容——反馈、想法、功能请求……";
+"Remind Me Later" = "稍后提醒";
+"Don't Ask Again" = "不再询问";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy 反馈 — %@";
+"Developer" = "开发者";
+"Designer" = "设计师";
+"Manager" = "管理者";
+"Student" = "学生";
+"Researcher" = "研究员";
+"Other" = "其他";
+
+// MARK: - Projects list
+"Activity" = "活动";
+"No tracked work in this period." = "此期间没有追踪到工作记录。";
+
+// MARK: - Software updates
+"Version Information" = "版本信息";
+"Current Version" = "当前版本";
+"Last Checked" = "最后检查时间";
+"Update Preferences" = "更新偏好设置";
+"Automatic Updates" = "自动更新";
+"Automatically check for and download updates daily" = "每天自动检查并下载更新";
+"Checking…" = "检查中……";
+"Secure Updates" = "安全更新";
+"All updates are cryptographically signed and verified before installation" = "所有更新在安装前均经过密码学签名验证";
+
+// MARK: - Support page
+"Support the Project" = "支持本项目";
+"UpworkBuddy is free and open source" = "UpworkBuddy 是免费开源的";
+"All Features Are Free" = "所有功能均免费";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "此应用中的所有功能均可免费使用。没有高级版、没有付费墙、没有订阅。";
+"Open Source" = "开源";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "源代码已在 GitHub 上公开。您可以查看、修改并为项目做出贡献。";
+"No Tracking" = "无追踪";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "您的隐私至关重要。无分析、无遥测、无数据收集。一切数据留在您的 Mac 上。";
+"If you find this app useful, consider supporting its development" = "如果您觉得此应用有用，请考虑支持其开发";
+"Buy Me a Coffee" = "请我喝杯咖啡";
+"Your support helps keep this project alive and growing" = "您的支持帮助这个项目持续成长";
+"You can also support by" = "您还可以通过以下方式支持";
+"Starring on GitHub" = "在 GitHub 上加星";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "切换弹出窗口";
+"Refresh Now" = "立即刷新";
+"Open Settings" = "打开设置";
+"Show or hide the UpworkBuddy popover" = "显示或隐藏 UpworkBuddy 弹出窗口";
+"Fetch the latest earnings data" = "获取最新收入数据";
+"Open the settings window" = "打开设置窗口";
+
+// MARK: - Music
+"Music" = "音乐";
+"Background music while you work" = "工作时的背景音乐";
+"Add track" = "添加曲目";
+"Track URL" = "曲目 URL";
+"Paste YouTube, Spotify or audio URL" = "粘贴 YouTube、Spotify 或音频 URL";
+"Unsupported URL" = "不支持的 URL";
+"Playlist" = "播放列表";
+"Your playlist is empty. Paste a URL above to get started." = "您的播放列表为空。请在上方粘贴 URL 开始使用。";
+"Playback" = "播放";
+"Loop" = "循环";
+"Shuffle" = "随机";
+"One" = "单曲";
+"All" = "全部";
+"Sleep timer" = "睡眠定时器";
+"Stop playback after a delay" = "延迟后停止播放";
+"Stops in %@" = "%@ 后停止";
+"Sleep timer %@" = "睡眠定时器 %@";
+"15 minutes" = "15 分钟";
+"30 minutes" = "30 分钟";
+"1 hour" = "1 小时";
+"2 hours" = "2 小时";
+"Volume" = "音量";
+"Now playing" = "正在播放";
+"Play" = "播放";
+"Pause" = "暂停";
+"Next" = "下一首";
+"Previous" = "上一首";
+"Stop" = "停止";
+"Remove" = "移除";
+"Off" = "关闭";
+"Playback failed: %@" = "播放失败：%@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "粘贴 YouTube、Spotify、SoundCloud、Vimeo、Mixcloud 或音频 URL";
+
+// MARK: - Exercises
+"Exercises" = "运动提醒";
+"Periodic eye rest and standup reminders" = "定期护眼和起立提醒";
+"Eye break" = "护眼休息";
+"Enable eye break" = "启用护眼休息";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "定期暂停 Upwork 计时器并锁定屏幕以休息眼睛（20-20-20 原则）。";
+"Interval (minutes)" = "间隔（分钟）";
+"How often an eye break is triggered." = "护眼休息触发的频率。";
+"Break duration (seconds)" = "休息时长（秒）";
+"How long the lock overlay stays on screen." = "锁定遮罩在屏幕上显示的时长。";
+"On-screen message" = "屏幕上的消息";
+"Custom text shown over the lock overlay." = "锁定遮罩上显示的自定义文字。";
+"External displays only" = "仅外接显示器";
+"Only lock external monitors; keep the main display usable." = "仅锁定外接显示器，保持主显示器可用。";
+"Preview" = "预览";
+"Preview break now" = "立即预览休息";
+"Shows a 5-second break using the current settings." = "使用当前设置显示 5 秒钟的休息预览。";
+"Look 20 feet away for 20 seconds" = "注视 20 英尺外 20 秒";
+"Skip break (Esc)" = "跳过休息（Esc）";
+
+// Standup
+"Standup" = "起立活动";
+"Enable standup" = "启用起立活动";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "定期锁定屏幕，让您起立、伸展和活动（每 30 分钟约 2 分钟——斯坦福 EHS）。";
+"Standup interval (minutes)" = "起立间隔（分钟）";
+"How often a standup is triggered." = "起立活动触发的频率。";
+"Standup duration (seconds)" = "起立时长（秒）";
+"How long the lock overlay stays on screen so you can move." = "锁定遮罩在屏幕上显示的时长，让您有时间活动。";
+"Standup message" = "起立消息";
+"Only lock external monitors during standup." = "起立活动时仅锁定外接显示器。";
+"Preview standup now" = "立即预览起立活动";
+"Shows a 5-second standup using the current settings." = "使用当前设置显示 5 秒钟的起立活动预览。";
+"Stand up, stretch, and move around" = "起立、伸展、四处走动";
