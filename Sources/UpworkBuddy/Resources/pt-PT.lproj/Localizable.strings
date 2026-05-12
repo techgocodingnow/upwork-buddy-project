@@ -1,0 +1,334 @@
+/* Localizable.strings — Portuguese Portugal (pt-PT)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "Cancelar";
+"Reset" = "Repor";
+"Add" = "Adicionar";
+"Submit" = "Submeter";
+"Connected" = "Ligado";
+"Disconnected" = "Desligado";
+"Never" = "Nunca";
+"Coming soon" = "Em breve";
+"Quit" = "Sair";
+"Quit UpworkBuddy" = "Sair do UpworkBuddy";
+"Settings" = "Definições";
+
+// MARK: - Period
+"Today" = "Hoje";
+"Week" = "Semana";
+"Month" = "Mês";
+"Year" = "Ano";
+
+// MARK: - Metrics
+"Hours" = "Horas";
+"Earnings" = "Ganhos";
+"target" = "objetivo";
+"Session Reset" = "Novo começo";
+"Enable notifications" = "Celebrar marcos";
+"Receive alerts when approaching usage limits" = "Receba um aviso quando se aproximar do objetivo diário";
+"Enable progress notifications" = "Ativar celebrações de marcos";
+"Remove %d%%" = "Remover %d%%";
+"Add custom threshold" = "Adicionar limiar personalizado";
+"Notification sound" = "Som de notificação";
+"Light" = "Claro";
+"Dark" = "Escuro";
+"Auto" = "Auto";
+"App appearance" = "Aparência da aplicação";
+"Earnings target" = "Objetivo de ganhos";
+"Hours target" = "Objetivo de horas";
+"Custom threshold percent" = "Percentagem de limiar personalizado";
+"Remove custom threshold" = "Remover limiar personalizado";
+"Remove %d percent threshold" = "Remover limiar de %d por cento";
+"%@ at %d percent" = "%@ a %d por cento";
+"Warning" = "Quase lá";
+"High Usage" = "Tão perto!";
+"Critical" = "Um último esforço";
+"Milestone" = "Marco";
+"%@ theme" = "Tema %@";
+"Reset to default" = "Repor para predefinição";
+"Code Burn" = "Code Burn";
+"Emerald" = "Esmeralda";
+"Error: %@" = "Erro: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "A carregar";
+"Updated %@" = "Atualizado %@";
+"Last updated %@" = "Última atualização %@";
+"Name" = "Nome";
+"Email" = "E-mail";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "Abre a página de doação no navegador";
+"Star on GitHub" = "Dar estrela no GitHub";
+"Opens GitHub repo" = "Abre o repositório no GitHub";
+"Last %d days" = "Últimos %d dias";
+"Trend chart, last %d days, total %@" = "Gráfico de tendência, últimos %1$d dias, total %2$@";
+"Goal progress %d percent" = "Progresso do objetivo %d por cento";
+"Clear shortcut" = "Limpar atalho";
+"Time period" = "Período de tempo";
+
+// MARK: - Settings categories
+"General" = "Geral";
+"Goals" = "Objetivos";
+"Display" = "Visualização";
+"Language" = "Idioma";
+"Shortcuts" = "Atalhos";
+"Account" = "Conta";
+"Software Updates" = "Atualizações de Software";
+"Support" = "Suporte";
+"About" = "Acerca de";
+"About UpworkBuddy" = "Acerca do UpworkBuddy";
+
+"Refresh cadence and login behavior" = "Cadência de atualização e comportamento de início de sessão";
+"Hours and earnings targets, with notifications" = "Objetivos de horas e ganhos, com notificações";
+"Theme, menu bar, and dashboard" = "Tema, barra de menus e painel";
+"Choose your preferred language" = "Escolha o seu idioma preferido";
+"Global keyboard shortcuts" = "Atalhos de teclado globais";
+"Connected Upwork session" = "Sessão Upwork ligada";
+"Keep your app up to date" = "Mantenha a sua aplicação atualizada";
+"Support the project" = "Apoiar o projeto";
+
+// MARK: - General page
+"Sync" = "Sincronizar";
+"Startup" = "Arranque";
+"Launch at login" = "Iniciar ao iniciar sessão";
+"Open UpworkBuddy automatically when you sign in." = "Abrir o UpworkBuddy automaticamente quando iniciar sessão.";
+"Refresh Interval" = "Intervalo de Atualização";
+"How often UpworkBuddy polls for new earnings" = "Com que frequência o UpworkBuddy verifica novos ganhos";
+"Refresh interval" = "Intervalo de atualização";
+"1 min" = "1 min";
+"30 min" = "30 min";
+"1 minute" = "1 minuto";
+"%d minutes" = "%d minutos";
+
+// MARK: - Goals page
+"Targets" = "Objetivos";
+"Notifications" = "Notificações";
+"Celebration" = "Celebração";
+"Confetti when a goal is hit" = "Confetti ao atingir um objetivo";
+"Plays a quick burst when any target reaches 100%." = "Reproduz uma animação rápida quando qualquer objetivo atinge 100%.";
+"Goal tracking" = "Acompanhamento de objetivos";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "Mantenha o ritmo dia, semana, mês e ano. Receba um aviso ao ultrapassar um objetivo.";
+"Tracking off" = "Acompanhamento desativado";
+"Notifications on" = "Notificações ativadas";
+"Notifications blocked — check System Settings" = "Notificações bloqueadas — verifique as Definições do Sistema";
+"Awaiting permission" = "A aguardar permissão";
+"Notifications unavailable" = "Notificações indisponíveis";
+"Alert Thresholds" = "Momentos de Marco";
+"Custom Thresholds" = "Marcos Personalizados";
+"e.g. 50" = "ex.: 50";
+"Sound" = "Som";
+"Tap a value to type directly" = "Toque num valor para digitar diretamente";
+"Enable tracking to edit" = "Ativar acompanhamento para editar";
+"Get notified about usage milestones" = "Receba incentivos ao atingir o seu objetivo";
+"Goal celebration animation" = "Animação de celebração de objetivo";
+
+// MARK: - Display page
+"Theme" = "Tema";
+"Used across dashboard, menu bar, and settings" = "Utilizado no painel, barra de menus e definições";
+"Dashboard" = "Painel";
+"Primary metric" = "Métrica principal";
+"Renders large in the popover header." = "Apresentado em grande no cabeçalho da janela.";
+"Hide sensitive amounts" = "Ocultar valores sensíveis";
+"Masks earnings, rates, and totals across the app." = "Mascara ganhos, taxas e totais em toda a aplicação.";
+"Currency" = "Moeda";
+"Display currency" = "Moeda de visualização";
+"FX support coming in v2." = "Suporte a câmbios disponível na v2.";
+
+// MARK: - Shortcuts page
+"Bindings" = "Mapeamentos";
+"Esc cancels recording" = "Esc cancela a gravação";
+"Global shortcuts" = "Atalhos globais";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "Os atalhos funcionam em qualquer aplicação. Cada atalho deve incluir pelo menos uma tecla modificadora (⌘, ⌥, ⌃ ou ⇧).";
+
+// MARK: - Account page
+"Connection" = "Ligação";
+"Signed in via OAuth." = "Sessão iniciada via OAuth.";
+"Not connected." = "Não ligado.";
+"Danger zone" = "Zona de perigo";
+"Disconnect" = "Desligar";
+"Sign out and clear cached earnings on this Mac." = "Terminar sessão e limpar ganhos em cache neste Mac.";
+
+// MARK: - Menu bar
+"Menu bar" = "Barra de menus";
+"Choose which targets surface in the status bar" = "Escolha os objetivos a mostrar na barra de estado";
+"Today target" = "Objetivo de hoje";
+"Daily progress in the menu bar" = "Progresso diário na barra de menus";
+"Weekly target" = "Objetivo semanal";
+"Weekly progress in the menu bar" = "Progresso semanal na barra de menus";
+"Icon Style" = "Estilo do Ícone";
+"Display Mode" = "Modo de Visualização";
+"Display style" = "Estilo de visualização";
+"Add a goal target" = "Adicionar um objetivo";
+
+// MARK: - Menu bar enums
+"Icon + value" = "Ícone + valor";
+"Icon only" = "Só ícone";
+"Value only" = "Só valor";
+"Icon + primary metric" = "Ícone + métrica principal";
+"Icon + percentage" = "Ícone + percentagem";
+"Icon + remaining" = "Ícone + restante";
+"Glyph only, no value" = "Só glifo, sem valor";
+"Glyph + current value" = "Glifo + valor atual";
+"Glyph + percent of goal" = "Glifo + percentagem do objetivo";
+"Glyph + amount left to goal" = "Glifo + valor em falta para o objetivo";
+"Value only, no glyph" = "Só valor, sem glifo";
+"Battery (Classic)" = "Bateria (Clássico)";
+"Progress Bar" = "Barra de Progresso";
+"Percentage" = "Percentagem";
+"Icon with Bar" = "Ícone com Barra";
+"Compact" = "Compacto";
+"Count vs goal" = "Contagem vs objetivo";
+"Show as percentage (e.g., 60%)" = "Mostrar como percentagem (ex.: 60%)";
+"Show count vs goal (e.g., 5h/8h)" = "Mostrar contagem vs objetivo (ex.: 5h/8h)";
+
+// MARK: - Language page
+"Select Language" = "Selecionar Idioma";
+"Language changes will take effect after restarting the app" = "As alterações de idioma terão efeito após reiniciar a aplicação";
+
+// MARK: - About page
+"Reset App Data?" = "Repor Dados da Aplicação?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "Termina a sessão, limpa os ganhos em cache e repõe todas as preferências neste Mac. Esta ação não pode ser desfeita.";
+"Version %@" = "Versão %@";
+"Check for Updates" = "Verificar Atualizações";
+"Created By" = "Criado Por";
+"Links" = "Ligações";
+"Send Feedback" = "Enviar Comentários";
+"Reset App Data" = "Repor Dados da Aplicação";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "Acompanhe os seus projetos Upwork ativos, horas e ganhos — diretamente na barra de menus.";
+"Connect Upwork" = "Ligar ao Upwork";
+"A browser window will open for sign-in." = "Será aberta uma janela do navegador para iniciar sessão.";
+
+// MARK: - Dashboard
+"Show amounts" = "Mostrar valores";
+"Hide amounts" = "Ocultar valores";
+"Refresh now" = "Atualizar agora";
+
+// MARK: - Feedback
+"Help Us Improve" = "Ajude-nos a Melhorar";
+"Your feedback shapes the future of this app" = "Os seus comentários moldam o futuro desta aplicação";
+"Role" = "Função";
+"Tell us anything — feedback, ideas, feature requests…" = "Diga-nos tudo — comentários, ideias, pedidos de funcionalidades…";
+"Remind Me Later" = "Lembrar Mais Tarde";
+"Don't Ask Again" = "Não Perguntar Novamente";
+"UpworkBuddy Feedback — %@" = "Comentários UpworkBuddy — %@";
+"Developer" = "Programador";
+"Designer" = "Designer";
+"Manager" = "Gestor";
+"Student" = "Estudante";
+"Researcher" = "Investigador";
+"Other" = "Outro";
+
+// MARK: - Projects list
+"Activity" = "Atividade";
+"No tracked work in this period." = "Sem trabalho registado neste período.";
+
+// MARK: - Software updates
+"Version Information" = "Informação de Versão";
+"Current Version" = "Versão Atual";
+"Last Checked" = "Última Verificação";
+"Update Preferences" = "Preferências de Atualização";
+"Automatic Updates" = "Atualizações Automáticas";
+"Automatically check for and download updates daily" = "Verificar e transferir atualizações automaticamente todos os dias";
+"Checking…" = "A verificar…";
+"Secure Updates" = "Atualizações Seguras";
+"All updates are cryptographically signed and verified before installation" = "Todas as atualizações são assinadas criptograficamente e verificadas antes da instalação";
+
+// MARK: - Support page
+"Support the Project" = "Apoiar o Projeto";
+"UpworkBuddy is free and open source" = "UpworkBuddy é gratuito e de código aberto";
+"All Features Are Free" = "Todas as Funcionalidades São Gratuitas";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "Todas as funcionalidades desta aplicação são completamente gratuitas. Sem níveis premium, sem barreiras de pagamento, sem subscrições.";
+"Open Source" = "Código Aberto";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "O código-fonte está disponível publicamente no GitHub. Pode inspecionar, modificar e contribuir para o projeto.";
+"No Tracking" = "Sem Rastreio";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "A sua privacidade é importante. Sem análises, sem telemetria, sem recolha de dados. Tudo fica no seu Mac.";
+"If you find this app useful, consider supporting its development" = "Se achar esta aplicação útil, considere apoiar o seu desenvolvimento";
+"Buy Me a Coffee" = "Pague-me um Café";
+"Your support helps keep this project alive and growing" = "O seu apoio ajuda a manter este projeto vivo e a crescer";
+"You can also support by" = "Também pode apoiar";
+"Starring on GitHub" = "Dando estrela no GitHub";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "Alternar Janela";
+"Refresh Now" = "Atualizar Agora";
+"Open Settings" = "Abrir Definições";
+"Show or hide the UpworkBuddy popover" = "Mostrar ou ocultar a janela do UpworkBuddy";
+"Fetch the latest earnings data" = "Obter os dados de ganhos mais recentes";
+"Open the settings window" = "Abrir a janela de definições";
+
+// MARK: - Music
+"Music" = "Música";
+"Background music while you work" = "Música de fundo enquanto trabalha";
+"Add track" = "Adicionar faixa";
+"Track URL" = "URL da faixa";
+"Paste YouTube, Spotify or audio URL" = "Cole o URL do YouTube, Spotify ou áudio";
+"Unsupported URL" = "URL não suportado";
+"Playlist" = "Lista de reprodução";
+"Your playlist is empty. Paste a URL above to get started." = "A sua lista de reprodução está vazia. Cole um URL acima para começar.";
+"Playback" = "Reprodução";
+"Loop" = "Repetir";
+"Shuffle" = "Aleatório";
+"One" = "Uma";
+"All" = "Todas";
+"Sleep timer" = "Temporizador de suspensão";
+"Stop playback after a delay" = "Parar a reprodução após um atraso";
+"Stops in %@" = "Para em %@";
+"Sleep timer %@" = "Temporizador de suspensão %@";
+"15 minutes" = "15 minutos";
+"30 minutes" = "30 minutos";
+"1 hour" = "1 hora";
+"2 hours" = "2 horas";
+"Volume" = "Volume";
+"Now playing" = "A reproduzir";
+"Play" = "Reproduzir";
+"Pause" = "Pausar";
+"Next" = "Seguinte";
+"Previous" = "Anterior";
+"Stop" = "Parar";
+"Remove" = "Remover";
+"Off" = "Desligado";
+"Playback failed: %@" = "Falha na reprodução: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "Cole o URL do YouTube, Spotify, SoundCloud, Vimeo, Mixcloud ou áudio";
+
+// MARK: - Exercises
+"Exercises" = "Exercícios";
+"Periodic eye rest and standup reminders" = "Lembretes periódicos de descanso visual e pausa em pé";
+"Eye break" = "Pausa visual";
+"Enable eye break" = "Ativar pausa visual";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "Pause periodicamente o temporizador Upwork e bloqueie o ecrã para descansar os olhos (regra 20-20-20).";
+"Interval (minutes)" = "Intervalo (minutos)";
+"How often an eye break is triggered." = "Com que frequência uma pausa visual é acionada.";
+"Break duration (seconds)" = "Duração da pausa (segundos)";
+"How long the lock overlay stays on screen." = "Quanto tempo o ecrã de bloqueio permanece visível.";
+"On-screen message" = "Mensagem no ecrã";
+"Custom text shown over the lock overlay." = "Texto personalizado mostrado sobre o ecrã de bloqueio.";
+"External displays only" = "Apenas monitores externos";
+"Only lock external monitors; keep the main display usable." = "Bloquear apenas monitores externos; manter o ecrã principal utilizável.";
+"Preview" = "Pré-visualizar";
+"Preview break now" = "Pré-visualizar pausa agora";
+"Shows a 5-second break using the current settings." = "Mostra uma pausa de 5 segundos com as definições atuais.";
+"Look 20 feet away for 20 seconds" = "Olhe para longe (6 metros) durante 20 segundos";
+"Skip break (Esc)" = "Ignorar pausa (Esc)";
+
+// Standup
+"Standup" = "Pausa em Pé";
+"Enable standup" = "Ativar pausa em pé";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "Bloqueie periodicamente o ecrã para se levantar, esticar e mover (~2 min a cada 30 min — Stanford EHS).";
+"Standup interval (minutes)" = "Intervalo de pausa em pé (minutos)";
+"How often a standup is triggered." = "Com que frequência uma pausa em pé é acionada.";
+"Standup duration (seconds)" = "Duração da pausa em pé (segundos)";
+"How long the lock overlay stays on screen so you can move." = "Quanto tempo o ecrã de bloqueio permanece visível para que se possa mover.";
+"Standup message" = "Mensagem de pausa em pé";
+"Only lock external monitors during standup." = "Bloquear apenas monitores externos durante a pausa em pé.";
+"Preview standup now" = "Pré-visualizar pausa em pé agora";
+"Shows a 5-second standup using the current settings." = "Mostra uma pausa em pé de 5 segundos com as definições atuais.";
+"Stand up, stretch, and move around" = "Levante-se, estique-se e mova-se";
