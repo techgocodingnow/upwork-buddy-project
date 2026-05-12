@@ -1,0 +1,335 @@
+/*
+  Localizable.strings — Vietnamese (vi)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "Hủy";
+"Reset" = "Đặt lại";
+"Add" = "Thêm";
+"Submit" = "Gửi";
+"Connected" = "Đã kết nối";
+"Disconnected" = "Đã ngắt kết nối";
+"Never" = "Không bao giờ";
+"Coming soon" = "Sắp ra mắt";
+"Quit" = "Thoát";
+"Quit UpworkBuddy" = "Thoát UpworkBuddy";
+"Settings" = "Cài đặt";
+
+// MARK: - Period
+"Today" = "Hôm nay";
+"Week" = "Tuần";
+"Month" = "Tháng";
+"Year" = "Năm";
+
+// MARK: - Metrics
+"Hours" = "Giờ";
+"Earnings" = "Thu nhập";
+"target" = "mục tiêu";
+"Session Reset" = "Bắt đầu mới";
+"Enable notifications" = "Kỷ niệm cột mốc";
+"Receive alerts when approaching usage limits" = "Nhận thông báo khi gần đạt mục tiêu hàng ngày";
+"Enable progress notifications" = "Bật thông báo cột mốc";
+"Remove %d%%" = "Xóa %d%%";
+"Add custom threshold" = "Thêm ngưỡng tùy chỉnh";
+"Notification sound" = "Âm thanh thông báo";
+"Light" = "Sáng";
+"Dark" = "Tối";
+"Auto" = "Tự động";
+"App appearance" = "Giao diện ứng dụng";
+"Earnings target" = "Mục tiêu thu nhập";
+"Hours target" = "Mục tiêu giờ";
+"Custom threshold percent" = "Phần trăm ngưỡng tùy chỉnh";
+"Remove custom threshold" = "Xóa ngưỡng tùy chỉnh";
+"Remove %d percent threshold" = "Xóa ngưỡng %d phần trăm";
+"%@ at %d percent" = "%@ ở %d phần trăm";
+"Warning" = "Sắp đến rồi";
+"High Usage" = "Gần tới đích!";
+"Critical" = "Cố thêm chút nữa";
+"Milestone" = "Cột mốc";
+"%@ theme" = "Chủ đề %@";
+"Reset to default" = "Đặt lại mặc định";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "Lỗi: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "Đang tải";
+"Updated %@" = "Cập nhật %@";
+"Last updated %@" = "Cập nhật lần cuối %@";
+"Name" = "Tên";
+"Email" = "Email";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "Mở trang quyên góp trong trình duyệt";
+"Star on GitHub" = "Đánh sao trên GitHub";
+"Opens GitHub repo" = "Mở kho lưu trữ GitHub";
+"Last %d days" = "%d ngày qua";
+"Trend chart, last %d days, total %@" = "Biểu đồ xu hướng, %1$d ngày qua, tổng %2$@";
+"Goal progress %d percent" = "Tiến độ mục tiêu %d phần trăm";
+"Clear shortcut" = "Xóa phím tắt";
+"Time period" = "Khoảng thời gian";
+
+// MARK: - Settings categories
+"General" = "Tổng quan";
+"Goals" = "Mục tiêu";
+"Display" = "Hiển thị";
+"Language" = "Ngôn ngữ";
+"Shortcuts" = "Phím tắt";
+"Account" = "Tài khoản";
+"Software Updates" = "Cập nhật phần mềm";
+"Support" = "Hỗ trợ";
+"About" = "Giới thiệu";
+"About UpworkBuddy" = "Giới thiệu về UpworkBuddy";
+
+"Refresh cadence and login behavior" = "Tần suất làm mới và hành vi đăng nhập";
+"Hours and earnings targets, with notifications" = "Mục tiêu giờ và thu nhập, kèm thông báo";
+"Theme, menu bar, and dashboard" = "Chủ đề, thanh menu và bảng điều khiển";
+"Choose your preferred language" = "Chọn ngôn ngữ ưa thích";
+"Global keyboard shortcuts" = "Phím tắt bàn phím toàn cầu";
+"Connected Upwork session" = "Phiên Upwork đã kết nối";
+"Keep your app up to date" = "Giữ ứng dụng cập nhật";
+"Support the project" = "Ủng hộ dự án";
+
+// MARK: - General page
+"Sync" = "Đồng bộ";
+"Startup" = "Khởi động";
+"Launch at login" = "Khởi chạy khi đăng nhập";
+"Open UpworkBuddy automatically when you sign in." = "Tự động mở UpworkBuddy khi bạn đăng nhập.";
+"Refresh Interval" = "Chu kỳ làm mới";
+"How often UpworkBuddy polls for new earnings" = "Tần suất UpworkBuddy kiểm tra thu nhập mới";
+"Refresh interval" = "Chu kỳ làm mới";
+"1 min" = "1 phút";
+"30 min" = "30 phút";
+"1 minute" = "1 phút";
+"%d minutes" = "%d phút";
+
+// MARK: - Goals page
+"Targets" = "Mục tiêu";
+"Notifications" = "Thông báo";
+"Celebration" = "Chào mừng";
+"Confetti when a goal is hit" = "Bắn pháo hoa khi đạt mục tiêu";
+"Plays a quick burst when any target reaches 100%." = "Phát hiệu ứng nhanh khi bất kỳ mục tiêu nào đạt 100%.";
+"Goal tracking" = "Theo dõi mục tiêu";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "Theo dõi tiến độ ngày, tuần, tháng, năm. Nhận thông báo khi vượt mục tiêu.";
+"Tracking off" = "Tắt theo dõi";
+"Notifications on" = "Thông báo bật";
+"Notifications blocked — check System Settings" = "Thông báo bị chặn — kiểm tra Cài đặt hệ thống";
+"Awaiting permission" = "Đang chờ quyền";
+"Notifications unavailable" = "Thông báo không khả dụng";
+"Alert Thresholds" = "Cột mốc quan trọng";
+"Custom Thresholds" = "Cột mốc tùy chỉnh";
+"e.g. 50" = "vd. 50";
+"Sound" = "Âm thanh";
+"Tap a value to type directly" = "Nhấn vào giá trị để nhập trực tiếp";
+"Enable tracking to edit" = "Bật theo dõi để chỉnh sửa";
+"Get notified about usage milestones" = "Nhận thông báo khi đạt cột mốc";
+"Goal celebration animation" = "Hoạt ảnh chào mừng mục tiêu";
+
+// MARK: - Display page
+"Theme" = "Chủ đề";
+"Used across dashboard, menu bar, and settings" = "Áp dụng cho bảng điều khiển, thanh menu và cài đặt";
+"Dashboard" = "Bảng điều khiển";
+"Primary metric" = "Chỉ số chính";
+"Renders large in the popover header." = "Hiển thị lớn trong tiêu đề popover.";
+"Hide sensitive amounts" = "Ẩn số tiền nhạy cảm";
+"Masks earnings, rates, and totals across the app." = "Ẩn thu nhập, tỷ lệ và tổng số trong toàn ứng dụng.";
+"Currency" = "Tiền tệ";
+"Display currency" = "Hiển thị tiền tệ";
+"FX support coming in v2." = "Hỗ trợ ngoại hối sẽ có trong v2.";
+
+// MARK: - Shortcuts page
+"Bindings" = "Liên kết";
+"Esc cancels recording" = "Esc hủy ghi";
+"Global shortcuts" = "Phím tắt toàn cầu";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "Phím tắt hoạt động từ mọi ứng dụng. Mỗi phím tắt phải có ít nhất một phím bổ trợ (⌘, ⌥, ⌃ hoặc ⇧).";
+
+// MARK: - Account page
+"Connection" = "Kết nối";
+"Signed in via OAuth." = "Đã đăng nhập qua OAuth.";
+"Not connected." = "Chưa kết nối.";
+"Danger zone" = "Vùng nguy hiểm";
+"Disconnect" = "Ngắt kết nối";
+"Sign out and clear cached earnings on this Mac." = "Đăng xuất và xóa dữ liệu thu nhập đã lưu trên Mac này.";
+
+// MARK: - Menu bar
+"Menu bar" = "Thanh menu";
+"Choose which targets surface in the status bar" = "Chọn mục tiêu hiển thị trên thanh trạng thái";
+"Today target" = "Mục tiêu hôm nay";
+"Daily progress in the menu bar" = "Tiến độ hàng ngày trên thanh menu";
+"Weekly target" = "Mục tiêu tuần";
+"Weekly progress in the menu bar" = "Tiến độ hàng tuần trên thanh menu";
+"Icon Style" = "Kiểu biểu tượng";
+"Display Mode" = "Chế độ hiển thị";
+"Display style" = "Kiểu hiển thị";
+"Add a goal target" = "Thêm mục tiêu";
+
+// MARK: - Menu bar enums
+"Icon + value" = "Biểu tượng + giá trị";
+"Icon only" = "Chỉ biểu tượng";
+"Value only" = "Chỉ giá trị";
+"Icon + primary metric" = "Biểu tượng + chỉ số chính";
+"Icon + percentage" = "Biểu tượng + phần trăm";
+"Icon + remaining" = "Biểu tượng + còn lại";
+"Glyph only, no value" = "Chỉ ký hiệu, không có giá trị";
+"Glyph + current value" = "Ký hiệu + giá trị hiện tại";
+"Glyph + percent of goal" = "Ký hiệu + phần trăm mục tiêu";
+"Glyph + amount left to goal" = "Ký hiệu + số còn lại đến mục tiêu";
+"Value only, no glyph" = "Chỉ giá trị, không có ký hiệu";
+"Battery (Classic)" = "Pin (Cổ điển)";
+"Progress Bar" = "Thanh tiến trình";
+"Percentage" = "Phần trăm";
+"Icon with Bar" = "Biểu tượng có thanh";
+"Compact" = "Thu gọn";
+"Count vs goal" = "Số lượng so với mục tiêu";
+"Show as percentage (e.g., 60%)" = "Hiển thị dưới dạng phần trăm (vd. 60%)";
+"Show count vs goal (e.g., 5h/8h)" = "Hiển thị số lượng so với mục tiêu (vd. 5h/8h)";
+
+// MARK: - Language page
+"Select Language" = "Chọn ngôn ngữ";
+"Language changes will take effect after restarting the app" = "Thay đổi ngôn ngữ sẽ có hiệu lực sau khi khởi động lại ứng dụng";
+
+// MARK: - About page
+"Reset App Data?" = "Đặt lại dữ liệu ứng dụng?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "Đăng xuất, xóa dữ liệu thu nhập đã lưu và đặt lại tất cả tùy chọn trên Mac này. Hành động này không thể hoàn tác.";
+"Version %@" = "Phiên bản %@";
+"Check for Updates" = "Kiểm tra cập nhật";
+"Created By" = "Được tạo bởi";
+"Links" = "Liên kết";
+"Send Feedback" = "Gửi phản hồi";
+"Reset App Data" = "Đặt lại dữ liệu ứng dụng";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "Theo dõi dự án, giờ làm và thu nhập Upwork — ngay từ thanh menu.";
+"Connect Upwork" = "Kết nối Upwork";
+"A browser window will open for sign-in." = "Một cửa sổ trình duyệt sẽ mở để đăng nhập.";
+
+// MARK: - Dashboard
+"Show amounts" = "Hiện số tiền";
+"Hide amounts" = "Ẩn số tiền";
+"Refresh now" = "Làm mới ngay";
+
+// MARK: - Feedback
+"Help Us Improve" = "Giúp chúng tôi cải thiện";
+"Your feedback shapes the future of this app" = "Phản hồi của bạn định hình tương lai của ứng dụng này";
+"Role" = "Vai trò";
+"Tell us anything — feedback, ideas, feature requests…" = "Hãy chia sẻ bất cứ điều gì — phản hồi, ý tưởng, yêu cầu tính năng…";
+"Remind Me Later" = "Nhắc tôi sau";
+"Don't Ask Again" = "Không hỏi lại";
+"UpworkBuddy Feedback — %@" = "Phản hồi UpworkBuddy — %@";
+"Developer" = "Lập trình viên";
+"Designer" = "Nhà thiết kế";
+"Manager" = "Quản lý";
+"Student" = "Sinh viên";
+"Researcher" = "Nhà nghiên cứu";
+"Other" = "Khác";
+
+// MARK: - Projects list
+"Activity" = "Hoạt động";
+"No tracked work in this period." = "Không có công việc nào được ghi nhận trong kỳ này.";
+
+// MARK: - Software updates
+"Version Information" = "Thông tin phiên bản";
+"Current Version" = "Phiên bản hiện tại";
+"Last Checked" = "Kiểm tra lần cuối";
+"Update Preferences" = "Tùy chọn cập nhật";
+"Automatic Updates" = "Cập nhật tự động";
+"Automatically check for and download updates daily" = "Tự động kiểm tra và tải xuống bản cập nhật hàng ngày";
+"Checking…" = "Đang kiểm tra…";
+"Secure Updates" = "Cập nhật bảo mật";
+"All updates are cryptographically signed and verified before installation" = "Tất cả bản cập nhật được ký mã hóa và xác minh trước khi cài đặt";
+
+// MARK: - Support page
+"Support the Project" = "Ủng hộ dự án";
+"UpworkBuddy is free and open source" = "UpworkBuddy miễn phí và mã nguồn mở";
+"All Features Are Free" = "Tất cả tính năng miễn phí";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "Mọi tính năng trong ứng dụng này hoàn toàn miễn phí. Không có gói trả phí, không có tường phí, không có đăng ký.";
+"Open Source" = "Mã nguồn mở";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "Mã nguồn được công khai trên GitHub. Bạn có thể xem, chỉnh sửa và đóng góp cho dự án.";
+"No Tracking" = "Không theo dõi";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Quyền riêng tư của bạn quan trọng. Không phân tích, không đo lường, không thu thập dữ liệu. Tất cả lưu trên Mac của bạn.";
+"If you find this app useful, consider supporting its development" = "Nếu ứng dụng hữu ích, hãy cân nhắc ủng hộ sự phát triển của nó";
+"Buy Me a Coffee" = "Mua cho tôi một ly cà phê";
+"Your support helps keep this project alive and growing" = "Sự ủng hộ của bạn giúp dự án tiếp tục phát triển";
+"You can also support by" = "Bạn cũng có thể ủng hộ bằng cách";
+"Starring on GitHub" = "Đánh sao trên GitHub";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "Bật/tắt cửa sổ nổi";
+"Refresh Now" = "Làm mới ngay";
+"Open Settings" = "Mở cài đặt";
+"Show or hide the UpworkBuddy popover" = "Hiển thị hoặc ẩn cửa sổ nổi UpworkBuddy";
+"Fetch the latest earnings data" = "Tải dữ liệu thu nhập mới nhất";
+"Open the settings window" = "Mở cửa sổ cài đặt";
+
+// MARK: - Music
+"Music" = "Âm nhạc";
+"Background music while you work" = "Nhạc nền trong khi làm việc";
+"Add track" = "Thêm bài hát";
+"Track URL" = "URL bài hát";
+"Paste YouTube, Spotify or audio URL" = "Dán URL YouTube, Spotify hoặc âm thanh";
+"Unsupported URL" = "URL không được hỗ trợ";
+"Playlist" = "Danh sách phát";
+"Your playlist is empty. Paste a URL above to get started." = "Danh sách phát trống. Dán URL ở trên để bắt đầu.";
+"Playback" = "Phát lại";
+"Loop" = "Lặp";
+"Shuffle" = "Trộn bài";
+"One" = "Một bài";
+"All" = "Tất cả";
+"Sleep timer" = "Hẹn giờ tắt";
+"Stop playback after a delay" = "Dừng phát sau một khoảng thời gian";
+"Stops in %@" = "Dừng sau %@";
+"Sleep timer %@" = "Hẹn giờ tắt %@";
+"15 minutes" = "15 phút";
+"30 minutes" = "30 phút";
+"1 hour" = "1 giờ";
+"2 hours" = "2 giờ";
+"Volume" = "Âm lượng";
+"Now playing" = "Đang phát";
+"Play" = "Phát";
+"Pause" = "Tạm dừng";
+"Next" = "Tiếp theo";
+"Previous" = "Trước đó";
+"Stop" = "Dừng";
+"Remove" = "Xóa";
+"Off" = "Tắt";
+"Playback failed: %@" = "Phát lại thất bại: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "Dán URL YouTube, Spotify, SoundCloud, Vimeo, Mixcloud hoặc âm thanh";
+
+// MARK: - Exercises
+"Exercises" = "Bài tập";
+"Periodic eye rest and standup reminders" = "Nhắc nhở nghỉ mắt và đứng dậy định kỳ";
+"Eye break" = "Nghỉ mắt";
+"Enable eye break" = "Bật nghỉ mắt";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "Định kỳ tạm dừng bộ đếm Upwork và khóa màn hình để nghỉ mắt (quy tắc 20-20-20).";
+"Interval (minutes)" = "Khoảng cách (phút)";
+"How often an eye break is triggered." = "Tần suất kích hoạt nghỉ mắt.";
+"Break duration (seconds)" = "Thời lượng nghỉ (giây)";
+"How long the lock overlay stays on screen." = "Thời gian màn hình khóa hiển thị.";
+"On-screen message" = "Thông điệp trên màn hình";
+"Custom text shown over the lock overlay." = "Văn bản tùy chỉnh hiển thị trên màn hình khóa.";
+"External displays only" = "Chỉ màn hình ngoài";
+"Only lock external monitors; keep the main display usable." = "Chỉ khóa màn hình ngoài; giữ màn hình chính có thể sử dụng.";
+"Preview" = "Xem trước";
+"Preview break now" = "Xem trước nghỉ ngay";
+"Shows a 5-second break using the current settings." = "Hiển thị nghỉ 5 giây với cài đặt hiện tại.";
+"Look 20 feet away for 20 seconds" = "Nhìn xa 6 mét trong 20 giây";
+"Skip break (Esc)" = "Bỏ qua nghỉ (Esc)";
+
+// Standup
+"Standup" = "Đứng dậy";
+"Enable standup" = "Bật nhắc nhở đứng dậy";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "Định kỳ khóa màn hình để bạn đứng dậy, giãn cơ và vận động (~2 phút mỗi 30 phút — Stanford EHS).";
+"Standup interval (minutes)" = "Khoảng cách đứng dậy (phút)";
+"How often a standup is triggered." = "Tần suất kích hoạt nhắc nhở đứng dậy.";
+"Standup duration (seconds)" = "Thời lượng đứng dậy (giây)";
+"How long the lock overlay stays on screen so you can move." = "Thời gian màn hình khóa hiển thị để bạn có thể vận động.";
+"Standup message" = "Thông điệp đứng dậy";
+"Only lock external monitors during standup." = "Chỉ khóa màn hình ngoài khi đứng dậy.";
+"Preview standup now" = "Xem trước đứng dậy ngay";
+"Shows a 5-second standup using the current settings." = "Hiển thị đứng dậy 5 giây với cài đặt hiện tại.";
+"Stand up, stretch, and move around" = "Đứng dậy, giãn cơ và đi lại";
