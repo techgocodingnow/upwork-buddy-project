@@ -1,0 +1,334 @@
+/* Localizable.strings — Ukrainian (uk)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "Скасувати";
+"Reset" = "Скинути";
+"Add" = "Додати";
+"Submit" = "Надіслати";
+"Connected" = "Підключено";
+"Disconnected" = "Відключено";
+"Never" = "Ніколи";
+"Coming soon" = "Незабаром";
+"Quit" = "Вийти";
+"Quit UpworkBuddy" = "Вийти з UpworkBuddy";
+"Settings" = "Налаштування";
+
+// MARK: - Period
+"Today" = "Сьогодні";
+"Week" = "Тиждень";
+"Month" = "Місяць";
+"Year" = "Рік";
+
+// MARK: - Metrics
+"Hours" = "Години";
+"Earnings" = "Заробіток";
+"target" = "ціль";
+"Session Reset" = "Новий початок";
+"Enable notifications" = "Святкуйте досягнення";
+"Receive alerts when approaching usage limits" = "Отримуйте нагадування, коли наближаєтесь до денної цілі";
+"Enable progress notifications" = "Увімкнути святкування досягнень";
+"Remove %d%%" = "Видалити %d%%";
+"Add custom threshold" = "Додати власний поріг";
+"Notification sound" = "Звук сповіщення";
+"Light" = "Світла";
+"Dark" = "Темна";
+"Auto" = "Авто";
+"App appearance" = "Вигляд програми";
+"Earnings target" = "Ціль заробітку";
+"Hours target" = "Ціль годин";
+"Custom threshold percent" = "Відсоток власного порогу";
+"Remove custom threshold" = "Видалити власний поріг";
+"Remove %d percent threshold" = "Видалити %d відсотковий поріг";
+"%@ at %d percent" = "%@ на %d відсотках";
+"Warning" = "Майже там";
+"High Usage" = "Так близько!";
+"Critical" = "Останній ривок";
+"Milestone" = "Рубіж";
+"%@ theme" = "Тема %@";
+"Reset to default" = "Скинути до стандартних";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "Помилка: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "Завантаження";
+"Updated %@" = "Оновлено %@";
+"Last updated %@" = "Останнє оновлення %@";
+"Name" = "Ім'я";
+"Email" = "Електронна пошта";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "Відкриває сторінку пожертв у браузері";
+"Star on GitHub" = "Зірочка на GitHub";
+"Opens GitHub repo" = "Відкриває репозиторій GitHub";
+"Last %d days" = "Останні %d днів";
+"Trend chart, last %d days, total %@" = "Графік тенденцій, останні %1$d днів, всього %2$@";
+"Goal progress %d percent" = "Прогрес цілі %d відсотків";
+"Clear shortcut" = "Очистити ярлик";
+"Time period" = "Часовий проміжок";
+
+// MARK: - Settings categories
+"General" = "Загальне";
+"Goals" = "Цілі";
+"Display" = "Дисплей";
+"Language" = "Мова";
+"Shortcuts" = "Ярлики";
+"Account" = "Обліковий запис";
+"Software Updates" = "Оновлення програми";
+"Support" = "Підтримка";
+"About" = "Про програму";
+"About UpworkBuddy" = "Про UpworkBuddy";
+
+"Refresh cadence and login behavior" = "Частота оновлення та поведінка входу";
+"Hours and earnings targets, with notifications" = "Цілі по годинах і заробітку зі сповіщеннями";
+"Theme, menu bar, and dashboard" = "Тема, рядок меню та панель";
+"Choose your preferred language" = "Оберіть бажану мову";
+"Global keyboard shortcuts" = "Глобальні комбінації клавіш";
+"Connected Upwork session" = "Підключений сеанс Upwork";
+"Keep your app up to date" = "Тримайте програму актуальною";
+"Support the project" = "Підтримайте проект";
+
+// MARK: - General page
+"Sync" = "Синхронізація";
+"Startup" = "Запуск";
+"Launch at login" = "Запускати при вході";
+"Open UpworkBuddy automatically when you sign in." = "Автоматично відкривати UpworkBuddy при вході до системи.";
+"Refresh Interval" = "Інтервал оновлення";
+"How often UpworkBuddy polls for new earnings" = "Як часто UpworkBuddy перевіряє новий заробіток";
+"Refresh interval" = "Інтервал оновлення";
+"1 min" = "1 хв";
+"30 min" = "30 хв";
+"1 minute" = "1 хвилина";
+"%d minutes" = "%d хвилин";
+
+// MARK: - Goals page
+"Targets" = "Цілі";
+"Notifications" = "Сповіщення";
+"Celebration" = "Святкування";
+"Confetti when a goal is hit" = "Конфеті при досягненні цілі";
+"Plays a quick burst when any target reaches 100%." = "Відтворює короткий спалах, коли будь-яка ціль досягає 100%.";
+"Goal tracking" = "Відстеження цілей";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "Дотримуйтесь темпу день, тиждень, місяць і рік. Отримуйте банер при перетині цілі.";
+"Tracking off" = "Відстеження вимкнено";
+"Notifications on" = "Сповіщення увімкнено";
+"Notifications blocked — check System Settings" = "Сповіщення заблоковано — перевірте системні налаштування";
+"Awaiting permission" = "Очікування дозволу";
+"Notifications unavailable" = "Сповіщення недоступні";
+"Alert Thresholds" = "Ключові моменти";
+"Custom Thresholds" = "Власні рубежі";
+"e.g. 50" = "напр. 50";
+"Sound" = "Звук";
+"Tap a value to type directly" = "Натисніть на значення, щоб ввести безпосередньо";
+"Enable tracking to edit" = "Увімкніть відстеження для редагування";
+"Get notified about usage milestones" = "Підтримуйте вас на шляху до цілі";
+"Goal celebration animation" = "Анімація святкування цілі";
+
+// MARK: - Display page
+"Theme" = "Тема";
+"Used across dashboard, menu bar, and settings" = "Використовується на панелі, в рядку меню та налаштуваннях";
+"Dashboard" = "Панель";
+"Primary metric" = "Основна метрика";
+"Renders large in the popover header." = "Відображається великим у заголовку спливаючого вікна.";
+"Hide sensitive amounts" = "Приховати конфіденційні суми";
+"Masks earnings, rates, and totals across the app." = "Маскує заробіток, ставки та підсумки в усій програмі.";
+"Currency" = "Валюта";
+"Display currency" = "Відображувана валюта";
+"FX support coming in v2." = "Підтримка валютних курсів з'явиться у v2.";
+
+// MARK: - Shortcuts page
+"Bindings" = "Прив'язки";
+"Esc cancels recording" = "Esc скасовує запис";
+"Global shortcuts" = "Глобальні ярлики";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "Ярлики працюють з будь-якої програми. Кожен ярлик повинен містити принаймні одну клавішу-модифікатор (⌘, ⌥, ⌃ або ⇧).";
+
+// MARK: - Account page
+"Connection" = "З'єднання";
+"Signed in via OAuth." = "Увійшли через OAuth.";
+"Not connected." = "Не підключено.";
+"Danger zone" = "Небезпечна зона";
+"Disconnect" = "Відключити";
+"Sign out and clear cached earnings on this Mac." = "Вийти та очистити кешований заробіток на цьому Mac.";
+
+// MARK: - Menu bar
+"Menu bar" = "Рядок меню";
+"Choose which targets surface in the status bar" = "Виберіть, які цілі відображаються у рядку стану";
+"Today target" = "Ціль на сьогодні";
+"Daily progress in the menu bar" = "Щоденний прогрес у рядку меню";
+"Weekly target" = "Ціль на тиждень";
+"Weekly progress in the menu bar" = "Щотижневий прогрес у рядку меню";
+"Icon Style" = "Стиль іконки";
+"Display Mode" = "Режим відображення";
+"Display style" = "Стиль відображення";
+"Add a goal target" = "Додати ціль";
+
+// MARK: - Menu bar enums
+"Icon + value" = "Іконка + значення";
+"Icon only" = "Лише іконка";
+"Value only" = "Лише значення";
+"Icon + primary metric" = "Іконка + основна метрика";
+"Icon + percentage" = "Іконка + відсоток";
+"Icon + remaining" = "Іконка + залишок";
+"Glyph only, no value" = "Лише гліф, без значення";
+"Glyph + current value" = "Гліф + поточне значення";
+"Glyph + percent of goal" = "Гліф + відсоток цілі";
+"Glyph + amount left to goal" = "Гліф + залишок до цілі";
+"Value only, no glyph" = "Лише значення, без гліфа";
+"Battery (Classic)" = "Батарея (класична)";
+"Progress Bar" = "Індикатор прогресу";
+"Percentage" = "Відсоток";
+"Icon with Bar" = "Іконка з рискою";
+"Compact" = "Компактний";
+"Count vs goal" = "Кількість проти цілі";
+"Show as percentage (e.g., 60%)" = "Показати як відсоток (напр., 60%)";
+"Show count vs goal (e.g., 5h/8h)" = "Показати кількість проти цілі (напр., 5г/8г)";
+
+// MARK: - Language page
+"Select Language" = "Вибрати мову";
+"Language changes will take effect after restarting the app" = "Зміни мови набудуть чинності після перезапуску програми";
+
+// MARK: - About page
+"Reset App Data?" = "Скинути дані програми?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "Виходить з облікового запису, очищає кешований заробіток та скидає всі налаштування на цьому Mac. Дію неможливо скасувати.";
+"Version %@" = "Версія %@";
+"Check for Updates" = "Перевірити оновлення";
+"Created By" = "Створено";
+"Links" = "Посилання";
+"Send Feedback" = "Надіслати відгук";
+"Reset App Data" = "Скинути дані програми";
+"MIT License • Open Source" = "MIT License • Open Source";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "Відстежуйте активні проекти Upwork, години та заробіток — прямо з рядка меню.";
+"Connect Upwork" = "Підключити Upwork";
+"A browser window will open for sign-in." = "Для входу відкриється вікно браузера.";
+
+// MARK: - Dashboard
+"Show amounts" = "Показати суми";
+"Hide amounts" = "Приховати суми";
+"Refresh now" = "Оновити зараз";
+
+// MARK: - Feedback
+"Help Us Improve" = "Допоможіть нам покращитись";
+"Your feedback shapes the future of this app" = "Ваш відгук формує майбутнє цієї програми";
+"Role" = "Роль";
+"Tell us anything — feedback, ideas, feature requests…" = "Розкажіть нам будь-що — відгуки, ідеї, побажання щодо функцій…";
+"Remind Me Later" = "Нагадати пізніше";
+"Don't Ask Again" = "Більше не питати";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy Feedback — %@";
+"Developer" = "Розробник";
+"Designer" = "Дизайнер";
+"Manager" = "Менеджер";
+"Student" = "Студент";
+"Researcher" = "Дослідник";
+"Other" = "Інше";
+
+// MARK: - Projects list
+"Activity" = "Активність";
+"No tracked work in this period." = "Немає відстежуваної роботи за цей період.";
+
+// MARK: - Software updates
+"Version Information" = "Інформація про версію";
+"Current Version" = "Поточна версія";
+"Last Checked" = "Остання перевірка";
+"Update Preferences" = "Налаштування оновлень";
+"Automatic Updates" = "Автоматичні оновлення";
+"Automatically check for and download updates daily" = "Автоматично перевіряти та завантажувати оновлення щодня";
+"Checking…" = "Перевірка…";
+"Secure Updates" = "Безпечні оновлення";
+"All updates are cryptographically signed and verified before installation" = "Всі оновлення криптографічно підписані та перевірені перед встановленням";
+
+// MARK: - Support page
+"Support the Project" = "Підтримати проект";
+"UpworkBuddy is free and open source" = "UpworkBuddy є безкоштовним і відкритим кодом";
+"All Features Are Free" = "Всі функції безкоштовні";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "Кожна функція цієї програми абсолютно безкоштовна. Без преміум-рівнів, без платних стін, без підписок.";
+"Open Source" = "Відкритий код";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "Вихідний код публічно доступний на GitHub. Ви можете перевіряти, змінювати та робити внесок у проект.";
+"No Tracking" = "Без відстеження";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Ваша конфіденційність важлива. Без аналітики, без телеметрії, без збору даних. Все залишається на вашому Mac.";
+"If you find this app useful, consider supporting its development" = "Якщо ця програма корисна для вас, розгляньте можливість підтримки її розробки";
+"Buy Me a Coffee" = "Купіть мені каву";
+"Your support helps keep this project alive and growing" = "Ваша підтримка допомагає цьому проекту жити та розвиватись";
+"You can also support by" = "Ви також можете підтримати, ";
+"Starring on GitHub" = "Поставивши зірочку на GitHub";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "Перемкнути спливаюче вікно";
+"Refresh Now" = "Оновити зараз";
+"Open Settings" = "Відкрити налаштування";
+"Show or hide the UpworkBuddy popover" = "Показати або приховати спливаюче вікно UpworkBuddy";
+"Fetch the latest earnings data" = "Отримати останні дані про заробіток";
+"Open the settings window" = "Відкрити вікно налаштувань";
+
+// MARK: - Music
+"Music" = "Музика";
+"Background music while you work" = "Фонова музика під час роботи";
+"Add track" = "Додати трек";
+"Track URL" = "URL треку";
+"Paste YouTube, Spotify or audio URL" = "Вставте URL YouTube, Spotify або аудіо";
+"Unsupported URL" = "Непідтримуваний URL";
+"Playlist" = "Плейлист";
+"Your playlist is empty. Paste a URL above to get started." = "Ваш плейлист порожній. Вставте URL вище, щоб почати.";
+"Playback" = "Відтворення";
+"Loop" = "Цикл";
+"Shuffle" = "Перемішати";
+"One" = "Одне";
+"All" = "Всі";
+"Sleep timer" = "Таймер сну";
+"Stop playback after a delay" = "Зупинити відтворення через деякий час";
+"Stops in %@" = "Зупиниться через %@";
+"Sleep timer %@" = "Таймер сну %@";
+"15 minutes" = "15 хвилин";
+"30 minutes" = "30 хвилин";
+"1 hour" = "1 година";
+"2 hours" = "2 години";
+"Volume" = "Гучність";
+"Now playing" = "Зараз грає";
+"Play" = "Відтворити";
+"Pause" = "Пауза";
+"Next" = "Далі";
+"Previous" = "Назад";
+"Stop" = "Зупинити";
+"Remove" = "Видалити";
+"Off" = "Вимкнено";
+"Playback failed: %@" = "Відтворення не вдалося: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "Вставте URL YouTube, Spotify, SoundCloud, Vimeo, Mixcloud або аудіо";
+
+// MARK: - Exercises
+"Exercises" = "Вправи";
+"Periodic eye rest and standup reminders" = "Регулярний відпочинок для очей та нагадування встати";
+"Eye break" = "Перерва для очей";
+"Enable eye break" = "Увімкнути перерву для очей";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule).";
+"Interval (minutes)" = "Інтервал (хвилини)";
+"How often an eye break is triggered." = "Як часто спрацьовує перерва для очей.";
+"Break duration (seconds)" = "Тривалість перерви (секунди)";
+"How long the lock overlay stays on screen." = "Як довго заставка залишається на екрані.";
+"On-screen message" = "Повідомлення на екрані";
+"Custom text shown over the lock overlay." = "Власний текст, що відображається поверх заставки.";
+"External displays only" = "Лише зовнішні монітори";
+"Only lock external monitors; keep the main display usable." = "Блокувати лише зовнішні монітори; основний дисплей залишається доступним.";
+"Preview" = "Попередній перегляд";
+"Preview break now" = "Переглянути перерву зараз";
+"Shows a 5-second break using the current settings." = "Показує 5-секундну перерву з поточними налаштуваннями.";
+"Look 20 feet away for 20 seconds" = "Дивіться вдаль на 6 метрів протягом 20 секунд";
+"Skip break (Esc)" = "Пропустити перерву (Esc)";
+
+// Standup
+"Standup" = "Підйом";
+"Enable standup" = "Увімкнути підйом";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS).";
+"Standup interval (minutes)" = "Інтервал підйому (хвилини)";
+"How often a standup is triggered." = "Як часто спрацьовує підйом.";
+"Standup duration (seconds)" = "Тривалість підйому (секунди)";
+"How long the lock overlay stays on screen so you can move." = "Як довго заставка залишається на екрані, щоб ви могли порухатись.";
+"Standup message" = "Повідомлення підйому";
+"Only lock external monitors during standup." = "Блокувати лише зовнішні монітори під час підйому.";
+"Preview standup now" = "Переглянути підйом зараз";
+"Shows a 5-second standup using the current settings." = "Показує 5-секундний підйом з поточними налаштуваннями.";
+"Stand up, stretch, and move around" = "Встаньте, потягніться та порухайтесь";
