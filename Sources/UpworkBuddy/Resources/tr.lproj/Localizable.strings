@@ -1,0 +1,334 @@
+/* Localizable.strings — Turkish (tr)
+  Translated by AI. Community corrections welcome.
+*/
+
+// MARK: - Brand
+"Upwork" = "Upwork";
+"Buddy" = "Buddy";
+"UpworkBuddy" = "UpworkBuddy";
+
+// MARK: - Common actions
+"Cancel" = "İptal";
+"Reset" = "Sıfırla";
+"Add" = "Ekle";
+"Submit" = "Gönder";
+"Connected" = "Bağlandı";
+"Disconnected" = "Bağlantı Kesildi";
+"Never" = "Hiçbir Zaman";
+"Coming soon" = "Yakında";
+"Quit" = "Çıkış";
+"Quit UpworkBuddy" = "UpworkBuddy'den Çıkış";
+"Settings" = "Ayarlar";
+
+// MARK: - Period
+"Today" = "Bugün";
+"Week" = "Hafta";
+"Month" = "Ay";
+"Year" = "Yıl";
+
+// MARK: - Metrics
+"Hours" = "Saatler";
+"Earnings" = "Kazanç";
+"target" = "hedef";
+"Session Reset" = "Taze Başlangıç";
+"Enable notifications" = "Dönüm noktalarını kutla";
+"Receive alerts when approaching usage limits" = "Günlük hedefinize yaklaştığınızda bildirim alın";
+"Enable progress notifications" = "Dönüm noktası kutlamalarını etkinleştir";
+"Remove %d%%" = "%d%% Kaldır";
+"Add custom threshold" = "Özel eşik ekle";
+"Notification sound" = "Bildirim sesi";
+"Light" = "Açık";
+"Dark" = "Koyu";
+"Auto" = "Otomatik";
+"App appearance" = "Uygulama görünümü";
+"Earnings target" = "Kazanç hedefi";
+"Hours target" = "Saat hedefi";
+"Custom threshold percent" = "Özel eşik yüzdesi";
+"Remove custom threshold" = "Özel eşiği kaldır";
+"Remove %d percent threshold" = "%d yüzde eşiğini kaldır";
+"%@ at %d percent" = "%1$@ %2$d yüzdede";
+"Warning" = "Neredeyse Oldu";
+"High Usage" = "Çok Yakın!";
+"Critical" = "Son Bir Hamle";
+"Milestone" = "Dönüm Noktası";
+"%@ theme" = "%@ teması";
+"Reset to default" = "Varsayılana sıfırla";
+"Code Burn" = "Code Burn";
+"Emerald" = "Emerald";
+"Error: %@" = "Hata: %@";
+"Upwork Buddy" = "Upwork Buddy";
+"Loading" = "Yükleniyor";
+"Updated %@" = "%@ güncellendi";
+"Last updated %@" = "Son güncelleme %@";
+"Name" = "Ad";
+"Email" = "E-posta";
+"%@: %@" = "%1$@: %2$@";
+"Opens donation page in browser" = "Bağış sayfasını tarayıcıda açar";
+"Star on GitHub" = "GitHub'da Yıldızla";
+"Opens GitHub repo" = "GitHub deposunu açar";
+"Last %d days" = "Son %d gün";
+"Trend chart, last %d days, total %@" = "Trend grafiği, son %1$d gün, toplam %2$@";
+"Goal progress %d percent" = "Hedef ilerleme %d yüzde";
+"Clear shortcut" = "Kısayolu temizle";
+"Time period" = "Zaman dilimi";
+
+// MARK: - Settings categories
+"General" = "Genel";
+"Goals" = "Hedefler";
+"Display" = "Görünüm";
+"Language" = "Dil";
+"Shortcuts" = "Kısayollar";
+"Account" = "Hesap";
+"Software Updates" = "Yazılım Güncellemeleri";
+"Support" = "Destek";
+"About" = "Hakkında";
+"About UpworkBuddy" = "UpworkBuddy Hakkında";
+
+"Refresh cadence and login behavior" = "Yenileme sıklığı ve giriş davranışı";
+"Hours and earnings targets, with notifications" = "Bildirimli saat ve kazanç hedefleri";
+"Theme, menu bar, and dashboard" = "Tema, menü çubuğu ve kontrol paneli";
+"Choose your preferred language" = "Tercih ettiğiniz dili seçin";
+"Global keyboard shortcuts" = "Global klavye kısayolları";
+"Connected Upwork session" = "Bağlı Upwork oturumu";
+"Keep your app up to date" = "Uygulamanızı güncel tutun";
+"Support the project" = "Projeyi destekleyin";
+
+// MARK: - General page
+"Sync" = "Senkronizasyon";
+"Startup" = "Başlangıç";
+"Launch at login" = "Girişte başlat";
+"Open UpworkBuddy automatically when you sign in." = "Oturum açtığınızda UpworkBuddy'yi otomatik olarak açın.";
+"Refresh Interval" = "Yenileme Aralığı";
+"How often UpworkBuddy polls for new earnings" = "UpworkBuddy'nin yeni kazançları ne sıklıkla kontrol ettiği";
+"Refresh interval" = "Yenileme aralığı";
+"1 min" = "1 dk";
+"30 min" = "30 dk";
+"1 minute" = "1 dakika";
+"%d minutes" = "%d dakika";
+
+// MARK: - Goals page
+"Targets" = "Hedefler";
+"Notifications" = "Bildirimler";
+"Celebration" = "Kutlama";
+"Confetti when a goal is hit" = "Hedef tutturulduğunda konfeti";
+"Plays a quick burst when any target reaches 100%." = "Herhangi bir hedef %100'e ulaştığında kısa bir animasyon oynatır.";
+"Goal tracking" = "Hedef takibi";
+"Stay on pace day, week, month, and year. Get a banner when you cross a target." = "Gün, hafta, ay ve yıl boyunca ritminizi koruyun. Bir hedefi aştığınızda bildirim alın.";
+"Tracking off" = "Takip kapalı";
+"Notifications on" = "Bildirimler açık";
+"Notifications blocked — check System Settings" = "Bildirimler engellendi — Sistem Ayarlarını kontrol edin";
+"Awaiting permission" = "İzin bekleniyor";
+"Notifications unavailable" = "Bildirimler kullanılamıyor";
+"Alert Thresholds" = "Dönüm Noktası Anları";
+"Custom Thresholds" = "Özel Dönüm Noktaları";
+"e.g. 50" = "örn. 50";
+"Sound" = "Ses";
+"Tap a value to type directly" = "Doğrudan yazmak için bir değere dokunun";
+"Enable tracking to edit" = "Düzenlemek için takibi etkinleştirin";
+"Get notified about usage milestones" = "Hedefinize ulaştığınızda sizi tebrik edelim";
+"Goal celebration animation" = "Hedef kutlama animasyonu";
+
+// MARK: - Display page
+"Theme" = "Tema";
+"Used across dashboard, menu bar, and settings" = "Kontrol paneli, menü çubuğu ve ayarlarda kullanılır";
+"Dashboard" = "Kontrol Paneli";
+"Primary metric" = "Birincil metrik";
+"Renders large in the popover header." = "Açılır pencere başlığında büyük görüntülenir.";
+"Hide sensitive amounts" = "Hassas tutarları gizle";
+"Masks earnings, rates, and totals across the app." = "Uygulama genelinde kazançları, oranları ve toplamları maskeler.";
+"Currency" = "Para Birimi";
+"Display currency" = "Para birimini görüntüle";
+"FX support coming in v2." = "Döviz desteği v2'de geliyor.";
+
+// MARK: - Shortcuts page
+"Bindings" = "Bağlantılar";
+"Esc cancels recording" = "Esc kaydı iptal eder";
+"Global shortcuts" = "Global kısayollar";
+"Shortcuts work from any application. Each shortcut must include at least one modifier key (⌘, ⌥, ⌃, or ⇧)." = "Kısayollar herhangi bir uygulamadan çalışır. Her kısayol en az bir niteleyici tuş içermelidir (⌘, ⌥, ⌃ veya ⇧).";
+
+// MARK: - Account page
+"Connection" = "Bağlantı";
+"Signed in via OAuth." = "OAuth ile giriş yapıldı.";
+"Not connected." = "Bağlı değil.";
+"Danger zone" = "Tehlike bölgesi";
+"Disconnect" = "Bağlantıyı Kes";
+"Sign out and clear cached earnings on this Mac." = "Bu Mac'teki önbelleğe alınmış kazançları temizleyerek çıkış yapın.";
+
+// MARK: - Menu bar
+"Menu bar" = "Menü çubuğu";
+"Choose which targets surface in the status bar" = "Durum çubuğunda hangi hedeflerin görüneceğini seçin";
+"Today target" = "Bugünkü hedef";
+"Daily progress in the menu bar" = "Menü çubuğundaki günlük ilerleme";
+"Weekly target" = "Haftalık hedef";
+"Weekly progress in the menu bar" = "Menü çubuğundaki haftalık ilerleme";
+"Icon Style" = "Simge Stili";
+"Display Mode" = "Görüntüleme Modu";
+"Display style" = "Görüntüleme stili";
+"Add a goal target" = "Hedef ekle";
+
+// MARK: - Menu bar enums
+"Icon + value" = "Simge + değer";
+"Icon only" = "Yalnızca simge";
+"Value only" = "Yalnızca değer";
+"Icon + primary metric" = "Simge + birincil metrik";
+"Icon + percentage" = "Simge + yüzde";
+"Icon + remaining" = "Simge + kalan";
+"Glyph only, no value" = "Yalnızca glyph, değer yok";
+"Glyph + current value" = "Glyph + geçerli değer";
+"Glyph + percent of goal" = "Glyph + hedefin yüzdesi";
+"Glyph + amount left to goal" = "Glyph + hedefe kalan miktar";
+"Value only, no glyph" = "Yalnızca değer, glyph yok";
+"Battery (Classic)" = "Pil (Klasik)";
+"Progress Bar" = "İlerleme Çubuğu";
+"Percentage" = "Yüzde";
+"Icon with Bar" = "Çubuklu Simge";
+"Compact" = "Kompakt";
+"Count vs goal" = "Sayı vs hedef";
+"Show as percentage (e.g., 60%)" = "Yüzde olarak göster (örn. %60)";
+"Show count vs goal (e.g., 5h/8h)" = "Sayıyı hedefe karşı göster (örn. 5s/8s)";
+
+// MARK: - Language page
+"Select Language" = "Dil Seçin";
+"Language changes will take effect after restarting the app" = "Dil değişiklikleri uygulamayı yeniden başlattıktan sonra geçerli olur";
+
+// MARK: - About page
+"Reset App Data?" = "Uygulama Verileri Sıfırlansın mı?";
+"Signs you out, clears cached earnings, and resets all preferences on this Mac. The action cannot be undone." = "Bu Mac'te oturumunuzu kapatır, önbelleğe alınmış kazançları temizler ve tüm tercihleri sıfırlar. Bu işlem geri alınamaz.";
+"Version %@" = "Sürüm %@";
+"Check for Updates" = "Güncellemeleri Kontrol Et";
+"Created By" = "Oluşturan";
+"Links" = "Bağlantılar";
+"Send Feedback" = "Geri Bildirim Gönder";
+"Reset App Data" = "Uygulama Verilerini Sıfırla";
+"MIT License • Open Source" = "MIT License • Açık Kaynak";
+
+// MARK: - Login
+"Track your active Upwork projects, hours, and earnings — right from the menu bar." = "Aktif Upwork projelerinizi, saatlerinizi ve kazançlarınızı — doğrudan menü çubuğundan takip edin.";
+"Connect Upwork" = "Upwork'e Bağlan";
+"A browser window will open for sign-in." = "Giriş için bir tarayıcı penceresi açılacak.";
+
+// MARK: - Dashboard
+"Show amounts" = "Tutarları göster";
+"Hide amounts" = "Tutarları gizle";
+"Refresh now" = "Şimdi yenile";
+
+// MARK: - Feedback
+"Help Us Improve" = "Geliştirmemize Yardımcı Olun";
+"Your feedback shapes the future of this app" = "Geri bildiriminiz bu uygulamanın geleceğini şekillendiriyor";
+"Role" = "Rol";
+"Tell us anything — feedback, ideas, feature requests…" = "Bize her şeyi söyleyin — geri bildirim, fikirler, özellik istekleri…";
+"Remind Me Later" = "Daha Sonra Hatırlat";
+"Don't Ask Again" = "Bir Daha Sorma";
+"UpworkBuddy Feedback — %@" = "UpworkBuddy Geri Bildirimi — %@";
+"Developer" = "Geliştirici";
+"Designer" = "Tasarımcı";
+"Manager" = "Yönetici";
+"Student" = "Öğrenci";
+"Researcher" = "Araştırmacı";
+"Other" = "Diğer";
+
+// MARK: - Projects list
+"Activity" = "Aktivite";
+"No tracked work in this period." = "Bu dönemde takip edilen çalışma yok.";
+
+// MARK: - Software updates
+"Version Information" = "Sürüm Bilgisi";
+"Current Version" = "Mevcut Sürüm";
+"Last Checked" = "Son Kontrol";
+"Update Preferences" = "Güncelleme Tercihleri";
+"Automatic Updates" = "Otomatik Güncellemeler";
+"Automatically check for and download updates daily" = "Güncellemeleri her gün otomatik olarak kontrol et ve indir";
+"Checking…" = "Kontrol ediliyor…";
+"Secure Updates" = "Güvenli Güncellemeler";
+"All updates are cryptographically signed and verified before installation" = "Tüm güncellemeler kurulumdan önce kriptografik olarak imzalanır ve doğrulanır";
+
+// MARK: - Support page
+"Support the Project" = "Projeyi Destekleyin";
+"UpworkBuddy is free and open source" = "UpworkBuddy ücretsiz ve açık kaynaklıdır";
+"All Features Are Free" = "Tüm Özellikler Ücretsizdir";
+"Every feature in this app is completely free to use. No premium tiers, no paywalls, no subscriptions." = "Bu uygulamadaki her özellik tamamen ücretsiz kullanılabilir. Premium katman yok, ödeme duvarı yok, abonelik yok.";
+"Open Source" = "Açık Kaynak";
+"The source code is publicly available on GitHub. You can inspect, modify, and contribute to the project." = "Kaynak kodu GitHub'da herkese açıktır. Projeyi inceleyebilir, değiştirebilir ve katkıda bulunabilirsiniz.";
+"No Tracking" = "İzleme Yok";
+"Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Gizliliğiniz önemlidir. Analitik yok, telemetri yok, veri toplama yok. Her şey Mac'inizde kalır.";
+"If you find this app useful, consider supporting its development" = "Bu uygulamayı yararlı buluyorsanız geliştirilmesini desteklemeyi düşünün";
+"Buy Me a Coffee" = "Bana Kahve Ismarla";
+"Your support helps keep this project alive and growing" = "Desteğiniz bu projenin yaşamasına ve büyümesine yardımcı olur";
+"You can also support by" = "Ayrıca şu şekilde de destek olabilirsiniz";
+"Starring on GitHub" = "GitHub'da Yıldızlayarak";
+
+// MARK: - Shortcut actions
+"Toggle Popover" = "Açılır Pencereyi Aç/Kapat";
+"Refresh Now" = "Şimdi Yenile";
+"Open Settings" = "Ayarları Aç";
+"Show or hide the UpworkBuddy popover" = "UpworkBuddy açılır penceresini gösterin veya gizleyin";
+"Fetch the latest earnings data" = "En güncel kazanç verilerini getir";
+"Open the settings window" = "Ayarlar penceresini açın";
+
+// MARK: - Music
+"Music" = "Müzik";
+"Background music while you work" = "Çalışırken arka plan müziği";
+"Add track" = "Parça ekle";
+"Track URL" = "Parça URL'si";
+"Paste YouTube, Spotify or audio URL" = "YouTube, Spotify veya ses URL'si yapıştırın";
+"Unsupported URL" = "Desteklenmeyen URL";
+"Playlist" = "Çalma Listesi";
+"Your playlist is empty. Paste a URL above to get started." = "Çalma listeniz boş. Başlamak için yukarıya bir URL yapıştırın.";
+"Playback" = "Oynatma";
+"Loop" = "Döngü";
+"Shuffle" = "Karıştır";
+"One" = "Bir";
+"All" = "Tümü";
+"Sleep timer" = "Uyku zamanlayıcısı";
+"Stop playback after a delay" = "Belirli bir süre sonra oynatmayı durdur";
+"Stops in %@" = "%@ içinde duruyor";
+"Sleep timer %@" = "Uyku zamanlayıcısı %@";
+"15 minutes" = "15 dakika";
+"30 minutes" = "30 dakika";
+"1 hour" = "1 saat";
+"2 hours" = "2 saat";
+"Volume" = "Ses Düzeyi";
+"Now playing" = "Şu anda oynatılıyor";
+"Play" = "Oynat";
+"Pause" = "Duraklat";
+"Next" = "Sonraki";
+"Previous" = "Önceki";
+"Stop" = "Durdur";
+"Remove" = "Kaldır";
+"Off" = "Kapalı";
+"Playback failed: %@" = "Oynatma başarısız: %@";
+"Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud or audio URL" = "YouTube, Spotify, SoundCloud, Vimeo, Mixcloud veya ses URL'si yapıştırın";
+
+// MARK: - Exercises
+"Exercises" = "Egzersizler";
+"Periodic eye rest and standup reminders" = "Periyodik göz dinlendirme ve ayağa kalkma hatırlatıcıları";
+"Eye break" = "Göz molası";
+"Enable eye break" = "Göz molasını etkinleştir";
+"Periodically pause your Upwork timer and lock the screen to rest your eyes (20-20-20 rule)." = "Gözlerinizi dinlendirmek için Upwork zamanlayıcınızı periyodik olarak durdurun ve ekranı kilitleyin (20-20-20 kuralı).";
+"Interval (minutes)" = "Aralık (dakika)";
+"How often an eye break is triggered." = "Göz molasının ne sıklıkla tetiklendiği.";
+"Break duration (seconds)" = "Mola süresi (saniye)";
+"How long the lock overlay stays on screen." = "Kilit kaplamasının ekranda ne kadar kaldığı.";
+"On-screen message" = "Ekran mesajı";
+"Custom text shown over the lock overlay." = "Kilit kaplaması üzerinde gösterilen özel metin.";
+"External displays only" = "Yalnızca harici ekranlar";
+"Only lock external monitors; keep the main display usable." = "Yalnızca harici monitörleri kilitleyin; ana ekranı kullanılabilir tutun.";
+"Preview" = "Önizleme";
+"Preview break now" = "Molayı şimdi önizle";
+"Shows a 5-second break using the current settings." = "Mevcut ayarları kullanarak 5 saniyelik bir mola gösterir.";
+"Look 20 feet away for 20 seconds" = "20 saniye boyunca 20 feet uzağa bakın";
+"Skip break (Esc)" = "Molayı atla (Esc)";
+
+// Standup
+"Standup" = "Ayağa Kalk";
+"Enable standup" = "Ayağa kalkma özelliğini etkinleştir";
+"Periodically lock the screen so you stand up, stretch, and move (~2 min every 30 min — Stanford EHS)." = "Ayağa kalkmanız, gerilmeniz ve hareket etmeniz için ekranı periyodik olarak kilitleyin (~30 dakikada 2 dk — Stanford EHS).";
+"Standup interval (minutes)" = "Ayağa kalkma aralığı (dakika)";
+"How often a standup is triggered." = "Ayağa kalkmanın ne sıklıkla tetiklendiği.";
+"Standup duration (seconds)" = "Ayağa kalkma süresi (saniye)";
+"How long the lock overlay stays on screen so you can move." = "Hareket edebilmeniz için kilit kaplamasının ekranda ne kadar kaldığı.";
+"Standup message" = "Ayağa kalkma mesajı";
+"Only lock external monitors during standup." = "Ayağa kalkma sırasında yalnızca harici monitörleri kilitleyin.";
+"Preview standup now" = "Ayağa kalkma özelliğini şimdi önizle";
+"Shows a 5-second standup using the current settings." = "Mevcut ayarları kullanarak 5 saniyelik bir ayağa kalkma gösterir.";
+"Stand up, stretch, and move around" = "Ayağa kalkın, gerilip gerin ve etrafta dolaşın";
