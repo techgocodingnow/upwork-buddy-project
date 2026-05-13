@@ -45,11 +45,15 @@ struct HeroSection: View {
                 Spacer(minLength: 8)
                 if goalTarget > 0 {
                     let current = (primary == .earnings) ? snapshot.totalEarnings : snapshot.totalHours
-                    let progress = current / goalTarget
-                    GoalRing(
-                        progress: progress,
-                        label: "\(Int(progress * 100))%"
-                    )
+                    if current > 0.01 {
+                        let progress = current / goalTarget
+                        GoalRing(
+                            progress: progress,
+                            label: "\(Int(progress * 100))%",
+                            size: 36,
+                            lineWidth: 4
+                        )
+                    }
                 }
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(primary == .earnings ? hoursText : earningsText)
@@ -77,7 +81,7 @@ struct HeroSection: View {
     private func deltaChip(format: CurrencyFormat) -> some View {
         let current = primary == .earnings ? snapshot.totalEarnings : snapshot.totalHours
         let prior = primary == .earnings ? previous.totalEarnings : previous.totalHours
-        if prior > 0.01 {
+        if prior > 0.01 && current > 0.01 {
             let delta = current - prior
             let pct = (delta / prior) * 100
             let positive = delta >= 0

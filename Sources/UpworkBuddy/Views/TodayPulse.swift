@@ -11,20 +11,16 @@ struct TodayPulse: View {
         let cal = Calendar.current
         let todayStart = cal.startOfDay(for: Date())
 
-        let yesterdayPt = points.first {
-            guard let y = cal.date(byAdding: .day, value: -1, to: todayStart) else { return false }
-            return cal.isDate($0.date, inSameDayAs: y)
-        }
-
-        let todayEarn = snapshot.totalEarnings
-        let yesterdayEarn = yesterdayPt?.earnings ?? 0
-
-        let weekTotal: Double = {
-            guard let weekStart = cal.date(byAdding: .day, value: -6, to: todayStart) else { return 0 }
-            return points
-                .filter { $0.date >= weekStart && $0.date <= todayStart }
-                .reduce(0) { $0 + $1.earnings }
+        let weekPoints: [DailyPoint] = {
+            guard let weekStart = cal.date(byAdding: .day, value: -6, to: todayStart) else { return [] }
+            return points.filter { $0.date >= weekStart && $0.date <= todayStart }
         }()
+
+        let weekTotal = weekPoints.reduce(0) { $0 + $1.earnings }
+        let activeDays = weekPoints.filter { $0.hours > 0 || $0.earnings > 0 }.count
+        let dailyAvg = activeDays > 0 ? weekTotal / Double(activeDays) : 0
+
+        let streak = currentStreak(points: points, todayStart: todayStart, calendar: cal)
 
         let lastActivity = points
             .filter { $0.hours > 0 || $0.earnings > 0 }
@@ -35,10 +31,10 @@ struct TodayPulse: View {
 
             HStack(spacing: 8) {
                 pulseCard(
-                    label: L10n.t("Vs yesterday"),
-                    primary: deltaText(today: todayEarn, prior: yesterdayEarn, format: format),
-                    secondary: L10n.t("%@ yest.", format.compact(yesterdayEarn)),
-                    tint: deltaTint(today: todayEarn, prior: yesterdayEarn)
+                    label: L10n.t("Daily avg"),
+                    primary: format.compact(dailyAvg),
+                    secondary: L10n.t("%d active days", activeDays),
+                    tint: Theme.textPrimary
                 )
                 pulseCard(
                     label: L10n.t("Week so far"),
@@ -50,10 +46,10 @@ struct TodayPulse: View {
 
             HStack(spacing: 8) {
                 pulseCard(
-                    label: L10n.t("Hours today"),
-                    primary: snapshot.totalHours.asHours(),
-                    secondary: hoursContext(today: snapshot.totalHours, yesterday: yesterdayPt?.hours ?? 0),
-                    tint: Theme.textPrimary
+                    label: L10n.t("Streak"),
+                    primary: streak == 1 ? L10n.t("%d day", streak) : L10n.t("%d days", streak),
+                    secondary: streak > 0 ? L10n.t("keep it going") : L10n.t("start today"),
+                    tint: streak > 0 ? Theme.accent : Theme.textPrimary
                 )
                 pulseCard(
                     label: L10n.t("Last activity"),
@@ -64,6 +60,20 @@ struct TodayPulse: View {
             }
 
         }
+    }
+
+    private func currentStreak(points: [DailyPoint], todayStart: Date, calendar: Calendar) -> Int {
+        var count = 0
+        var cursor = todayStart
+        let activeDates = Set(points
+            .filter { $0.hours > 0 || $0.earnings > 0 }
+            .map { calendar.startOfDay(for: $0.date) })
+        while activeDates.contains(cursor) {
+            count += 1
+            guard let prev = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            cursor = prev
+        }
+        return count
     }
 
     private func pulseCard(label: String, primary: String, secondary: String, tint: Color) -> some View {
@@ -95,26 +105,6 @@ struct TodayPulse: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(primary). \(secondary)")
-    }
-
-    private func deltaText(today: Double, prior: Double, format: CurrencyFormat) -> String {
-        if prior <= 0 && today <= 0 { return "—" }
-        if prior <= 0 { return "+" + format.compact(today) }
-        let pct = (today - prior) / prior * 100
-        let sign = pct >= 0 ? "+" : ""
-        return "\(sign)\(Int(pct.rounded()))%"
-    }
-
-    private func deltaTint(today: Double, prior: Double) -> Color {
-        if today >= prior { return Theme.accent }
-        return Theme.textSecondary
-    }
-
-    private func hoursContext(today: Double, yesterday: Double) -> String {
-        if yesterday <= 0 { return "—" }
-        let diff = today - yesterday
-        let prefix = diff >= 0 ? "+" : "−"
-        return L10n.t("%@ vs yest.", "\(prefix)\(abs(diff).asHours())")
     }
 
     private func relativeDay(_ point: DailyPoint) -> String {
