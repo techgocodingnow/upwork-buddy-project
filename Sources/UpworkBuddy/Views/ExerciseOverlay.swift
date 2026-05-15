@@ -1,6 +1,14 @@
 import AppKit
 import SwiftUI
 
+/// Borderless NSPanel subclass that *can* become key/main. Required so the
+/// overlay receives keyDown events (Esc to skip). The default borderless
+/// panel returns false for `canBecomeKey`, which silently swallows keys.
+private final class KeyableOverlayPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
 /// Fullscreen "lock screen" style overlay shown during an exercise session
 /// (eye break, standup, …). One opaque NSPanel per (filtered) NSScreen,
 /// mouse/keyboard captured so the user is gently forced to take the break.
@@ -34,6 +42,11 @@ final class ExerciseOverlayController {
             panel.orderFrontRegardless()
             activePanels.append(panel)
         }
+
+        // Activate the app and key the first panel so keyDown (Esc) routes
+        // here instead of whatever app the user was in when the break fired.
+        NSApp.activate(ignoringOtherApps: true)
+        activePanels.first?.makeKeyAndOrderFront(nil)
 
         installKeyMonitor()
     }
@@ -73,9 +86,9 @@ final class ExerciseOverlayController {
     }
 
     private func makePanel(for screen: NSScreen, store: AppStore, kind: ExerciseCoordinator.Kind) -> NSPanel {
-        let panel = NSPanel(
+        let panel = KeyableOverlayPanel(
             contentRect: screen.frame,
-            styleMask: [.borderless, .nonactivatingPanel],
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
@@ -86,6 +99,7 @@ final class ExerciseOverlayController {
         panel.ignoresMouseEvents = false
         panel.level = .screenSaver
         panel.hidesOnDeactivate = false
+        panel.becomesKeyOnlyIfNeeded = false
         panel.collectionBehavior = [
             .canJoinAllSpaces,
             .stationary,
