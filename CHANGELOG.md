@@ -11,6 +11,8 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-01
+
 ### Added
 
 - Initial public release of UpworkBuddy.
