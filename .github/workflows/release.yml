@@ -210,11 +210,23 @@ jobs:
           TAG: ${{ steps.tag.outputs.tag }}
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
+          # Prefer the hand-written CHANGELOG.md section for this version;
+          # fall back to generating notes from git history.
+          SECTION=""
+          if [ -f CHANGELOG.md ]; then
+            SECTION=$(awk -v ver="$VERSION" '
+              $0 ~ "^## \\[" ver "\\]" { flag=1; next }
+              /^## / && flag { exit }
+              flag { print }
+            ' CHANGELOG.md | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;};/\n$/ba')
+          fi
           PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || echo "")
           {
             echo "## UpworkBuddy ${VERSION}"
             echo ""
-            if [ -n "$PREV_TAG" ]; then
+            if [ -n "$SECTION" ]; then
+              echo "$SECTION"
+            elif [ -n "$PREV_TAG" ]; then
               echo "### Changes since ${PREV_TAG}"
               echo ""
               git log "${PREV_TAG}..${TAG}" --pretty=format:"- %s (%h)" --no-merges

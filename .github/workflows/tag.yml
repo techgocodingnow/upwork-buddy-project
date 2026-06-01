@@ -1,0 +1,119 @@
+name: Tag
+
+# Manually-triggered release tagging — the CI-side equivalent of
+# Scripts/release.sh. Bumps the VERSION file, commits it, creates an
+# annotated `vMAJOR.MINOR.PATCH` tag, and pushes both.
+#
+# Why it then dispatches Release explicitly: a tag pushed with the default
+# GITHUB_TOKEN does NOT trigger other workflows (GitHub suppresses
+# workflow-triggered workflows to avoid recursion). So instead of requiring
+# a PAT, this job pushes the tag and then kicks off release.yml via its
+# `workflow_dispatch` `tag` input using `gh`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.0.0 or 1.2.0-beta.1 (no leading v)'
+        required: true
+        type: string
+      dispatch_release:
+        description: 'Also start the Release workflow after pushing the tag'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write   # push the release commit + tag
+  actions: write    # dispatch release.yml
+
+concurrency:
+  group: tag-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate version
+        id: v
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$ ]]; then
+            echo "::error::version '$VERSION' must match MAJOR.MINOR.PATCH[-PRERELEASE]"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Guard against existing tag
+        env:
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "::error::tag $TAG already exists"
+            exit 1
+          fi
+
+      - name: Promote CHANGELOG [Unreleased] section
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "::warning::CHANGELOG.md not found — skipping changelog promotion"
+            exit 0
+          fi
+          if ! grep -q '^## \[Unreleased\]' CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [Unreleased]' section"
+            exit 1
+          fi
+          DATE=$(date -u +%Y-%m-%d)
+          # Keep an empty [Unreleased] at the top and move its current contents
+          # under a new dated version heading.
+          awk -v ver="$VERSION" -v date="$DATE" '
+            /^## \[Unreleased\]/ && !done {
+              print "## [Unreleased]"
+              print ""
+              print "## [" ver "] - " date
+              done = 1
+              next
+            }
+            { print }
+          ' CHANGELOG.md > CHANGELOG.md.tmp
+          mv CHANGELOG.md.tmp CHANGELOG.md
+
+      - name: Bump VERSION, commit, tag, push
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          echo "$VERSION" > VERSION
+          git add VERSION CHANGELOG.md
+          # Matches the message ci.yml skips, so this commit doesn't double-build.
+          git commit -m "chore: release $TAG"
+          git tag -a "$TAG" -m "UpworkBuddy $VERSION"
+
+          git push origin HEAD:"${GITHUB_REF_NAME}"
+          git push origin "$TAG"
+
+      - name: Dispatch Release workflow
+        if: ${{ github.event.inputs.dispatch_release != 'false' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.v.outputs.tag }}
+        run: |
+          gh workflow run release.yml -f tag="$TAG"
+          echo "Dispatched Release for $TAG"
+          echo "::notice::Tag $TAG pushed and Release dispatched"
