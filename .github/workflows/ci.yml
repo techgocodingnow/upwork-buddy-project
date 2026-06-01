@@ -16,7 +16,7 @@ jobs:
     # Skip release commits to avoid double-runs (release.yml handles those).
     if: "${{ github.event_name == 'pull_request' || !startsWith(github.event.head_commit.message, 'chore: release v') }}"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Select Xcode
         run: |
