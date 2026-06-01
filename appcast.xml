@@ -7,17 +7,6 @@
     <link>https://techgocodingnow.github.io/upwork-buddy-project/appcast.xml</link>
     <description>UpworkBuddy update feed</description>
     <language>en</language>
-    <!-- TEST ENTRY (notarized) — remove after verifying the update flow. -->
-    <item>
-      <title>Version 1.0.1</title>
-      <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
-      <sparkle:version>2</sparkle:version>
-      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <pubDate>Mon, 01 Jun 2026 18:40:05 +0000</pubDate>
-      <enclosure url="https://techgocodingnow.github.io/upwork-buddy-project/UpworkBuddy-1.0.1.zip"
-                 type="application/octet-stream"
-                 length="4334795"
-                 sparkle:edSignature="S1eoh5HVzHVzJmNiEokQDB8rStQUT4qNvFnKUUXF3LDYgH15PfN8De09Z9I029KQqv4D+cqeNoZUuT3+J4YxDg==" />
-    </item>
+    <!-- CI prepends a new <item> here per release. Keep newest at top. -->
   </channel>
 </rss>
