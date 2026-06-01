@@ -25,9 +25,9 @@
     <key>CFBundleIdentifier</key>
     <string>com.gocodingnow.UpworkBuddy</string>
     <key>CFBundleName</key>
-    <string>UpworkBuddy</string>
+    <string>Upwork Buddy</string>
     <key>CFBundleDisplayName</key>
-    <string>UpworkBuddy</string>
+    <string>Upwork Buddy</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
