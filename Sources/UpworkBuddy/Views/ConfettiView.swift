@@ -36,13 +36,8 @@ struct ConfettiView: View {
         case .fireworks:    fireworksView
         case .confettiRain: confettiBurstView
         case .moneyRain:    moneyRainView
-        case .stars:        magicStarsView
-        case .sideBursts:   sideBurstsView
-        case .fire:         fireView
-        case .fireflies:    firefliesView
         case .snow:         snowView
         case .rain:         rainView
-        case .spark:        sparkView
         }
     }
 
@@ -90,58 +85,6 @@ struct ConfettiView: View {
         }
     }
 
-    private var magicStarsView: some View {
-        VortexView(.magic) {
-            Image(systemName: "sparkle")
-                .font(.system(size: 24))
-                .foregroundStyle(.white)
-                .blendMode(.plusLighter)
-                .tag("sparkle")
-        }
-    }
-
-    /// Two `.splash` systems anchored to bottom-left and bottom-right.
-    private var sideBurstsView: some View {
-        ZStack {
-            VortexView(sideBurstSystem(left: true)) {
-                Circle()
-                    .fill(.white)
-                    .blendMode(.plusLighter)
-                    .frame(width: 18, height: 18)
-                    .tag("circle")
-            }
-            VortexView(sideBurstSystem(left: false)) {
-                Circle()
-                    .fill(.white)
-                    .blendMode(.plusLighter)
-                    .frame(width: 18, height: 18)
-                    .tag("circle")
-            }
-        }
-    }
-
-    private var fireView: some View {
-        VortexView(.fire) {
-            Circle()
-                .fill(.white)
-                .blendMode(.plusLighter)
-                .blur(radius: 3)
-                .frame(width: 32, height: 32)
-                .tag("circle")
-        }
-    }
-
-    private var firefliesView: some View {
-        VortexView(.fireflies) {
-            Circle()
-                .fill(.white)
-                .blendMode(.plusLighter)
-                .blur(radius: 1.5)
-                .frame(width: 14, height: 14)
-                .tag("circle")
-        }
-    }
-
     private var snowView: some View {
         VortexView(.snow) {
             Circle()
@@ -157,16 +100,6 @@ struct ConfettiView: View {
             Circle()
                 .fill(.white.opacity(0.7))
                 .frame(width: 32, height: 32)
-                .tag("circle")
-        }
-    }
-
-    private var sparkView: some View {
-        VortexView(.spark) {
-            Circle()
-                .fill(.white)
-                .blendMode(.plusLighter)
-                .frame(width: 16, height: 16)
                 .tag("circle")
         }
     }
@@ -188,32 +121,6 @@ struct ConfettiView: View {
         s.size = 0.6
         s.sizeVariation = 0.5
         s.angularSpeedVariation = [0, 0, 2]
-        return s
-    }
-
-    /// Splash-style burst anchored to bottom-left (left=true) or bottom-right.
-    /// Cone aimed inward + upward.
-    private func sideBurstSystem(left: Bool) -> VortexSystem {
-        let s = VortexSystem(tags: ["circle"])
-        s.position = left ? [0.05, 0.95] : [0.95, 0.95]
-        s.shape = .point
-        s.birthRate = 60
-        s.lifespan = 1.6
-        s.lifespanVariation = 0.4
-        s.speed = 1.1
-        s.speedVariation = 0.4
-        s.angle = left ? .degrees(290) : .degrees(250)
-        s.angleRange = .degrees(35)
-        s.acceleration = [0, 1.2]   // gravity
-        s.colors = .randomRamp(
-            [.red, .orange, .yellow],
-            [.cyan, .blue, .purple],
-            [.green, .yellow, .white],
-            [.pink, .red, .orange]
-        )
-        s.size = 0.4
-        s.sizeVariation = 0.4
-        s.sizeMultiplierAtDeath = 0.4
         return s
     }
 }
