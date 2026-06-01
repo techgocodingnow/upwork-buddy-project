@@ -10,8 +10,7 @@ enum MenuBarMetric: String, CaseIterable, Sendable {
 /// Visual style for the goal-celebration overlay. Each case renders with a
 /// distinct particle trajectory in `ConfettiView`.
 enum CelebrationStyle: String, CaseIterable, Sendable, Identifiable {
-    // All styles render through Vortex (twostraws/Vortex, MIT). Each maps to
-    // either a built-in preset or a small custom VortexSystem.
+    // All styles render through the native particle engine in `ConfettiView`.
     case fireworks
     case confettiRain
     case moneyRain
