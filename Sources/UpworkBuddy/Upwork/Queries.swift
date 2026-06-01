@@ -76,6 +76,20 @@ enum Queries {
         """
     }
 
+    /// Freelancer Work Diary for one contract on one day. `date` is compact
+    /// `YYYYMMDD`. Each `workDiaryTimeCell` is a fixed 10-minute billing interval,
+    /// so logged hours == `cellCount / 6`. Used to surface the in-progress current
+    /// day, which `contractTimeReport` does not post until hours later.
+    static func workDiaryContract(contractId: String, date: String) -> String {
+        """
+        query WorkDiaryContract {
+          workDiaryContract(workDiaryContractInput: {contractId: "\(contractId)", date: "\(date)"}) {
+            workDiaryTimeCells { manual }
+          }
+        }
+        """
+    }
+
     /// `__schema` introspection slice — used by Introspection.swift in DEBUG builds.
     static let introspectType = """
     query IntrospectType($name: String!) {
@@ -84,11 +98,19 @@ enum Queries {
         kind
         fields {
           name
+          args {
+            name
+            type { name kind ofType { name kind ofType { name kind } } }
+          }
           type {
             name
             kind
             ofType { name kind }
           }
+        }
+        inputFields {
+          name
+          type { name kind ofType { name kind ofType { name kind } } }
         }
       }
     }

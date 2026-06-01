@@ -44,6 +44,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, UNU
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+#if DEBUG
+        if let idx = CommandLine.arguments.firstIndex(of: "--introspect"),
+           idx + 1 < CommandLine.arguments.count {
+            let names = CommandLine.arguments[idx + 1]
+                .split(separator: ",")
+                .map(String.init)
+            Task {
+                await Introspection.dump(typeNames: names)
+                exit(0)
+            }
+            return
+        }
+#endif
         ProcessInfo.processInfo.automaticTerminationSupportEnabled = false
         ProcessInfo.processInfo.disableSuddenTermination()
 
