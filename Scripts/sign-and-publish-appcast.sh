@@ -110,9 +110,14 @@ fi
 # its leading siblings — i.e. before the first existing <item> if present,
 # otherwise before </channel>.
 TMP="$(mktemp)"
-awk -v item="$NEW_ITEM" '
+# Pass the multiline item through the environment, not `awk -v`: awk's -v
+# assignment runs escape processing and rejects literal newlines ("newline in
+# string"), which silently broke appcast publishing. ENVIRON reads the value
+# verbatim, newlines included.
+export NEW_ITEM
+awk '
   BEGIN { inserted=0 }
-  /<\/channel>/ && !inserted { print item; inserted=1 }
+  /<\/channel>/ && !inserted { print ENVIRON["NEW_ITEM"]; inserted=1 }
   { print }
   END {
     if (!inserted) {
