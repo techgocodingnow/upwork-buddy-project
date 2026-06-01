@@ -148,7 +148,16 @@ if security find-identity -v -p codesigning | grep -qF "${SIGN_IDENTITY}"; then
     done
   for fw in "${BUNDLE}/Contents/lib/"*.framework; do
     [[ -d "${fw}" ]] || continue
-    # Sign nested XPC/helpers inside framework.
+    # Sign nested helpers inside-out, before the framework itself:
+    #   1. Bare executables (Sparkle ships 'Autoupdate' — NOT a bundle, so it
+    #      is missed by the *.xpc/*.app search and would fail notarization with
+    #      "not signed with a valid Developer ID / no secure timestamp").
+    #   2. XPC services and helper .app bundles.
+    find "${fw}/Versions" -maxdepth 2 -type f -name Autoupdate -print0 2>/dev/null | \
+      while IFS= read -r -d '' helper; do
+        codesign --force --options runtime --timestamp \
+          --sign "${SIGN_IDENTITY}" "${helper}"
+      done
     find "${fw}" \( -name "*.xpc" -o -name "*.app" \) -type d -print0 2>/dev/null | \
       while IFS= read -r -d '' helper; do
         codesign --force --options runtime --timestamp \
