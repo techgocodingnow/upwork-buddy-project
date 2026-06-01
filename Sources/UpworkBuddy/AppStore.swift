@@ -15,13 +15,8 @@ enum CelebrationStyle: String, CaseIterable, Sendable, Identifiable {
     case fireworks
     case confettiRain
     case moneyRain
-    case stars
-    case sideBursts
-    case fire
-    case fireflies
     case snow
     case rain
-    case spark
 
     var id: String { rawValue }
 
@@ -30,38 +25,17 @@ enum CelebrationStyle: String, CaseIterable, Sendable, Identifiable {
         case .fireworks:    return "Fireworks 🎆"
         case .confettiRain: return "Confetti burst 🎊"
         case .moneyRain:    return "Money rain 💵"
-        case .stars:        return "Magic stars ✨"
-        case .sideBursts:   return "Side bursts 🎇"
-        case .fire:         return "Fire 🔥"
-        case .fireflies:    return "Fireflies 🪲"
         case .snow:         return "Snow ❄️"
         case .rain:         return "Rain 🌧️"
-        case .spark:        return "Sparks ⚡"
         }
     }
 }
 
-/// System sound to play alongside the celebration overlay. Backed by the
-/// `/System/Library/Sounds` bundled set so we don't ship audio assets.
-/// Audio cue played alongside the celebration overlay. Procedurally-generated
-/// cases (`applause`, `cheer`, `fanfare`, `magic`, `drumroll`) are synthesized
-/// on the fly by `CelebrationSoundPlayer` — no bundled audio assets. System
-/// cases play `NSSound(named:)` from `/System/Library/Sounds`.
+/// Audio cue played alongside the celebration overlay. `.off` mutes it;
+/// `.custom` plays a user-supplied local file or remote URL via
+/// `CelebrationSoundPlayer` — no bundled audio assets.
 enum CelebrationSound: String, CaseIterable, Sendable, Identifiable {
     case off
-    // Fun / encouraging — procedurally synthesized.
-    case applause  = "applause"
-    case cheer     = "cheer"
-    case fanfare   = "fanfare"
-    case magic     = "magic"
-    case drumroll  = "drumroll"
-    // macOS bundled system sounds.
-    case glass     = "Glass"
-    case hero      = "Hero"
-    case submarine = "Submarine"
-    case ping      = "Ping"
-    case funk      = "Funk"
-    case pop       = "Pop"
     // User-supplied audio (local file path or remote URL persisted in
     // AppStore.customSoundSource).
     case custom    = "custom"
@@ -71,33 +45,7 @@ enum CelebrationSound: String, CaseIterable, Sendable, Identifiable {
     var displayName: String {
         switch self {
         case .off:       return "Off"
-        case .applause:  return "Applause 👏"
-        case .cheer:     return "Cheer 🎉"
-        case .fanfare:   return "Fanfare 🎺"
-        case .magic:     return "Magic ✨"
-        case .drumroll:  return "Drum roll 🥁"
-        case .glass:     return "Glass"
-        case .hero:      return "Hero"
-        case .submarine: return "Submarine"
-        case .ping:      return "Ping"
-        case .funk:      return "Funk"
-        case .pop:       return "Pop"
         case .custom:    return "Custom…"
-        }
-    }
-
-    var isProcedural: Bool {
-        switch self {
-        case .applause, .cheer, .fanfare, .magic, .drumroll: return true
-        default: return false
-        }
-    }
-
-    /// NSSound name for system sounds; nil for procedural / off / custom.
-    var systemName: String? {
-        switch self {
-        case .glass, .hero, .submarine, .ping, .funk, .pop: return rawValue
-        default: return nil
         }
     }
 }
@@ -667,7 +615,7 @@ final class AppStore {
         let storedStyle = defaults.string(forKey: Self.kCelebrationStyle).flatMap(CelebrationStyle.init(rawValue:))
         self.celebrationStyle = storedStyle ?? .fireworks
         let storedSound = defaults.string(forKey: Self.kCelebrationSound).flatMap(CelebrationSound.init(rawValue:))
-        self.celebrationSound = storedSound ?? .hero
+        self.celebrationSound = storedSound ?? .off
         self.celebrationCustomSource = defaults.string(forKey: Self.kCelebrationCustomSrc) ?? ""
 
         // Eye break — default off, 20-20-20 rule values.
