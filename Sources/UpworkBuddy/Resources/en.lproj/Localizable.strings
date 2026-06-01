@@ -258,8 +258,12 @@
 "No Tracking" = "No Tracking";
 "Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac.";
 "If you find this app useful, consider supporting its development" = "If you find this app useful, consider supporting its development";
-"Buy Me a Coffee" = "Buy Me a Coffee";
+"Sponsor on GitHub" = "Sponsor on GitHub";
 "Your support helps keep this project alive and growing" = "Your support helps keep this project alive and growing";
+"Support from Vietnam" = "Support from Vietnam";
+"Scan this QR code with the MoMo app to send your support" = "Scan this QR code with the MoMo app to send your support";
+"MoMo QR code" = "MoMo QR code";
+"QR code unavailable" = "QR code unavailable";
 "You can also support by" = "You can also support by";
 "Starring on GitHub" = "Starring on GitHub";
 
@@ -323,7 +327,7 @@
 "Preview break now" = "Preview break now";
 "Shows a 5-second break using the current settings." = "Shows a 5-second break using the current settings.";
 "Look 20 feet away for 20 seconds" = "Look 20 feet away for 20 seconds";
-"Skip break (Esc)" = "Skip break (Esc)";
+"Skip break (press any key)" = "Skip break (press any key)";
 
 // Standup
 "Standup" = "Standup";

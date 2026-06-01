@@ -20,6 +20,7 @@ URL_SCHEME="upworkbuddy"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST_DIR="${ROOT}/.build/dist"
 CONFIG_PLIST="${ROOT}/Sources/UpworkBuddy/Resources/Config.plist"
+SOURCE_PLIST="${ROOT}/Sources/UpworkBuddy/Info.plist"
 APP_ICON="${ROOT}/Sources/UpworkBuddy/Resources/GeneratedBrand/UpworkBuddy.icns"
 
 cd "${ROOT}"
@@ -28,6 +29,28 @@ if [[ ! -f "${CONFIG_PLIST}" ]]; then
   echo "ERROR: ${CONFIG_PLIST} not found." >&2
   echo "       Copy Config.example.plist to Config.plist and fill in values." >&2
   exit 1
+fi
+
+# Sparkle auto-update config is sourced from Sources/UpworkBuddy/Info.plist so
+# there is a single source of truth. SwiftPM excludes that plist from the build,
+# so the keys must be re-emitted into the bundle Info.plist below — otherwise the
+# shipped app has no SUFeedURL and "Check for Updates" silently does nothing.
+plist_read() { /usr/libexec/PlistBuddy -c "Print :$1" "${SOURCE_PLIST}" 2>/dev/null || true; }
+SU_FEED_URL="$(plist_read SUFeedURL)"
+SU_PUBLIC_ED_KEY="$(plist_read SUPublicEDKey)"
+# Sparkle compares the appcast's <sparkle:version> (the build number) against the
+# running app's CFBundleVersion, so the bundle MUST ship the integer build — not
+# the marketing version — or update detection misbehaves. CI publishes the same
+# CFBundleVersion as <sparkle:version>, so read it from the same place.
+BUILD="$(plist_read CFBundleVersion)"
+BUILD="${BUILD:-1}"
+
+if [[ -z "${SU_FEED_URL}" ]]; then
+  echo "WARNING: SUFeedURL missing in ${SOURCE_PLIST}; auto-update will be disabled." >&2
+fi
+if [[ -z "${SU_PUBLIC_ED_KEY}" || "${SU_PUBLIC_ED_KEY}" == REPLACE_WITH_* ]]; then
+  echo "WARNING: SUPublicEDKey in ${SOURCE_PLIST} is unset/placeholder." >&2
+  echo "         Sparkle will refuse updates. Run 'generate_keys' and paste the public key." >&2
 fi
 
 CLIENT_ID=$(/usr/libexec/PlistBuddy -c "Print :UpworkClientId" "${CONFIG_PLIST}" 2>/dev/null || true)
@@ -109,13 +132,23 @@ cat > "${BUNDLE}/Contents/Info.plist" <<PLIST
     <key>CFBundleShortVersionString</key>
     <string>${VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>${VERSION}</string>
+    <string>${BUILD}</string>
     <key>LSMinimumSystemVersion</key>
     <string>${MIN_MACOS}</string>
     <key>LSUIElement</key>
     <true/>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>SUFeedURL</key>
+    <string>${SU_FEED_URL}</string>
+    <key>SUPublicEDKey</key>
+    <string>${SU_PUBLIC_ED_KEY}</string>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SUEnableInstallerLauncherService</key>
+    <false/>
+    <key>SUScheduledCheckInterval</key>
+    <integer>86400</integer>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>

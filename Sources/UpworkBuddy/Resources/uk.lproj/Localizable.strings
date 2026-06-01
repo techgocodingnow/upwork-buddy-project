@@ -317,7 +317,7 @@
 "Preview break now" = "Переглянути перерву зараз";
 "Shows a 5-second break using the current settings." = "Показує 5-секундну перерву з поточними налаштуваннями.";
 "Look 20 feet away for 20 seconds" = "Дивіться вдаль на 6 метрів протягом 20 секунд";
-"Skip break (Esc)" = "Пропустити перерву (Esc)";
+"Skip break (press any key)" = "Пропустити перерву (будь-яка клавіша)";
 
 // Standup
 "Standup" = "Підйом";

@@ -317,7 +317,7 @@
 "Preview break now" = "立即预览休息";
 "Shows a 5-second break using the current settings." = "使用当前设置显示 5 秒钟的休息预览。";
 "Look 20 feet away for 20 seconds" = "注视 20 英尺外 20 秒";
-"Skip break (Esc)" = "跳过休息（Esc）";
+"Skip break (press any key)" = "跳过休息（按任意键）";
 
 // Standup
 "Standup" = "起立活动";

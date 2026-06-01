@@ -317,7 +317,7 @@
 "Preview break now" = "Molayı şimdi önizle";
 "Shows a 5-second break using the current settings." = "Mevcut ayarları kullanarak 5 saniyelik bir mola gösterir.";
 "Look 20 feet away for 20 seconds" = "20 saniye boyunca 20 feet uzağa bakın";
-"Skip break (Esc)" = "Molayı atla (Esc)";
+"Skip break (press any key)" = "Molayı atla (herhangi bir tuş)";
 
 // Standup
 "Standup" = "Ayağa Kalk";

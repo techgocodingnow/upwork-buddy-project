@@ -1,9 +1,9 @@
 import SwiftUI
 import AppKit
 
-private let supportRepoURL    = URL(string: "https://github.com/anthropics/claude-code")!
-private let supportIssuesURL  = URL(string: "https://github.com/anthropics/claude-code/issues")!
-private let buyMeACoffeeURL   = URL(string: "https://buymeacoffee.com/")!
+private let supportRepoURL     = URL(string: "https://github.com/techgocodingnow/upwork-buddy-project")!
+private let supportIssuesURL   = URL(string: "https://github.com/techgocodingnow/upwork-buddy-project/issues")!
+private let gitHubSponsorsURL  = URL(string: "https://github.com/sponsors/techgocodingnow")!
 
 /// Scheme-aware tint colors for Support page feature rows. Brighter on dark,
 /// deeper on light — keeps WCAG contrast on both themes.
@@ -28,6 +28,12 @@ private enum SupportTint {
             ? Color(red: 1.00, green: 0.50, blue: 0.56)
             : Color(red: 0.92, green: 0.20, blue: 0.28)
     }
+    /// GitHub Sponsors brand pink, tuned for contrast on each scheme.
+    static func sponsor(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color(red: 0.92, green: 0.40, blue: 0.66)
+            : Color(red: 0.79, green: 0.20, blue: 0.55)
+    }
 }
 
 /// Inline Support page rendered inside `SettingsContent`. Inherits the
@@ -40,6 +46,7 @@ struct SupportPage: View {
             heroBlock
             featuresCard
             supportBlock
+            vietnameseSupportBlock
             githubBlock
         }
         .frame(maxWidth: .infinity)
@@ -108,7 +115,7 @@ struct SupportPage: View {
         )
     }
 
-    // MARK: - Coffee CTA
+    // MARK: - GitHub Sponsors CTA (primary)
 
     private var supportBlock: some View {
         VStack(spacing: 14) {
@@ -119,30 +126,96 @@ struct SupportPage: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             Button {
-                NSWorkspace.shared.open(buyMeACoffeeURL)
+                NSWorkspace.shared.open(gitHubSponsorsURL)
             } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "cup.and.saucer.fill")
+                    Image(systemName: "heart.fill")
                         .font(Theme.body(size: 14, weight: .bold))
-                    Text(loc: "Buy Me a Coffee")
+                    Text(loc: "Sponsor on GitHub")
                         .font(Theme.body(size: 14, weight: .bold))
                 }
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.white)
                 .padding(.horizontal, 26)
                 .padding(.vertical, 12)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color(red: 1.0, green: 0.86, blue: 0.20))
+                        .fill(SupportTint.sponsor(colorScheme))
                 )
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(L10n.t("Buy Me a Coffee"))
+            .accessibilityLabel(L10n.t("Sponsor on GitHub"))
             .accessibilityHint(L10n.t("Opens donation page in browser"))
 
             Text(loc: "Your support helps keep this project alive and growing")
                 .font(Theme.body(size: 11.5))
                 .foregroundStyle(Theme.textTertiary)
                 .multilineTextAlignment(.center)
+        }
+    }
+
+    // MARK: - Vietnamese support (MoMo)
+
+    /// Local donation option for Vietnamese users: a MoMo QR code shipped from
+    /// `Resources/donation/momo.JPG` (SwiftPM's `.process` flattens it to the
+    /// bundle root). Falls back to a labelled placeholder if the image is
+    /// missing from the bundle.
+    private var vietnameseSupportBlock: some View {
+        VStack(spacing: 14) {
+            Text(loc: "Support from Vietnam")
+                .font(Theme.body(size: 14.5, weight: .semibold))
+                .foregroundStyle(Theme.textPrimary)
+                .accessibilityAddTraits(.isHeader)
+
+            Text(loc: "Scan this QR code with the MoMo app to send your support")
+                .font(Theme.body(size: 12))
+                .foregroundStyle(Theme.textSecondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            momoQR
+                .frame(width: 220, height: 220)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(Theme.divider, lineWidth: 0.6)
+                )
+                .accessibilityLabel(L10n.t("MoMo QR code"))
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Theme.surface.opacity(0.6))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(Theme.divider, lineWidth: 0.6)
+        )
+    }
+
+    @ViewBuilder
+    private var momoQR: some View {
+        if let url = Bundle.module.url(forResource: "momo", withExtension: "JPG"),
+           let nsImage = NSImage(contentsOf: url) {
+            Image(nsImage: nsImage)
+                .resizable()
+                .interpolation(.high)
+                .scaledToFit()
+        } else {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Theme.surface)
+                VStack(spacing: 8) {
+                    Image(systemName: "qrcode")
+                        .font(Theme.body(size: 40, weight: .regular))
+                        .foregroundStyle(Theme.textTertiary)
+                    Text(loc: "QR code unavailable")
+                        .font(Theme.body(size: 11))
+                        .foregroundStyle(Theme.textTertiary)
+                }
+            }
+            .frame(height: 180)
+            .accessibilityHidden(true)
         }
     }
 

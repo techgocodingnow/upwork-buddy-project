@@ -253,8 +253,12 @@
 "No Tracking" = "Không theo dõi";
 "Your privacy matters. No analytics, no telemetry, no data collection. Everything stays on your Mac." = "Quyền riêng tư của bạn quan trọng. Không phân tích, không đo lường, không thu thập dữ liệu. Tất cả lưu trên Mac của bạn.";
 "If you find this app useful, consider supporting its development" = "Nếu ứng dụng hữu ích, hãy cân nhắc ủng hộ sự phát triển của nó";
-"Buy Me a Coffee" = "Mua cho tôi một ly cà phê";
+"Sponsor on GitHub" = "Tài trợ trên GitHub";
 "Your support helps keep this project alive and growing" = "Sự ủng hộ của bạn giúp dự án tiếp tục phát triển";
+"Support from Vietnam" = "Ủng hộ từ Việt Nam";
+"Scan this QR code with the MoMo app to send your support" = "Quét mã QR này bằng ứng dụng MoMo để gửi ủng hộ";
+"MoMo QR code" = "Mã QR MoMo";
+"QR code unavailable" = "Không có mã QR";
 "You can also support by" = "Bạn cũng có thể ủng hộ bằng cách";
 "Starring on GitHub" = "Đánh sao trên GitHub";
 
@@ -318,7 +322,7 @@
 "Preview break now" = "Xem trước nghỉ ngay";
 "Shows a 5-second break using the current settings." = "Hiển thị nghỉ 5 giây với cài đặt hiện tại.";
 "Look 20 feet away for 20 seconds" = "Nhìn xa 6 mét trong 20 giây";
-"Skip break (Esc)" = "Bỏ qua nghỉ (Esc)";
+"Skip break (press any key)" = "Bỏ qua nghỉ (nhấn phím bất kỳ)";
 
 // Standup
 "Standup" = "Đứng dậy";

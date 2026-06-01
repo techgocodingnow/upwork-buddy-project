@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// Borderless NSPanel subclass that *can* become key/main. Required so the
-/// overlay receives keyDown events (Esc to skip). The default borderless
+/// overlay receives keyDown events (any key skips). The default borderless
 /// panel returns false for `canBecomeKey`, which silently swallows keys.
 private final class KeyableOverlayPanel: NSPanel {
     override var canBecomeKey: Bool { true }
@@ -12,7 +12,7 @@ private final class KeyableOverlayPanel: NSPanel {
 /// Fullscreen "lock screen" style overlay shown during an exercise session
 /// (eye break, standup, …). One opaque NSPanel per (filtered) NSScreen,
 /// mouse/keyboard captured so the user is gently forced to take the break.
-/// Esc dismisses early.
+/// Any key (or the Skip button) dismisses early.
 @MainActor
 final class ExerciseOverlayController {
     static let shared = ExerciseOverlayController()
@@ -75,13 +75,10 @@ final class ExerciseOverlayController {
     }
 
     private func installKeyMonitor() {
-        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            // 53 = Escape
-            if event.keyCode == 53 {
-                self?.onSkip?()
-                return nil
-            }
-            return event
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] _ in
+            // Any key dismisses the break early — not just Escape.
+            self?.onSkip?()
+            return nil
         }
     }
 
@@ -161,7 +158,7 @@ struct ExerciseLockView: View {
                     .frame(maxWidth: 720)
 
                 Button(action: onSkip) {
-                    Text(loc: "Skip break (Esc)")
+                    Text(loc: "Skip break (press any key)")
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(.white.opacity(0.9))
                         .padding(.horizontal, 18)
@@ -174,7 +171,7 @@ struct ExerciseLockView: View {
                 .buttonStyle(.plain)
                 .padding(.top, 12)
                 .accessibilityLabel(L10n.t("Skip break"))
-                .accessibilityHint(L10n.t("Press Escape or activate to skip the break early"))
+                .accessibilityHint(L10n.t("Press any key or activate to skip the break early"))
             }
         }
     }

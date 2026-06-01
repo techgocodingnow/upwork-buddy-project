@@ -317,7 +317,7 @@
 "Preview break now" = "Pré-visualizar pausa agora";
 "Shows a 5-second break using the current settings." = "Mostra uma pausa de 5 segundos com as definições atuais.";
 "Look 20 feet away for 20 seconds" = "Olhe para longe (6 metros) durante 20 segundos";
-"Skip break (Esc)" = "Ignorar pausa (Esc)";
+"Skip break (press any key)" = "Ignorar pausa (qualquer tecla)";
 
 // Standup
 "Standup" = "Pausa em Pé";

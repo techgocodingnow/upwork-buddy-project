@@ -317,7 +317,7 @@
 "Preview break now" = "今すぐプレビュー";
 "Shows a 5-second break using the current settings." = "現在の設定で5秒間の休憩をプレビューします。";
 "Look 20 feet away for 20 seconds" = "20フィート先を20秒間見つめてください";
-"Skip break (Esc)" = "休憩をスキップ (Esc)";
+"Skip break (press any key)" = "休憩をスキップ (任意のキー)";
 
 // Standup
 "Standup" = "スタンドアップ";

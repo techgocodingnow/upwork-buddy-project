@@ -318,7 +318,7 @@
 "Preview break now" = "Previsualizar descanso ahora";
 "Shows a 5-second break using the current settings." = "Muestra un descanso de 5 segundos con la configuración actual.";
 "Look 20 feet away for 20 seconds" = "Mira a 6 metros de distancia durante 20 segundos";
-"Skip break (Esc)" = "Saltar descanso (Esc)";
+"Skip break (press any key)" = "Saltar descanso (cualquier tecla)";
 
 // Standup
 "Standup" = "Levantarse";
