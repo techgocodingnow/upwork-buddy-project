@@ -118,6 +118,77 @@ final class AggregationTests: XCTestCase {
         XCTAssertEqual(snapshot.totalHours, 0)
     }
 
+    // MARK: - overlayWorkDiary (live current-day hours)
+
+    func testOverlayUsesLiveHoursWhenReportLagsAtZero() {
+        let day = Date()
+        let dayStr = DateRange.iso.string(from: day)
+        // contract seen earlier in the week, but no row for `day` yet (report lag).
+        let timeRows = [
+            TimeReportRow(dateWorkedOn: "2026-05-18", hours: 5, charges: 190,
+                          contractId: "c1", contractTitle: "Job", clientName: "Acme",
+                          hourlyRate: 38)
+        ]
+        let result = UpworkAPI.overlayWorkDiary(
+            timeRows: timeRows, day: day, liveHours: ["c1": 2.0])
+
+        let todayRow = result.first { $0.dateWorkedOn == dayStr }
+        XCTAssertEqual(todayRow?.hours ?? 0, 2.0, accuracy: 0.001)
+        XCTAssertEqual(todayRow?.charges ?? 0, 76, accuracy: 0.001) // 2h * 38
+        XCTAssertEqual(todayRow?.contractTitle, "Job")
+        XCTAssertEqual(todayRow?.hourlyRate, 38)
+    }
+
+    func testOverlayKeepsReportHoursWhenGreaterThanLive() {
+        let day = Date()
+        let dayStr = DateRange.iso.string(from: day)
+        let timeRows = [
+            TimeReportRow(dateWorkedOn: dayStr, hours: 4, charges: 152,
+                          contractId: "c1", contractTitle: "Job", clientName: "Acme",
+                          hourlyRate: 38)
+        ]
+        // Live diary lags behind the already-posted report — report must win.
+        let result = UpworkAPI.overlayWorkDiary(
+            timeRows: timeRows, day: day, liveHours: ["c1": 1.0])
+
+        let todayRows = result.filter { $0.dateWorkedOn == dayStr }
+        XCTAssertEqual(todayRows.count, 1)
+        XCTAssertEqual(todayRows.first?.hours ?? 0, 4, accuracy: 0.001)
+    }
+
+    func testOverlayFallsBackToReportWhenLiveFetchFailed() {
+        let day = Date()
+        let dayStr = DateRange.iso.string(from: day)
+        let timeRows = [
+            TimeReportRow(dateWorkedOn: dayStr, hours: 3, charges: 114,
+                          contractId: "c1", contractTitle: "Job", clientName: "Acme",
+                          hourlyRate: 38)
+        ]
+        // A failed diary fetch surfaces as 0 — report hours must be preserved.
+        let result = UpworkAPI.overlayWorkDiary(
+            timeRows: timeRows, day: day, liveHours: ["c1": 0])
+
+        XCTAssertEqual(result.first { $0.dateWorkedOn == dayStr }?.hours ?? 0,
+                       3, accuracy: 0.001)
+    }
+
+    func testOverlayLeavesOtherDaysUnchanged() {
+        let day = Date()
+        let timeRows = [
+            TimeReportRow(dateWorkedOn: "2026-05-18", hours: 5, charges: 190,
+                          contractId: "c1", contractTitle: "Job", clientName: "Acme",
+                          hourlyRate: 38),
+            TimeReportRow(dateWorkedOn: "2026-05-19", hours: 6, charges: 228,
+                          contractId: "c1", contractTitle: "Job", clientName: "Acme",
+                          hourlyRate: 38)
+        ]
+        let result = UpworkAPI.overlayWorkDiary(
+            timeRows: timeRows, day: day, liveHours: ["c1": 2.0])
+
+        XCTAssertEqual(result.first { $0.dateWorkedOn == "2026-05-18" }?.hours, 5)
+        XCTAssertEqual(result.first { $0.dateWorkedOn == "2026-05-19" }?.hours, 6)
+    }
+
     // MARK: - ProjectStat helpers
 
     func testDerivedRateFallsBackToEarningsOverHours() {

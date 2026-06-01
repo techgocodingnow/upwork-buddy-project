@@ -19,7 +19,19 @@ enum Introspection {
                     print("==== \(type.name ?? name) (\(type.kind ?? "?")) ====")
                     for field in type.fields ?? [] {
                         let typeStr = field.type.map(typeDescription) ?? "?"
-                        print("  • \(field.name): \(typeStr)")
+                        let args = field.args ?? []
+                        if args.isEmpty {
+                            print("  • \(field.name): \(typeStr)")
+                        } else {
+                            let argStr = args
+                                .map { "\($0.name): \($0.type.map(typeDescription) ?? "?")" }
+                                .joined(separator: ", ")
+                            print("  • \(field.name)(\(argStr)): \(typeStr)")
+                        }
+                    }
+                    for input in type.inputFields ?? [] {
+                        let typeStr = input.type.map(typeDescription) ?? "?"
+                        print("  → \(input.name): \(typeStr)")
                     }
                 } else {
                     print("==== \(name): not found ====")
@@ -46,9 +58,16 @@ enum Introspection {
         let name: String?
         let kind: String?
         let fields: [Field]?
+        let inputFields: [Arg]?
     }
 
     private struct Field: Decodable, Sendable {
+        let name: String
+        let args: [Arg]?
+        let type: TypeRef?
+    }
+
+    private struct Arg: Decodable, Sendable {
         let name: String
         let type: TypeRef?
     }

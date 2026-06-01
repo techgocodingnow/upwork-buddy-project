@@ -45,8 +45,112 @@ struct UpworkAPI: Sendable {
         async let txTask = fetchTransactionRows(range: range, aceId: aceId)
         async let timeTask = fetchTimeReport(range: timeRange)
         let txRows = try await txTask
-        let timeRows = try await timeTask
+        var timeRows = try await timeTask
+
+        // `contractTimeReport` lags hours behind for the in-progress current day.
+        // For a single-day range that is today, overlay Work Diary hours (archived
+        // ~live) so "Today" reflects tracked time instead of a stale 0.
+        let cal = Calendar.current
+        if cal.isDate(range.start, inSameDayAs: range.end), cal.isDateInToday(range.start) {
+            timeRows = await augmentWithWorkDiary(timeRows: timeRows, day: range.start)
+        }
+
         return Self.merge(txRows: txRows, timeRows: timeRows, filterDate: filterDate)
+    }
+
+    // MARK: - Work Diary (live current-day hours)
+
+    /// Logged hours for one contract on one day via the Work Diary. Each time cell
+    /// is a 10-minute billing interval, so `hours == cellCount / 6`.
+    func fetchWorkDiaryHours(contractId: String, date: Date) async throws -> Double {
+        struct Resp: Decodable {
+            struct WD: Decodable {
+                struct Cell: Decodable {}
+                let workDiaryTimeCells: [Cell]?
+            }
+            let workDiaryContract: WD?
+        }
+        let query = Queries.workDiaryContract(
+            contractId: contractId,
+            date: Self.compactDateString(date)
+        )
+        let resp = try await client.execute(query: query, as: Resp.self)
+        let cells = resp.workDiaryContract?.workDiaryTimeCells?.count ?? 0
+        return Double(cells) / 6.0
+    }
+
+    /// Replaces `day`'s time-report rows with `max(report, workDiary)` hours per
+    /// contract. Contracts are taken from `timeRows` (the enclosing week), reusing
+    /// their title/client/rate. A Work Diary failure for any contract falls back to
+    /// the report hours for that contract — never blanks out working data.
+    private func augmentWithWorkDiary(
+        timeRows: [TimeReportRow],
+        day: Date
+    ) async -> [TimeReportRow] {
+        let contractIds = Set(timeRows.compactMap(\.contractId))
+        guard !contractIds.isEmpty else { return timeRows }
+
+        let liveHours: [String: Double] = await withTaskGroup(
+            of: (String, Double).self
+        ) { group in
+            for cid in contractIds {
+                group.addTask {
+                    let hours = (try? await self.fetchWorkDiaryHours(
+                        contractId: cid, date: day)) ?? 0
+                    return (cid, hours)
+                }
+            }
+            var result: [String: Double] = [:]
+            for await (cid, hours) in group { result[cid] = hours }
+            return result
+        }
+
+        return Self.overlayWorkDiary(timeRows: timeRows, day: day, liveHours: liveHours)
+    }
+
+    /// Pure overlay step: rebuilds `day`'s rows as `max(reportHours, liveHours)`
+    /// per contract, carrying each contract's title/client/rate forward from the
+    /// surrounding week. Rows on other days pass through unchanged.
+    static func overlayWorkDiary(
+        timeRows: [TimeReportRow],
+        day: Date,
+        liveHours: [String: Double]
+    ) -> [TimeReportRow] {
+        let dayString = DateRange.iso.string(from: day)
+
+        struct Meta {
+            var title: String?
+            var clientName: String?
+            var rate: Double?
+            var reportHours: Double
+        }
+        var metaByContract: [String: Meta] = [:]
+        for r in timeRows {
+            guard let cid = r.contractId else { continue }
+            var m = metaByContract[cid]
+                ?? Meta(title: nil, clientName: nil, rate: nil, reportHours: 0)
+            m.title = m.title ?? r.contractTitle
+            m.clientName = m.clientName ?? r.clientName
+            m.rate = m.rate ?? r.hourlyRate
+            if r.dateWorkedOn == dayString { m.reportHours += r.hours ?? 0 }
+            metaByContract[cid] = m
+        }
+
+        var rebuilt = timeRows.filter { $0.dateWorkedOn != dayString }
+        for (cid, meta) in metaByContract {
+            let hours = max(meta.reportHours, liveHours[cid] ?? 0)
+            guard hours > 0 else { continue }
+            rebuilt.append(TimeReportRow(
+                dateWorkedOn: dayString,
+                hours: hours,
+                charges: meta.rate.map { $0 * hours } ?? 0,
+                contractId: cid,
+                contractTitle: meta.title,
+                clientName: meta.clientName,
+                hourlyRate: meta.rate
+            ))
+        }
+        return rebuilt
     }
 
     /// Expands `range.start` to the Monday of its Upwork week when the range
