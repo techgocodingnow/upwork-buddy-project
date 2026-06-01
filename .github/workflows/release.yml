@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
     steps:
       - name: Resolve tag
@@ -58,11 +58,10 @@ jobs:
 
       - name: Select Xcode
         run: |
-          if [ -d "/Applications/Xcode_16.4.app" ]; then
-            sudo xcode-select -s /Applications/Xcode_16.4.app
-          else
-            sudo xcode-select -s /Applications/Xcode.app
-          fi
+          # Use the image's default (latest stable) Xcode. The previously pinned
+          # Xcode 16.4 / Swift 6.0 fails to compile the Vortex dependency
+          # ("cannot infer contextual base in reference to member 'plusLighter'").
+          sudo xcode-select -s /Applications/Xcode.app
           xcodebuild -version
           swift --version
 
