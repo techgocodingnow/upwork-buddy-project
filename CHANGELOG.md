@@ -11,6 +11,15 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+### Added
+
+- Landing page at the GitHub Pages site root (`index.html`), so the project
+  URL no longer 404s. Served alongside the Sparkle appcast.
+
+### Changed
+
+- Rewrote the README for a cleaner open-source first impression.
+
 ## [1.0.0] - 2026-06-01
 
 ### Added
