@@ -9,6 +9,28 @@ A lightweight macOS menu-bar app that shows your Upwork freelance earnings at a 
 
 ---
 
+## Quick introduction
+
+Watch the app feature walkthrough:
+
+[▶ Watch UpworkBuddy quick introduction](docs/hyperframes/upworkbuddy-quick-intro/upworkbuddy-quick-intro.mp4)
+
+The video was built with HyperFrames and highlights the menu-bar dashboard, working-hour and earnings rollups, per-project breakdowns, goals and celebrations, focus music, exercise reminders, themes, and the open-source privacy promise.
+
+Regenerate it from the repo root:
+
+```bash
+npx hyperframes preview docs/hyperframes/upworkbuddy-quick-intro
+npx hyperframes render docs/hyperframes/upworkbuddy-quick-intro \
+  --output docs/hyperframes/upworkbuddy-quick-intro/upworkbuddy-quick-intro.mp4 \
+  --fps 30 \
+  --quality standard
+```
+
+After rendering, the video is available at `docs/hyperframes/upworkbuddy-quick-intro/upworkbuddy-quick-intro.mp4` and can be attached to releases, the GitHub repository page, or product announcements.
+
+---
+
 ## Requirements
 
 - macOS 14 (Sonoma) or newer

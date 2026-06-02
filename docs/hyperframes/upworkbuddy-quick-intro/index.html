@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UpworkBuddy Feature Walkthrough</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081118;
+      --panel: #101c25;
+      --panel-2: #162834;
+      --ink: #f5fbf8;
+      --muted: #9bb2a8;
+      --accent: #14a800;
+      --accent-2: #8fe388;
+      --line: rgba(255, 255, 255, 0.12);
+      --yellow: #f7c948;
+      --blue: #74c0fc;
+      --pink: #ff8cc6;
+      --purple: #b197fc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(20, 168, 0, 0.22), transparent 34%),
+        radial-gradient(circle at 14% 88%, rgba(116, 192, 252, 0.18), transparent 29%),
+        linear-gradient(135deg, #071018 0%, #0b151b 56%, #10120f 100%);
+      font-family: sans-serif;
+      color: var(--ink);
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.16;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .clip {
+      position: absolute;
+    }
+
+    .brand {
+      top: 58px;
+      left: 78px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 34px;
+      font-weight: 780;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), #64d84c);
+      color: #06120a;
+      font-size: 31px;
+      box-shadow: 0 24px 70px rgba(20, 168, 0, 0.28);
+    }
+
+    .badge {
+      top: 150px;
+      left: 82px;
+      padding: 11px 18px;
+      border: 1px solid rgba(143, 227, 136, 0.32);
+      border-radius: 999px;
+      background: rgba(20, 168, 0, 0.12);
+      color: var(--accent-2);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .headline {
+      top: 228px;
+      left: 78px;
+      width: 850px;
+      font-size: 82px;
+      line-height: 0.98;
+      font-weight: 840;
+      letter-spacing: 0;
+    }
+
+    .subhead {
+      top: 505px;
+      left: 82px;
+      width: 730px;
+      color: var(--muted);
+      font-size: 31px;
+      line-height: 1.35;
+      font-weight: 520;
+    }
+
+    .scene-title {
+      top: 144px;
+      left: 78px;
+      width: 690px;
+      font-size: 56px;
+      line-height: 1.04;
+      font-weight: 840;
+      letter-spacing: 0;
+    }
+
+    .scene-copy {
+      top: 288px;
+      left: 82px;
+      width: 640px;
+      color: var(--muted);
+      font-size: 28px;
+      line-height: 1.34;
+      font-weight: 540;
+    }
+
+    .bullet-stack {
+      left: 82px;
+      top: 450px;
+      width: 640px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .bullet {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 54px;
+      padding: 13px 17px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(16, 28, 37, 0.72);
+      color: #dce9e4;
+      font-size: 22px;
+      font-weight: 690;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+    }
+
+    .bullet-dot {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--accent-2);
+      box-shadow: 0 0 22px rgba(143, 227, 136, 0.65);
+    }
+
+    .caption {
+      left: 50%;
+      bottom: 66px;
+      width: 1240px;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 39px;
+      line-height: 1.2;
+      font-weight: 820;
+      letter-spacing: 0;
+      text-shadow: 0 14px 48px rgba(0, 0, 0, 0.52);
+      z-index: 30;
+    }
+
+    .caption small {
+      display: block;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 640;
+    }
+
+    .app-window {
+      top: 118px;
+      right: 112px;
+      width: 560px;
+      height: 790px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(21, 37, 48, 0.97), rgba(11, 20, 27, 0.97));
+      box-shadow:
+        0 38px 120px rgba(0, 0, 0, 0.44),
+        0 0 0 1px rgba(20, 168, 0, 0.06) inset;
+      z-index: 10;
+    }
+
+    .window-bar {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .traffic {
+      display: flex;
+      gap: 9px;
+    }
+
+    .traffic span {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #ff5f57;
+    }
+
+    .traffic span:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .traffic span:nth-child(3) {
+      background: #28c840;
+    }
+
+    .window-title {
+      margin-left: auto;
+      color: #d8e6df;
+      font-weight: 720;
+      font-size: 21px;
+    }
+
+    .metric {
+      padding: 32px 34px 22px;
+    }
+
+    .period {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 19px;
+      font-weight: 680;
+    }
+
+    .period::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .amount {
+      margin-top: 18px;
+      font-size: 72px;
+      font-weight: 850;
+      color: var(--accent-2);
+      letter-spacing: 0;
+    }
+
+    .meta-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      color: #c0d4cb;
+      font-size: 23px;
+      font-weight: 650;
+    }
+
+    .segments {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 2px 28px 20px;
+      padding: 6px;
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .segments span {
+      padding: 12px 0;
+      text-align: center;
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 760;
+    }
+
+    .segments span.active {
+      color: #08160b;
+      background: var(--accent-2);
+    }
+
+    .pulse-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 0 28px;
+    }
+
+    .pulse-card {
+      min-height: 108px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .pulse-label {
+      color: var(--muted);
+      font-size: 14px;
+      text-transform: uppercase;
+      font-weight: 780;
+    }
+
+    .pulse-value {
+      margin-top: 9px;
+      font-size: 28px;
+      font-weight: 820;
+    }
+
+    .project-list {
+      margin: 20px 28px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .project-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 15px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #dce9e4;
+      font-size: 18px;
+      font-weight: 690;
+    }
+
+    .project-row span:last-child {
+      color: var(--accent-2);
+    }
+
+    .mini-player {
+      left: 35px;
+      right: 35px;
+      bottom: 32px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 18px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 18px;
+      background: rgba(10, 17, 23, 0.82);
+      font-size: 17px;
+      font-weight: 720;
+      color: #d9e8e2;
+    }
+
+    .play {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #07110b;
+      font-size: 15px;
+    }
+
+    .panel {
+      width: 500px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 30px;
+      background: rgba(16, 28, 37, 0.8);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: 0;
+    }
+
+    .panel p {
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: 21px;
+      line-height: 1.35;
+      font-weight: 540;
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 20px;
+      border-radius: 18px;
+      background: rgba(143, 227, 136, 0.14);
+      color: var(--accent-2);
+      font-size: 32px;
+      font-weight: 850;
+    }
+
+    .goals-card {
+      top: 226px;
+      left: 84px;
+    }
+
+    .celebration-card {
+      top: 462px;
+      left: 345px;
+    }
+
+    .music-card {
+      top: 248px;
+      left: 84px;
+    }
+
+    .playlist-card {
+      top: 510px;
+      left: 344px;
+    }
+
+    .exercise-card {
+      top: 238px;
+      left: 84px;
+    }
+
+    .standup-card {
+      top: 510px;
+      left: 344px;
+    }
+
+    .theme-board {
+      top: 320px;
+      left: 84px;
+      width: 1550px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .themes-title {
+      top: 142px;
+      width: 780px;
+      font-size: 48px;
+      line-height: 1.08;
+    }
+
+    .theme-tile {
+      height: 132px;
+      padding: 19px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 820;
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.24);
+    }
+
+    .theme-tile small {
+      color: rgba(255,255,255,0.72);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .minimal {
+      background: linear-gradient(135deg, #0b1016, #27313d);
+    }
+
+    .artdeco {
+      background: linear-gradient(135deg, #17120b, #b88a34);
+    }
+
+    .cyber {
+      background: linear-gradient(135deg, #100d2b, #00d1ff);
+    }
+
+    .terminal {
+      background: linear-gradient(135deg, #030603, #1b6b28);
+    }
+
+    .sketch {
+      background: linear-gradient(135deg, #f4efe4, #222);
+      color: #111;
+    }
+
+    .vapor {
+      background: linear-gradient(135deg, #23064b, #ff4fd8);
+    }
+
+    .open-source {
+      top: 188px;
+      left: 120px;
+      width: 760px;
+    }
+
+    .promise-grid {
+      top: 482px;
+      left: 120px;
+      width: 760px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .promise {
+      min-height: 158px;
+      padding: 22px;
+      border: 1px solid rgba(143, 227, 136, 0.2);
+      border-radius: 24px;
+      background: rgba(20, 168, 0, 0.1);
+      font-size: 22px;
+      font-weight: 820;
+      color: #effff0;
+    }
+
+    .promise span {
+      display: block;
+      margin-bottom: 18px;
+      color: var(--accent-2);
+      font-size: 34px;
+    }
+
+    .ring {
+      position: absolute;
+      right: 34px;
+      top: 32px;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--accent-2) 0 82%, rgba(255, 255, 255, 0.12) 82% 100%);
+    }
+
+    .ring::after {
+      content: "82%";
+      position: absolute;
+      inset: 11px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--panel);
+      color: var(--accent-2);
+      font-size: 17px;
+      font-weight: 820;
+    }
+
+    .sparkles {
+      position: absolute;
+      inset: -18px;
+      pointer-events: none;
+    }
+
+    .sparkles span {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 20px rgba(247, 201, 72, 0.8);
+    }
+
+    .sparkles span:nth-child(1) { top: 28px; left: 30px; }
+    .sparkles span:nth-child(2) { top: 16px; right: 76px; background: var(--pink); }
+    .sparkles span:nth-child(3) { bottom: 42px; left: 92px; background: var(--blue); }
+    .sparkles span:nth-child(4) { bottom: 24px; right: 34px; }
+
+    .settings-window {
+      top: 126px;
+      right: 96px;
+      width: 610px;
+      height: 735px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 30px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(21, 37, 48, 0.97), rgba(11, 20, 27, 0.98));
+      box-shadow: 0 38px 120px rgba(0, 0, 0, 0.42);
+      z-index: 8;
+    }
+
+    .settings-head {
+      height: 82px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      font-size: 22px;
+      font-weight: 820;
+    }
+
+    .settings-body {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      height: calc(100% - 82px);
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      padding: 22px 16px;
+      display: grid;
+      align-content: start;
+      gap: 11px;
+    }
+
+    .side-item {
+      padding: 12px 13px;
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 740;
+    }
+
+    .side-item.active {
+      color: #07110b;
+      background: var(--accent-2);
+    }
+
+    .settings-content {
+      padding: 24px;
+      display: grid;
+      align-content: start;
+      gap: 15px;
+    }
+
+    .setting-row {
+      padding: 17px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #dce9e4;
+      font-size: 18px;
+      font-weight: 720;
+    }
+
+    .setting-row small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 620;
+    }
+
+    .final-scene {
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(20, 168, 0, 0.2), transparent 24%),
+        radial-gradient(circle at 50% 72%, rgba(116, 192, 252, 0.12), transparent 34%);
+      z-index: 40;
+    }
+
+    .final-inner {
+      width: 1180px;
+      display: grid;
+      justify-items: center;
+      gap: 26px;
+    }
+
+    .final-mark {
+      display: grid;
+      place-items: center;
+      width: 126px;
+      height: 126px;
+      border-radius: 32px;
+      background: linear-gradient(135deg, var(--accent), #78e45f);
+      color: #06120a;
+      font-size: 62px;
+      font-weight: 900;
+      box-shadow: 0 34px 110px rgba(20, 168, 0, 0.36);
+    }
+
+    .final-name {
+      font-size: 92px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .final-hook {
+      max-width: 980px;
+      color: var(--accent-2);
+      font-size: 52px;
+      line-height: 1.14;
+      font-weight: 860;
+      letter-spacing: 0;
+    }
+
+    .final-subhook {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 28px;
+      line-height: 1.35;
+      font-weight: 620;
+    }
+
+    .final-pills {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .final-pills span {
+      padding: 12px 18px;
+      border: 1px solid rgba(143, 227, 136, 0.24);
+      border-radius: 999px;
+      background: rgba(20, 168, 0, 0.1);
+      color: #dff7df;
+      font-size: 19px;
+      font-weight: 760;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="upworkbuddy-quick-intro" data-start="0" data-width="1920" data-height="1080">
+    <div class="grain"></div>
+
+    <div id="brand" class="clip brand" data-start="0" data-duration="38" data-track-index="0">
+      <div class="brand-mark">UB</div>
+      <div>UpworkBuddy</div>
+    </div>
+
+    <div id="intro-badge" class="clip badge" data-start="0" data-duration="4" data-track-index="1">macOS menu bar app</div>
+    <div id="intro-headline" class="clip headline" data-start="0" data-duration="4" data-track-index="2">Your freelance command center, one click away.</div>
+    <div id="intro-subhead" class="clip subhead" data-start="0.45" data-duration="3.55" data-track-index="3">
+      Track Upwork earnings, hours, projects, goals, music, breaks, themes, and privacy without opening a heavyweight dashboard.
+    </div>
+
+    <section id="app-window" class="clip app-window" data-start="1" data-duration="29" data-track-index="4">
+      <div class="window-bar">
+        <div class="traffic"><span></span><span></span><span></span></div>
+        <div class="window-title">UpworkBuddy</div>
+      </div>
+      <div class="metric">
+        <div class="period">Today · Tue Jun 2</div>
+        <div class="amount">$642.50</div>
+        <div class="meta-row">
+          <span>6h 45m</span>
+          <span>3 projects</span>
+        </div>
+      </div>
+      <div id="segments" class="segments">
+        <span class="active">Today</span><span>Week</span><span>Month</span><span>Year</span>
+      </div>
+      <div class="pulse-grid">
+        <div class="pulse-card">
+          <div class="pulse-label">Daily avg</div>
+          <div class="pulse-value">$518</div>
+        </div>
+        <div class="pulse-card">
+          <div class="pulse-label">Week so far</div>
+          <div class="pulse-value">$2.1k</div>
+        </div>
+        <div class="pulse-card">
+          <div class="pulse-label">Streak</div>
+          <div class="pulse-value">5 days</div>
+        </div>
+        <div class="pulse-card">
+          <div class="pulse-label">Last activity</div>
+          <div class="pulse-value">Today</div>
+        </div>
+      </div>
+      <div class="project-list">
+        <div class="project-row"><span>iOS dashboard build</span><span>$310</span></div>
+        <div class="project-row"><span>Swift API polish</span><span>$212</span></div>
+        <div class="project-row"><span>Design system pass</span><span>$120</span></div>
+      </div>
+      <div id="mini-player" class="clip mini-player" data-start="14" data-duration="15" data-track-index="5">
+        <span class="play">▶</span>
+        <span>Focus mix · playing while you work</span>
+      </div>
+    </section>
+
+    <section id="metrics-scene" class="clip" data-start="4" data-duration="5" data-track-index="6">
+      <div id="metrics-title" class="clip scene-title" data-start="4" data-duration="5" data-track-index="7">Know exactly how the workday is going.</div>
+      <div id="metrics-copy" class="clip scene-copy" data-start="4.25" data-duration="4.75" data-track-index="8">
+        UpworkBuddy rolls up working time and earnings by period, then keeps each project visible.
+      </div>
+      <div id="metrics-bullets" class="clip bullet-stack" data-start="4.55" data-duration="4.45" data-track-index="9">
+        <div class="bullet"><span class="bullet-dot"></span><span>Today, week, month, and year views</span></div>
+        <div class="bullet"><span class="bullet-dot"></span><span>Total hours, total earnings, and daily pulse</span></div>
+        <div class="bullet"><span class="bullet-dot"></span><span>Per-project breakdowns for quick review</span></div>
+      </div>
+    </section>
+
+    <section id="goals-scene" class="clip" data-start="9" data-duration="5" data-track-index="10">
+      <article id="goals-card" class="clip panel goals-card" data-start="9" data-duration="5" data-track-index="11">
+        <div class="icon">◎</div>
+        <div class="ring"></div>
+        <h2>Set goals</h2>
+        <p>Choose hour or earnings targets for your dashboard metric and see progress at a glance.</p>
+      </article>
+      <article id="celebration-card" class="clip panel celebration-card" data-start="9.7" data-duration="4.3" data-track-index="12">
+        <div class="sparkles"><span></span><span></span><span></span><span></span></div>
+        <div class="icon">★</div>
+        <h2>Celebrate wins</h2>
+        <p>When you hit a goal, the menu bar popover can celebrate the moment without leaving your flow.</p>
+      </article>
+      <div id="caption-goals" class="clip caption" data-start="9.25" data-duration="4.75" data-track-index="13">
+        Goals turn earnings into momentum.
+        <small>Progress rings and celebrations keep the feedback loop close to the work.</small>
+      </div>
+    </section>
+
+    <section id="music-scene" class="clip" data-start="14" data-duration="4" data-track-index="14">
+      <article id="music-card" class="clip panel music-card" data-start="14" data-duration="4" data-track-index="15">
+        <div class="icon">♪</div>
+        <h2>Add music</h2>
+        <p>Paste YouTube, Spotify, SoundCloud, Vimeo, Mixcloud, or audio URLs into your focus playlist.</p>
+      </article>
+      <article id="playlist-card" class="clip panel playlist-card" data-start="14.65" data-duration="3.35" data-track-index="16">
+        <div class="icon">▶</div>
+        <h2>Stay in rhythm</h2>
+        <p>Shuffle, loop, sleep timers, volume, and mini-player controls live inside the app.</p>
+      </article>
+      <div id="caption-music" class="clip caption" data-start="14.25" data-duration="3.75" data-track-index="17">
+        Bring a soundtrack to focused freelance sessions.
+      </div>
+    </section>
+
+    <section id="exercise-scene" class="clip" data-start="18" data-duration="4" data-track-index="18">
+      <article id="exercise-card" class="clip panel exercise-card" data-start="18" data-duration="4" data-track-index="19">
+        <div class="icon">20</div>
+        <h2>Eye breaks</h2>
+        <p>Schedule short reminders that protect your eyes during long coding, design, or client-review blocks.</p>
+      </article>
+      <article id="standup-card" class="clip panel standup-card" data-start="18.65" data-duration="3.35" data-track-index="20">
+        <div class="icon">↑</div>
+        <h2>Standup nudges</h2>
+        <p>Movement reminders keep healthy habits attached to the same place you track work.</p>
+      </article>
+      <div id="caption-exercise" class="clip caption" data-start="18.25" data-duration="3.75" data-track-index="21">
+        It watches the workday, not just the invoice.
+      </div>
+    </section>
+
+    <section id="themes-scene" class="clip" data-start="22" data-duration="3.6" data-track-index="22">
+      <div id="themes-title" class="clip scene-title themes-title" data-start="22" data-duration="3.6" data-track-index="23">Make the menu bar feel like yours.</div>
+      <div id="theme-board" class="clip theme-board" data-start="22.25" data-duration="3.35" data-track-index="24">
+        <div class="theme-tile minimal"><span>Minimal Dark</span><small>quiet focus</small></div>
+        <div class="theme-tile artdeco"><span>Art Deco</span><small>gold detail</small></div>
+        <div class="theme-tile cyber"><span>Cyberpunk</span><small>neon energy</small></div>
+        <div class="theme-tile terminal"><span>Terminal</span><small>raw utility</small></div>
+        <div class="theme-tile sketch"><span>Sketch</span><small>paper feel</small></div>
+        <div class="theme-tile vapor"><span>Vaporwave</span><small>retro glow</small></div>
+      </div>
+      <div id="caption-themes" class="clip caption" data-start="22.45" data-duration="3.15" data-track-index="25">
+        Multiple themes, one native macOS app.
+      </div>
+    </section>
+
+    <section id="open-scene" class="clip" data-start="25.6" data-duration="4.9" data-track-index="26">
+      <div id="open-title" class="clip scene-title open-source" data-start="25.6" data-duration="4.9" data-track-index="27">
+        Open source, private, and free by design.
+      </div>
+      <div id="promise-grid" class="clip promise-grid" data-start="26" data-duration="4.5" data-track-index="28">
+        <div class="promise"><span>{ }</span>Full source available</div>
+        <div class="promise"><span>×</span>No tracking</div>
+        <div class="promise"><span>$0</span>No subscription</div>
+      </div>
+      <div id="caption-open" class="clip caption" data-start="26.15" data-duration="4.35" data-track-index="29">
+        UpworkBuddy is a small, transparent tool for freelancers.
+        <small>Secure Keychain tokens, no paywalls, no hidden analytics.</small>
+      </div>
+    </section>
+
+    <section id="final-scene" class="clip final-scene" data-start="30.5" data-duration="7.5" data-track-index="30">
+      <div class="final-inner">
+        <div id="final-mark" class="final-mark">UB</div>
+        <div id="final-name" class="final-name">UpworkBuddy</div>
+        <div id="final-hook" class="final-hook">Know your freelance day before it slips away.</div>
+        <div id="final-subhook" class="final-subhook">
+          Hours, earnings, goals, focus, breaks, themes, and privacy in one quiet macOS menu-bar app.
+        </div>
+        <div id="final-pills" class="final-pills">
+          <span>Open source</span>
+          <span>No tracking</span>
+          <span>No subscription</span>
+        </div>
+      </div>
+    </section>
+
+    <aside id="settings-window" class="clip settings-window" data-start="14" data-duration="16" data-track-index="31">
+      <div class="settings-head">
+        <span>Settings</span>
+        <span>⌘</span>
+      </div>
+      <div class="settings-body">
+        <div class="sidebar">
+          <div class="side-item">Goals</div>
+          <div class="side-item active">Music</div>
+          <div class="side-item">Exercises</div>
+          <div class="side-item">Display</div>
+          <div class="side-item">Language</div>
+          <div class="side-item">Updates</div>
+        </div>
+        <div class="settings-content">
+          <div class="setting-row">Playlist<small>URLs, shuffle, loop, and sleep timer</small></div>
+          <div class="setting-row">Eye break schedule<small>Short visual rest reminders</small></div>
+          <div class="setting-row">Standup reminders<small>Healthy movement nudges</small></div>
+          <div class="setting-row">Themes<small>Pick the look that fits your desk</small></div>
+          <div class="setting-row">Privacy<small>Hide sensitive amounts instantly</small></div>
+        </div>
+      </div>
+    </aside>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+      const intro = ["#intro-badge", "#intro-headline", "#intro-subhead"];
+      const metrics = ["#metrics-title", "#metrics-copy", "#metrics-bullets"];
+      const goals = ["#goals-card", "#celebration-card", "#caption-goals"];
+      const music = ["#music-card", "#playlist-card", "#caption-music"];
+      const exercise = ["#exercise-card", "#standup-card", "#caption-exercise"];
+      const themes = ["#themes-title", "#theme-board", "#caption-themes"];
+      const open = ["#open-title", "#promise-grid", "#caption-open"];
+      const final = ["#final-mark", "#final-name", "#final-hook", "#final-subhook", "#final-pills"];
+
+      tl.from("#brand", { opacity: 0, y: -24, duration: 0.55, ease: "power3.out" }, 0);
+      tl.from(intro, { opacity: 0, y: 26, duration: 0.65, stagger: 0.16, ease: "power3.out" }, 0.15);
+      tl.from("#app-window", { opacity: 0, x: 120, scale: 0.94, duration: 0.95, ease: "power3.out" }, 0.95);
+      tl.to(intro, { opacity: 0, y: -18, duration: 0.45, ease: "power2.in" }, 3.55);
+      tl.set(intro, { opacity: 0 }, 4);
+
+      tl.from(metrics, { opacity: 0, y: 26, duration: 0.58, stagger: 0.14, ease: "power3.out" }, 4);
+      tl.to("#segments span", { backgroundColor: "rgba(255,255,255,0)", color: "#9bb2a8", duration: 0.2 }, 4.7);
+      tl.to("#segments span:nth-child(2)", { backgroundColor: "#8fe388", color: "#08160b", duration: 0.25 }, 5.1);
+      tl.to("#segments span:nth-child(3)", { backgroundColor: "#8fe388", color: "#08160b", duration: 0.25 }, 6.2);
+      tl.to("#segments span:nth-child(4)", { backgroundColor: "#8fe388", color: "#08160b", duration: 0.25 }, 7.3);
+      tl.to(metrics, { opacity: 0, y: -16, duration: 0.4, ease: "power2.in" }, 8.6);
+      tl.set(metrics, { opacity: 0 }, 9);
+
+      tl.from(goals, { opacity: 0, y: 28, duration: 0.6, stagger: 0.17, ease: "power3.out" }, 9);
+      tl.from(".sparkles span", { opacity: 0, scale: 0.15, y: 18, duration: 0.35, stagger: 0.08, ease: "back.out(2)" }, 10.05);
+      tl.to(goals, { opacity: 0, y: -16, duration: 0.4, ease: "power2.in" }, 13.6);
+      tl.set(goals, { opacity: 0 }, 14);
+
+      tl.to("#app-window", { x: -680, scale: 0.92, duration: 0.72, ease: "power3.out" }, 13.75);
+      tl.from("#settings-window", { opacity: 0, x: 110, scale: 0.96, duration: 0.7, ease: "power3.out" }, 14);
+      tl.from(music, { opacity: 0, y: 28, duration: 0.55, stagger: 0.14, ease: "power3.out" }, 14);
+      tl.to(music, { opacity: 0, y: -16, duration: 0.38, ease: "power2.in" }, 17.62);
+      tl.set(music, { opacity: 0 }, 18);
+
+      tl.to(".side-item", { color: "#9bb2a8", backgroundColor: "rgba(0,0,0,0)", duration: 0.1 }, 18);
+      tl.to(".side-item:nth-child(3)", { color: "#07110b", backgroundColor: "#8fe388", duration: 0.2 }, 18.05);
+      tl.from(exercise, { opacity: 0, y: 28, duration: 0.55, stagger: 0.14, ease: "power3.out" }, 18);
+      tl.to(exercise, { opacity: 0, y: -16, duration: 0.38, ease: "power2.in" }, 21.62);
+      tl.set(exercise, { opacity: 0 }, 22);
+
+      tl.to("#settings-window", { opacity: 0, x: 80, duration: 0.38, ease: "power2.in" }, 21.75);
+      tl.set("#settings-window", { opacity: 0 }, 22.15);
+      tl.to("#app-window", { opacity: 0, x: -760, duration: 0.38, ease: "power2.in" }, 21.75);
+      tl.set("#app-window", { opacity: 0 }, 22.15);
+      tl.from(themes, { opacity: 0, y: 28, duration: 0.55, stagger: 0.12, ease: "power3.out" }, 22);
+      tl.to(".theme-tile", { y: -10, duration: 0.35, stagger: 0.07, yoyo: true, repeat: 1, ease: "power2.inOut" }, 23.05);
+      tl.to(themes, { opacity: 0, y: -16, duration: 0.35, ease: "power2.in" }, 25.25);
+      tl.set(themes, { opacity: 0 }, 25.6);
+
+      tl.from(open, { opacity: 0, y: 28, duration: 0.52, stagger: 0.14, ease: "power3.out" }, 25.6);
+      tl.to(open, { opacity: 0, y: -14, duration: 0.42, ease: "power2.in" }, 30.08);
+      tl.to("#brand", { opacity: 0, duration: 0.35, ease: "power2.in" }, 30.08);
+      tl.from("#final-scene", { opacity: 0, duration: 0.55, ease: "power2.out" }, 30.5);
+      tl.from(final, { opacity: 0, y: 24, duration: 0.65, stagger: 0.13, ease: "power3.out" }, 30.72);
+      tl.set("#final-scene", { opacity: 1 }, 38);
+
+      window.__timelines["upworkbuddy-quick-intro"] = tl;
+    </script>
+  </div>
+</body>
+</html>
