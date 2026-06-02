@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UpworkBuddy — Upwork earnings in your macOS menu bar</title>
+  <meta name="description" content="A lightweight macOS menu-bar app that shows your Upwork freelance earnings at a glance — hours, earnings, and per-project breakdowns by today, week, month, and year." />
+  <meta property="og:title" content="UpworkBuddy" />
+  <meta property="og:description" content="Your Upwork freelance earnings at a glance, right from the macOS menu bar." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://techgocodingnow.github.io/upwork-buddy-project/" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #9198a1;
+      --accent: #14a800; /* Upwork green */
+      --accent-hover: #108a00;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+    header { text-align: center; padding: 88px 0 56px; }
+    .logo { font-size: 64px; line-height: 1; }
+    h1 { font-size: 40px; margin: 16px 0 8px; letter-spacing: -0.02em; }
+    .tagline { font-size: 19px; color: var(--muted); margin: 0 auto 32px; max-width: 560px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 12px 22px; border-radius: 8px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      border: 1px solid var(--border); transition: background .15s, border-color .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-secondary { background: var(--panel); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--muted); }
+    section { padding: 24px 0; }
+    h2 { font-size: 22px; margin: 32px 0 16px; }
+    .features { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .features li {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .features b { display: block; margin-bottom: 2px; }
+    .features span { color: var(--muted); font-size: 15px; }
+    code {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 6px; font-size: 13px;
+    }
+    .note { color: var(--muted); font-size: 14px; }
+    footer {
+      text-align: center; color: var(--muted); font-size: 14px;
+      border-top: 1px solid var(--border); margin-top: 48px; padding: 28px 0 56px;
+    }
+    footer a { color: var(--muted); }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">💼</div>
+      <h1>UpworkBuddy</h1>
+      <p class="tagline">
+        A lightweight macOS menu-bar app that shows your Upwork freelance earnings
+        at a glance — hours, earnings, and per-project breakdowns rolled up by
+        today, week, month, and year.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/techgocodingnow/upwork-buddy-project/releases/latest">Download for macOS</a>
+        <a class="btn btn-secondary" href="https://github.com/techgocodingnow/upwork-buddy-project">View on GitHub</a>
+      </div>
+    </header>
+
+    <section>
+      <h2>Why UpworkBuddy</h2>
+      <ul class="features">
+        <li><b>Lives in the menu bar</b><span>No Dock icon, no clutter — just your numbers a click away.</span></li>
+        <li><b>Private by design</b><span>OAuth tokens are stored securely in the macOS Keychain, never on a server.</span></li>
+        <li><b>Zero dependencies</b><span>Pure Swift + SwiftPM. Open source under the MIT license.</span></li>
+        <li><b>Auto-updating</b><span>Ships signed, notarized releases with EdDSA-verified Sparkle updates.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Requirements</h2>
+      <p class="note">
+        macOS 14 (Sonoma) or newer, and an Upwork developer app for OAuth.
+        Full setup instructions are in the
+        <a href="https://github.com/techgocodingnow/upwork-buddy-project#readme">README</a>.
+      </p>
+    </section>
+
+    <footer>
+      Open source · MIT License ·
+      <a href="https://github.com/techgocodingnow/upwork-buddy-project">github.com/techgocodingnow/upwork-buddy-project</a>
+    </footer>
+  </div>
+</body>
+</html>
