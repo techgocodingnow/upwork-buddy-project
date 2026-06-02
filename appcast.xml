@@ -19,5 +19,16 @@
                  length="4122058"
                  sparkle:edSignature="XLxhKFF1JlGoVi2vJ0umfSrfgOHaPpDlO3Rz9TTZzK9GmDTXPp1dYBfnMtKBHy/a20IAS/XR9AWOQzoxzImGBg==" />
     </item>
+    <item>
+      <title>Version 1.0.2</title>
+      <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <pubDate>Tue, 02 Jun 2026 02:10:35 +0000</pubDate>
+      <enclosure url="https://github.com/techgocodingnow/upwork-buddy-project/releases/download/v1.0.2/UpworkBuddy-1.0.2.dmg"
+                 type="application/octet-stream"
+                 length="4122055"
+                 sparkle:edSignature="QlfUkqHHIZGJM9sv9LzEGENYJE4NCLc7OC2ryPPpDL1BuNgJHwCEGQSwrAlFURu+bsehtw7rDWTB+9GwDY9wCQ==" />
+    </item>
   </channel>
 </rss>
