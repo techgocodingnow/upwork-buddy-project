@@ -11,6 +11,8 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-06-02
+
 ### Added
 
 - Landing page at the GitHub Pages site root (`index.html`), so the project
