@@ -173,6 +173,7 @@ final class AppStore {
     private static let kHideSensitive   = "UpworkBuddyHideSensitive"
     private static let kMenuBarMetric   = "UpworkBuddyMenuBarMetric"
     private static let kDashboardMetric = "UpworkBuddyDashboardMetric"
+    private static let kProjectNameStyle = "UpworkBuddyProjectNameStyle"
     private static let kLaunchAtLogin   = "UpworkBuddyLaunchAtLogin"
     private static let kGoalHoursDaily  = "UpworkBuddyGoalHoursDaily"
     private static let kGoalHoursWeekly = "UpworkBuddyGoalHoursWeekly"
@@ -235,6 +236,10 @@ final class AppStore {
 
     var dashboardMetric: MenuBarMetric {
         didSet { UserDefaults.standard.set(dashboardMetric.rawValue, forKey: Self.kDashboardMetric) }
+    }
+
+    var projectNameStyle: ProjectNameStyle {
+        didSet { UserDefaults.standard.set(projectNameStyle.rawValue, forKey: Self.kProjectNameStyle) }
     }
 
     var launchAtLogin: Bool {
@@ -524,6 +529,9 @@ final class AppStore {
         self.menuBarMetric = storedMetric ?? .hours
         let storedDash = defaults.string(forKey: Self.kDashboardMetric).flatMap(MenuBarMetric.init(rawValue:))
         self.dashboardMetric = storedDash ?? .earnings
+        let storedProjectNameStyle = defaults.string(forKey: Self.kProjectNameStyle)
+            .flatMap(ProjectNameStyle.init(rawValue:))
+        self.projectNameStyle = storedProjectNameStyle ?? .projectTitle
 
         // Reconcile launchAtLogin with actual SMAppService state — user may
         // have toggled it from System Settings → General → Login Items.
@@ -800,11 +808,13 @@ final class AppStore {
         let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays)
         let todayRange = DateRanges.range(for: .today)
         let weekRange = DateRanges.range(for: .week)
+        let nameStyle = projectNameStyle
 
         let key = ReportCache.Key(
             tenantId: "",
             rangeStart: periodRange.startString,
-            rangeEnd: periodRange.endString
+            rangeEnd: periodRange.endString,
+            projectNameStyle: nameStyle
         )
 
         if !force, let cached = await ReportCache.shared.get(key) {
@@ -816,15 +826,15 @@ final class AppStore {
         defer { loadingCount -= 1 }
 
         do {
-            async let periodResult = api.fetchCombinedEarnings(range: periodRange, aceId: aceId)
-            async let prevResult = api.fetchCombinedEarnings(range: prevRange, aceId: aceId)
-            async let sparkResult = api.fetchCombinedEarnings(range: sparkRange, aceId: aceId)
+            async let periodResult = api.fetchCombinedEarnings(range: periodRange, aceId: aceId, projectNameStyle: nameStyle)
+            async let prevResult = api.fetchCombinedEarnings(range: prevRange, aceId: aceId, projectNameStyle: nameStyle)
+            async let sparkResult = api.fetchCombinedEarnings(range: sparkRange, aceId: aceId, projectNameStyle: nameStyle)
             async let todayResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .today)
                 ? nil
-                : api.fetchCombinedEarnings(range: todayRange, aceId: aceId)
+                : api.fetchCombinedEarnings(range: todayRange, aceId: aceId, projectNameStyle: nameStyle)
             async let weekResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .week)
                 ? nil
-                : api.fetchCombinedEarnings(range: weekRange, aceId: aceId)
+                : api.fetchCombinedEarnings(range: weekRange, aceId: aceId, projectNameStyle: nameStyle)
 
             let (periodSnap, _) = try await periodResult
             let (prevSnap, _) = try await prevResult

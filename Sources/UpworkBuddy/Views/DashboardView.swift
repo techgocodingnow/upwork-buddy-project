@@ -3,8 +3,6 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(AppStore.self) private var store
 
-    @State private var activeCelebration: UUID?
-
     var body: some View {
         ZStack {
             Theme.bgGradient.ignoresSafeArea()
@@ -54,44 +52,6 @@ struct DashboardView: View {
                 MusicMiniPlayer()
                 Divider().background(Theme.divider)
                 footer
-            }
-
-            if let token = activeCelebration {
-                ConfettiView(
-                    palette: [
-                        Theme.accent,
-                        Theme.accentDeep,
-                        Theme.accentSoft,
-                        .yellow,
-                        .pink,
-                        .mint
-                    ],
-                    style: store.celebrationStyle
-                ) {
-                    if activeCelebration == token { activeCelebration = nil }
-                }
-                .transition(.opacity)
-            }
-        }
-        .onChange(of: store.celebrationToken) { _, token in
-            guard let token, store.goalCelebrationEnabled, store.popoverVisible else { return }
-            activeCelebration = token
-            store.celebrationToken = nil
-        }
-        .onChange(of: store.popoverVisible) { _, visible in
-            guard visible,
-                  let token = store.celebrationToken,
-                  store.goalCelebrationEnabled
-            else { return }
-            activeCelebration = token
-            store.celebrationToken = nil
-        }
-        .onAppear {
-            if store.popoverVisible,
-               let token = store.celebrationToken,
-               store.goalCelebrationEnabled {
-                activeCelebration = token
-                store.celebrationToken = nil
             }
         }
     }

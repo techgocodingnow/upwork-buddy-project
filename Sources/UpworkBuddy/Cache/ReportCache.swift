@@ -9,6 +9,7 @@ actor ReportCache {
         let tenantId: String
         let rangeStart: String
         let rangeEnd: String
+        var projectNameStyle: ProjectNameStyle = .projectTitle
     }
 
     struct Entry {

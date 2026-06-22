@@ -629,7 +629,7 @@ private struct RefreshIntervalCard: View {
                 HStack(spacing: 10) {
                     Image(systemName: "clock")
                         .font(Theme.body(size: 16, weight: .medium))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(Theme.accentDeep)
                     Text(valueLabel)
                         .font(Theme.body(size: 18, weight: .bold))
                         .foregroundStyle(Theme.textPrimary)
@@ -1439,6 +1439,25 @@ private struct DisplayPage: View {
                 }
 
                 SettingsCard(
+                    title: "Project names",
+                    subtitle: "Used in Activity rows and chart hover breakdowns.",
+                    systemImage: "tag"
+                ) {
+                    Picker("", selection: $store.projectNameStyle) {
+                        ForEach(ProjectNameStyle.allCases) { style in
+                            Text(style.label).tag(style)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .tint(Theme.accent)
+                    .frame(maxWidth: 300)
+                    .onChange(of: store.projectNameStyle) { _, _ in
+                        Task { await store.refresh(force: true) }
+                    }
+                }
+
+                SettingsCard(
                     title: "Hide sensitive amounts",
                     subtitle: "Masks earnings, rates, and totals across the app.",
                     systemImage: "eye.slash"
@@ -2085,8 +2104,7 @@ private struct EyeBreakExerciseSection: View {
             SettingsCard(
                 title: "Interval (minutes)",
                 subtitle: "How often an eye break is triggered.",
-                systemImage: "clock",
-                layout: .stacked
+                systemImage: "clock"
             ) {
                 Stepper(
                     value: $store.eyeBreakIntervalMinutes,
@@ -2104,8 +2122,7 @@ private struct EyeBreakExerciseSection: View {
             SettingsCard(
                 title: "Break duration (seconds)",
                 subtitle: "How long the lock overlay stays on screen.",
-                systemImage: "hourglass",
-                layout: .stacked
+                systemImage: "hourglass"
             ) {
                 Stepper(
                     value: $store.eyeBreakDurationSeconds,
@@ -2188,8 +2205,7 @@ private struct StandupExerciseSection: View {
             SettingsCard(
                 title: "Standup interval (minutes)",
                 subtitle: "How often a standup is triggered.",
-                systemImage: "clock",
-                layout: .stacked
+                systemImage: "clock"
             ) {
                 Stepper(
                     value: $store.standupIntervalMinutes,
@@ -2207,8 +2223,7 @@ private struct StandupExerciseSection: View {
             SettingsCard(
                 title: "Standup duration (seconds)",
                 subtitle: "How long the lock overlay stays on screen so you can move.",
-                systemImage: "hourglass",
-                layout: .stacked
+                systemImage: "hourglass"
             ) {
                 Stepper(
                     value: $store.standupDurationSeconds,
@@ -2374,4 +2389,3 @@ private struct CustomSoundCard: View {
         return s
     }
 }
-

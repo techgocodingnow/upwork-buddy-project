@@ -7,7 +7,7 @@ struct ProjectsList: View {
 
     var body: some View {
         let format = CurrencyFormat(code: currency, masked: masked)
-        let maxEarnings = max(projects.map(\.earnings).max() ?? 1, 0.01)
+        let totalEarnings = max(projects.map(\.earnings).reduce(0, +), 0.01)
 
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -35,7 +35,7 @@ struct ProjectsList: View {
                         ProjectRow(
                             project: project,
                             format: format,
-                            maxEarnings: maxEarnings
+                            totalEarnings: totalEarnings
                         )
                     }
                 }
@@ -47,19 +47,35 @@ struct ProjectsList: View {
 private struct ProjectRow: View {
     let project: ProjectStat
     let format: CurrencyFormat
-    let maxEarnings: Double
+    let totalEarnings: Double
+
+    @State private var isNameHovered = false
 
     var body: some View {
+        let share = Int(((project.earnings / totalEarnings) * 100).rounded())
+
         HStack(spacing: 10) {
-            BarTrack(progress: project.earnings / maxEarnings)
-                .frame(width: 86, height: 6)
-                .accessibilityHidden(true)
+            Text("\(share)%")
+                .font(Theme.body(size: 12, weight: .semibold))
+                .monospacedDigit()
+                .foregroundStyle(Theme.accent)
+                .frame(width: 44, alignment: .leading)
 
             Text(project.title)
                 .font(Theme.body(size: 13, weight: .medium))
                 .foregroundStyle(Theme.textPrimary)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .topLeading) {
+                    if isNameHovered {
+                        nameTooltip
+                            .offset(y: -36)
+                            .allowsHitTesting(false)
+                            .transition(.opacity)
+                    }
+                }
+                .onHover { isNameHovered = $0 }
+                .zIndex(isNameHovered ? 10 : 0)
 
             Text(format.compact(project.earnings))
                 .font(Theme.body(size: 13, weight: .semibold))
@@ -72,21 +88,27 @@ private struct ProjectRow: View {
                 .frame(width: 50, alignment: .trailing)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(project.title): \(format.compact(project.earnings)), \(project.hours.asHours())")
+        .accessibilityLabel("\(project.title): \(share)% of total, \(format.compact(project.earnings)), \(project.hours.asHours())")
     }
-}
 
-private struct BarTrack: View {
-    let progress: Double
-
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .leading) {
-                Capsule().fill(Theme.trackBg)
-                Capsule()
-                    .fill(Theme.accent)
-                    .frame(width: max(4, geo.size.width * CGFloat(min(max(progress, 0), 1))))
-            }
-        }
+    private var nameTooltip: some View {
+        Text(project.title)
+            .font(Theme.body(size: 11, weight: .semibold))
+            .foregroundStyle(Theme.textPrimary)
+            .lineLimit(nil)
+            .multilineTextAlignment(.leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .frame(maxWidth: 320, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.radius(8))
+                    .fill(Theme.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.radius(8))
+                    .strokeBorder(Theme.divider, lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.22), radius: 8, y: 2)
     }
 }

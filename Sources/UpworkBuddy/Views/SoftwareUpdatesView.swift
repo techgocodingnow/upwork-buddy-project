@@ -122,7 +122,7 @@ struct SoftwareUpdatesPage: View {
                 if service.isCheckingForUpdates {
                     ProgressView()
                         .controlSize(.small)
-                        .tint(.white)
+                        .tint(Theme.onAccent)
                 } else {
                     Image(systemName: "arrow.down.circle.fill")
                         .font(Theme.body(size: 15, weight: .semibold))
@@ -130,7 +130,7 @@ struct SoftwareUpdatesPage: View {
                 Text(loc: service.isCheckingForUpdates ? "Checking…" : "Check for Updates")
                     .font(Theme.body(size: 14, weight: .semibold))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.onAccent)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .background(
@@ -139,7 +139,7 @@ struct SoftwareUpdatesPage: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.18), lineWidth: 0.6)
+                    .strokeBorder(Theme.onAccent.opacity(0.18), lineWidth: 0.6)
             )
             .shadow(color: Theme.accent.opacity(0.30), radius: 10, y: 4)
             .contentShape(Rectangle())

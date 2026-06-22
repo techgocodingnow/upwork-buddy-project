@@ -141,16 +141,36 @@ struct AggregationMoreTests {
         #expect(UpworkAPI.compactDateString(d) == "20260512")
     }
 
-    @Test func dailyBreakdownPreservesClientLabel() {
+    @Test func dailyBreakdownUsesProjectTitle() {
         let timeRows = [
             TimeReportRow(dateWorkedOn: "2026-05-01", hours: 1, charges: 38,
-                          contractId: "c1", contractTitle: "T", clientName: "Acme", hourlyRate: 38),
+                          contractId: "c1", contractTitle: "React-Native Mobile Dashboard", clientName: "Acme", hourlyRate: 38),
             TimeReportRow(dateWorkedOn: "2026-05-01", hours: 2, charges: 76,
-                          contractId: "c2", contractTitle: "T2", clientName: "Beta", hourlyRate: 38),
+                          contractId: "c2", contractTitle: "iOS Maintenance", clientName: "Beta", hourlyRate: 38),
         ]
-        let (_, daily) = UpworkAPI.merge(txRows: [], timeRows: timeRows)
+        let txRows = [
+            TransactionRow(date: "2026-05-01T00:00:00+0000", type: "APInvoice", subtype: nil,
+                           clientName: "Acme", teamId: nil, amount: 30, currency: "USD")
+        ]
+        let (_, daily) = UpworkAPI.merge(txRows: txRows, timeRows: timeRows)
         #expect(daily.count == 1)
         let labels = Set(daily.first?.breakdown.map(\.label) ?? [])
-        #expect(labels == ["Acme", "Beta"])
+        #expect(labels == ["React-Native Mobile Dashboard", "iOS Maintenance"])
+    }
+
+    @Test func projectNameStyleCanUseClientName() {
+        let timeRows = [
+            TimeReportRow(dateWorkedOn: "2026-05-01", hours: 1, charges: 38,
+                          contractId: "c1", contractTitle: "React-Native Mobile Dashboard", clientName: "Acme", hourlyRate: 38),
+            TimeReportRow(dateWorkedOn: "2026-05-01", hours: 2, charges: 76,
+                          contractId: "c2", contractTitle: "iOS Maintenance", clientName: "Beta", hourlyRate: 38),
+        ]
+        let (snap, daily) = UpworkAPI.merge(
+            txRows: [],
+            timeRows: timeRows,
+            projectNameStyle: .clientName
+        )
+        #expect(Set(snap.projects.map(\.title)) == ["Acme", "Beta"])
+        #expect(Set(daily.first?.breakdown.map(\.label) ?? []) == ["Acme", "Beta"])
     }
 }

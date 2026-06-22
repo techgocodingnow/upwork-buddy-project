@@ -11,6 +11,26 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-23
+
+### Added
+
+- Added a Display setting to choose whether Activity rows and chart hover
+  breakdowns use project/contract titles or client/team names.
+- Added instant hover tooltips for truncated Activity project names.
+
+### Changed
+
+- Updated Activity rows to show each project's share of total earnings.
+- Improved settings readability for update, refresh interval, and exercise
+  interval controls.
+
+### Fixed
+
+- Kept goal confetti out of the dashboard popover so celebrations only render
+  on the monitor overlay.
+- Aligned chart hover project names with the Activity list naming mode.
+
 ## [1.0.2] - 2026-06-02
 
 ### Added

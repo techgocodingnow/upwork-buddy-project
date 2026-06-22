@@ -1,5 +1,19 @@
 import Foundation
 
+enum ProjectNameStyle: String, CaseIterable, Sendable, Identifiable {
+    case projectTitle
+    case clientName
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .projectTitle: return L10n.t("Project / contract title")
+        case .clientName:   return L10n.t("Client / team name")
+        }
+    }
+}
+
 /// High-level facade over `GraphQLClient`. Returns plain models the UI can render
 /// without knowing GraphQL.
 struct UpworkAPI: Sendable {
@@ -38,7 +52,8 @@ struct UpworkAPI: Sendable {
     /// back to `range` via `merge(filterDate:)`.
     func fetchCombinedEarnings(
         range: DateRange,
-        aceId: String
+        aceId: String,
+        projectNameStyle: ProjectNameStyle = .projectTitle
     ) async throws -> (EarningsSnapshot, [DailyPoint]) {
         let timeRange = Self.weekExpandedRange(for: range)
         let filterDate: Date? = timeRange.start < range.start ? range.start : nil
@@ -55,7 +70,12 @@ struct UpworkAPI: Sendable {
             timeRows = await augmentWithWorkDiary(timeRows: timeRows, day: range.start)
         }
 
-        return Self.merge(txRows: txRows, timeRows: timeRows, filterDate: filterDate)
+        return Self.merge(
+            txRows: txRows,
+            timeRows: timeRows,
+            filterDate: filterDate,
+            projectNameStyle: projectNameStyle
+        )
     }
 
     // MARK: - Work Diary (live current-day hours)
@@ -286,10 +306,17 @@ struct UpworkAPI: Sendable {
     static func merge(
         txRows: [TransactionRow],
         timeRows: [TimeReportRow],
-        filterDate: Date? = nil
+        filterDate: Date? = nil,
+        projectNameStyle: ProjectNameStyle = .projectTitle
     ) -> (EarningsSnapshot, [DailyPoint]) {
         let cal = Calendar.current
         let filterDay = filterDate.map { cal.startOfDay(for: $0) }
+        func displayName(contractTitle: String?, clientName: String?) -> String {
+            switch projectNameStyle {
+            case .projectTitle: return contractTitle ?? clientName ?? "Contract"
+            case .clientName:   return clientName ?? contractTitle ?? "Contract"
+            }
+        }
 
         // ---- contractTimeReport aggregation ----
         struct Agg { var title: String; var clientName: String?; var hours: Double; var gross: Double; var rate: Double? }
@@ -297,12 +324,19 @@ struct UpworkAPI: Sendable {
         var hoursByDay: [Date: Double] = [:]
         var hoursByDayClient: [Date: [String: Double]] = [:]
         var grossByDayClient: [Date: [String: Double]] = [:]
+        var titleByClient: [String: String] = [:]
         var totalHours: Double = 0
 
         for r in timeRows {
             guard let cid = r.contractId else { continue }
             let hours = r.hours ?? 0
             let charges = r.charges ?? 0
+            if let clientName = r.clientName {
+                titleByClient[clientName] = displayName(
+                    contractTitle: r.contractTitle,
+                    clientName: clientName
+                )
+            }
 
             // When a filterDay is set, only rows on that day count toward the
             // snapshot totals and per-contract breakdown. Rows on other days
@@ -312,7 +346,7 @@ struct UpworkAPI: Sendable {
 
             if countsTowardSnapshot {
                 var entry = byContract[cid] ?? Agg(
-                    title: r.contractTitle ?? r.clientName ?? "Contract",
+                    title: displayName(contractTitle: r.contractTitle, clientName: r.clientName),
                     clientName: r.clientName,
                     hours: 0,
                     gross: 0,
@@ -328,7 +362,7 @@ struct UpworkAPI: Sendable {
                let date = DateRange.iso.date(from: dateStr) {
                 let day = cal.startOfDay(for: date)
                 hoursByDay[day, default: 0] += hours
-                let label = r.clientName ?? r.contractTitle ?? "Contract"
+                let label = displayName(contractTitle: r.contractTitle, clientName: r.clientName)
                 hoursByDayClient[day, default: [:]][label, default: 0] += hours
                 grossByDayClient[day, default: [:]][label, default: 0] += charges
             }
@@ -351,8 +385,9 @@ struct UpworkAPI: Sendable {
         for p in parsedTx {
             earningsByClient[p.clientName, default: 0] += p.amount
             let day = cal.startOfDay(for: p.date)
+            let label = titleByClient[p.clientName] ?? p.clientName
             earningsByDay[day, default: 0] += p.amount
-            earningsByDayClient[day, default: [:]][p.clientName, default: 0] += p.amount
+            earningsByDayClient[day, default: [:]][label, default: 0] += p.amount
         }
 
         // ---- Build project list ----
