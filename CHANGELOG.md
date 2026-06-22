@@ -11,6 +11,15 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-06-23
+
+### Fixed
+
+- Fixed the release appcast publisher so new versions are prepended to the feed
+  and published with the DMG media type.
+- Documented the macOS App Management denial that can block Sparkle's
+  Autoupdate helper after download.
+
 ## [1.0.3] - 2026-06-23
 
 ### Added
