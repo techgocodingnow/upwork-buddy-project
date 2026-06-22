@@ -107,6 +107,7 @@ window will appear. Reset overrides with `defaults delete com.gocodingnow.Upwork
 | Appcast 404 | GitHub Pages not enabled on `gh-pages`, or DNS not propagated yet (wait 5–10 min after first push). |
 | Notification banner never fires | `UNUserNotificationCenter` not authorized — check System Settings → Notifications → UpworkBuddy. |
 | CI step "SPARKLE_PRIVATE_KEY not set" warning | Secret not configured in repo settings. |
+| "An error occurred while running the updater" after download | macOS denied Sparkle's `Autoupdate` helper through App Management. Console shows `kTCCServiceSystemPolicyAppBundles denied by TCC for Autoupdate`. Reset the app decision with `tccutil reset SystemPolicyAppBundles com.upworkbuddy.app`, then allow UpworkBuddy in System Settings → Privacy & Security → App Management and retry. |
 
 ## Key rotation
 

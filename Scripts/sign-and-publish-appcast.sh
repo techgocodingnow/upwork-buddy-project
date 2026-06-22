@@ -76,7 +76,7 @@ NEW_ITEM=$(cat <<XML
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
       <pubDate>${PUB_DATE}</pubDate>
       <enclosure url="${DMG_URL}"
-                 type="application/octet-stream"
+                 type="application/x-apple-diskimage"
                  length="${LENGTH}"
                  sparkle:edSignature="${ED_SIG}" />
     </item>
@@ -117,7 +117,8 @@ TMP="$(mktemp)"
 export NEW_ITEM
 awk '
   BEGIN { inserted=0 }
-  /<\/channel>/ && !inserted { print ENVIRON["NEW_ITEM"]; inserted=1 }
+  !inserted && /<item>/ { print ENVIRON["NEW_ITEM"]; inserted=1 }
+  !inserted && /<\/channel>/ { print ENVIRON["NEW_ITEM"]; inserted=1 }
   { print }
   END {
     if (!inserted) {
