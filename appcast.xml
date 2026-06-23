@@ -8,6 +8,17 @@
     <description>UpworkBuddy update feed</description>
     <language>en</language>
     <item>
+      <title>Version 1.0.6</title>
+      <sparkle:shortVersionString>1.0.6</sparkle:shortVersionString>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <pubDate>Tue, 23 Jun 2026 03:24:29 +0000</pubDate>
+      <enclosure url="https://github.com/techgocodingnow/upwork-buddy-project/releases/download/v1.0.6/UpworkBuddy-1.0.6.dmg"
+                 type="application/x-apple-diskimage"
+                 length="4145701"
+                 sparkle:edSignature="YI9nGvlxIQ2PorlbEkWcQNxYnnsDUFODEi3n8rawBavXcgT00RJAMj2sav9LeItfo1iNKeDFuYi7EqE/v0iIAQ==" />
+    </item>
+    <item>
       <title>Version 1.0.5</title>
       <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
       <sparkle:version>6</sparkle:version>
