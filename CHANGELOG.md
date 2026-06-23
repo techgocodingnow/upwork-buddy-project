@@ -11,6 +11,13 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-06-23
+
+### Fixed
+
+- Kept `100%` Activity percentages on one line without stealing space from
+  earnings and hours columns.
+
 ## [1.0.5] - 2026-06-23
 
 ### Fixed

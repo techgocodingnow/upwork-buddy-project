@@ -65,7 +65,9 @@ private struct ProjectRow: View {
                 .font(Theme.body(size: 12, weight: .semibold))
                 .monospacedDigit()
                 .foregroundStyle(Theme.accent)
-                .frame(width: 34, alignment: .leading)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(width: 44, alignment: .leading)
 
             Text(project.title)
                 .font(Theme.body(size: 13, weight: .medium))
