@@ -12,7 +12,7 @@ struct MenuBarContent: View {
                     LoginView()
                 }
             }
-            .frame(width: 380, height: 600)
+            .frame(width: 380, height: 620)
             .task { await store.bootstrap() }
             .id(store.preferredLanguage)
         }

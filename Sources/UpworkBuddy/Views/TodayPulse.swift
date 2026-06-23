@@ -101,7 +101,7 @@ struct TodayPulse: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Theme.divider, lineWidth: 0.5)
+                .strokeBorder(Theme.divider.opacity(0.18), lineWidth: 0.5)
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(primary). \(secondary)")

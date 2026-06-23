@@ -10,14 +10,13 @@ final class DateRangesTests: XCTestCase {
         XCTAssertLessThanOrEqual(range.start, range.end)
     }
 
-    func testWeekRangeIsMondayBased() {
+    func testWeekRangeIsRollingSevenDays() {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "UTC")!
-        cal.firstWeekday = 2
         let wednesday = cal.date(from: DateComponents(year: 2026, month: 3, day: 11))!
         let range = DateRanges.range(for: .week, now: wednesday, calendar: cal)
-        let comps = cal.dateComponents([.year, .month, .day, .weekday], from: range.start)
-        XCTAssertEqual(comps.weekday, 2, "Week should start Monday")
+        let dayCount = cal.dateComponents([.day], from: range.start, to: cal.startOfDay(for: wednesday)).day ?? 0
+        XCTAssertEqual(dayCount, 6)
     }
 
     func testSparklineRangeSpansRequestedDays() {

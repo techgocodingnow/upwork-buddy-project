@@ -33,17 +33,13 @@ struct SparklineView: View {
             GeometryReader { geo in
                 let count = max(values.count, 1)
                 let gap: CGFloat = 3
-                let barW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                let rawBarW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                let barW = count == 1 ? min(rawBarW, 44) : rawBarW
 
                 ZStack(alignment: .topLeading) {
                     Color.clear
                         .accessibilityLabel(L10n.t("Trend chart, last %d days, total %@", count, totalText))
                         .accessibilityAddTraits(.isImage)
-                    Rectangle()
-                        .fill(Theme.divider)
-                        .frame(height: 0.5)
-                        .offset(y: geo.size.height * 0.5)
-
                     HStack(alignment: .bottom, spacing: gap) {
                         ForEach(Array(values.enumerated()), id: \.offset) { idx, v in
                             let point = points[idx]
@@ -87,7 +83,8 @@ struct SparklineView: View {
                 GeometryReader { geo in
                     let count = max(values.count, 1)
                     let gap: CGFloat = 3
-                    let barW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                    let rawBarW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                    let barW = count == 1 ? min(rawBarW, 44) : rawBarW
                     if let idx = hoverIndex, idx < points.count {
                         tooltip(for: points[idx], format: format)
                             .offset(
@@ -114,13 +111,14 @@ struct SparklineView: View {
         f.setLocalizedDateFormatFromTemplate("EEE MMM d")
         let rows = Array(point.breakdown.prefix(5))
         let isPayoutOnly = point.earnings > 0 && point.hours <= 0.01
+        let primaryValue = metric == .hours ? point.hours.asHours() : format.compact(point.earnings)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(f.string(from: point.date))
                     .font(Theme.body(size: 11, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 if isPayoutOnly {
-                    Text("payout")
+                    Text(L10n.t("payout"))
                         .font(Theme.body(size: 9, weight: .medium))
                         .foregroundStyle(Theme.textTertiary)
                         .padding(.horizontal, 5)
@@ -131,7 +129,7 @@ struct SparklineView: View {
                         )
                 }
                 Spacer(minLength: 12)
-                Text(format.compact(point.earnings))
+                Text(primaryValue)
                     .font(Theme.body(size: 11, weight: .semibold))
                     .foregroundStyle(Theme.accent)
             }
@@ -149,17 +147,10 @@ struct SparklineView: View {
                         Text(format.compact(row.earnings))
                             .font(Theme.body(size: 11, weight: .semibold))
                             .foregroundStyle(Theme.accent)
-                        if row.hours > 0.01 {
-                            Text(row.hours.asHours())
-                                .font(Theme.body(size: 11))
-                                .foregroundStyle(Theme.textSecondary)
-                                .frame(width: 52, alignment: .trailing)
-                        } else {
-                            Text("—")
-                                .font(Theme.body(size: 11))
-                                .foregroundStyle(Theme.textTertiary)
-                                .frame(width: 52, alignment: .trailing)
-                        }
+                        Text(row.hours.asHours())
+                            .font(Theme.body(size: 11))
+                            .foregroundStyle(row.hours > 0.01 ? Theme.textSecondary : Theme.textTertiary)
+                            .frame(width: 52, alignment: .trailing)
                     }
                 }
                 if point.breakdown.count > rows.count {

@@ -11,6 +11,17 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-06-23
+
+### Fixed
+
+- Fixed missing translations across bundled languages and localized the weekly
+  chart payout badge.
+- Aligned the Week, Month, and Year hero, chart, and Activity rows around the
+  same rolling ranges.
+- Increased the menu popover height so more of the dashboard is visible before
+  scrolling.
+
 ## [1.0.4] - 2026-06-23
 
 ### Fixed

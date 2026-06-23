@@ -5,25 +5,26 @@ struct PeriodSegmentedControl: View {
     let onSelect: (Period) -> Void
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 8) {
             ForEach(Period.allCases) { period in
                 Button {
                     onSelect(period)
                 } label: {
                     Text(period.label)
                         .font(Theme.body(size: 12, weight: .semibold))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 7)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.9)
+                        .frame(maxWidth: .infinity, minHeight: 36, alignment: .center)
                         .background(
-                            RoundedRectangle(cornerRadius: Theme.radius(8))
+                            RoundedRectangle(cornerRadius: Theme.radius(6))
                                 .fill(selection == period ? Theme.surface : Theme.chipBg.opacity(0.6))
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(selection == period ? Theme.accent.opacity(0.0) : Color.clear, lineWidth: 0)
+                            RoundedRectangle(cornerRadius: Theme.radius(6))
+                                .strokeBorder(selection == period ? Theme.divider.opacity(0.12) : Color.clear, lineWidth: 0.5)
                         )
                         .foregroundStyle(selection == period ? Theme.textPrimary : Theme.textSecondary)
-                        .shadow(color: selection == period ? Color.black.opacity(0.06) : .clear, radius: 1, y: 0.5)
+                        .shadow(color: selection == period ? Color.black.opacity(0.03) : .clear, radius: 1, y: 0.5)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(period.label)

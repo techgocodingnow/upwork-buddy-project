@@ -31,32 +31,32 @@ struct DateRangesMoreTests {
         #expect(r.end == now)
     }
 
-    @Test func weekRangeStartsOnMonday() {
-        // 2026-05-12 is a Tuesday → Monday is 2026-05-11
+    @Test func weekRangeSpansLastSevenDays() {
         let now = date("2026-05-12 09:00:00")
         let r = DateRanges.range(for: .week, now: now, calendar: posixCal)
-        let comps = posixCal.dateComponents([.year, .month, .day, .weekday], from: r.start)
-        #expect(comps.day == 11)
+        let comps = posixCal.dateComponents([.year, .month, .day], from: r.start)
+        #expect(comps.day == 6)
         #expect(comps.month == 5)
-        // Monday == 2 in gregorian weekday numbering
-        #expect(comps.weekday == 2)
+        #expect(r.end == now)
     }
 
-    @Test func monthRangeStartsFirstOfMonth() {
+    @Test func monthRangeSpansLastThirtyDays() {
         let now = date("2026-05-12 09:00:00")
         let r = DateRanges.range(for: .month, now: now, calendar: posixCal)
         let comps = posixCal.dateComponents([.year, .month, .day], from: r.start)
-        #expect(comps.day == 1)
-        #expect(comps.month == 5)
+        #expect(comps.day == 13)
+        #expect(comps.month == 4)
+        #expect(r.end == now)
     }
 
-    @Test func yearRangeStartsJan1() {
+    @Test func yearRangeSpansLastNinetyDays() {
         let now = date("2026-05-12 09:00:00")
         let r = DateRanges.range(for: .year, now: now, calendar: posixCal)
         let comps = posixCal.dateComponents([.year, .month, .day], from: r.start)
-        #expect(comps.day == 1)
-        #expect(comps.month == 1)
+        #expect(comps.day == 12)
+        #expect(comps.month == 2)
         #expect(comps.year == 2026)
+        #expect(r.end == now)
     }
 
     // MARK: - sparklineRange
@@ -92,24 +92,22 @@ struct DateRangesMoreTests {
         #expect(endComps.second == 59)
     }
 
-    @Test func previousMonthRangeCoversPriorMonth() {
+    @Test func previousMonthRangeIsPreviousThirtyDays() {
         let now = date("2026-05-12 09:00:00")
+        let current = DateRanges.range(for: .month, now: now, calendar: posixCal)
         let r = DateRanges.previousRange(for: .month, now: now, calendar: posixCal)
-        let startComps = posixCal.dateComponents([.month, .day], from: r.start)
-        #expect(startComps.month == 4)
-        #expect(startComps.day == 1)
-        // end strictly before May 1 00:00
-        let mayFirst = posixCal.date(from: DateComponents(year: 2026, month: 5, day: 1))!
-        #expect(r.end < mayFirst)
+        let diff = posixCal.dateComponents([.day], from: r.start, to: current.start)
+        #expect(diff.day == Period.month.sparklineDays)
+        #expect(r.end < current.start)
     }
 
-    @Test func previousYearStartsLastJan1() {
+    @Test func previousYearRangeIsPreviousNinetyDays() {
         let now = date("2026-05-12 09:00:00")
+        let current = DateRanges.range(for: .year, now: now, calendar: posixCal)
         let r = DateRanges.previousRange(for: .year, now: now, calendar: posixCal)
-        let startComps = posixCal.dateComponents([.year, .month, .day], from: r.start)
-        #expect(startComps.year == 2025)
-        #expect(startComps.month == 1)
-        #expect(startComps.day == 1)
+        let diff = posixCal.dateComponents([.day], from: r.start, to: current.start)
+        #expect(diff.day == Period.year.sparklineDays)
+        #expect(r.end < current.start)
     }
 
     @Test func previousWeekIsExactlyOneWeekEarlier() {

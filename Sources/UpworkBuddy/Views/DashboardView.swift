@@ -9,9 +9,9 @@ struct DashboardView: View {
 
             VStack(spacing: 0) {
                 header
-                Divider().background(Theme.divider)
+                separator
                 ScrollView {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 12) {
                         HeroSection(
                             snapshot: store.snapshot,
                             previous: store.previousSnapshot,
@@ -50,7 +50,7 @@ struct DashboardView: View {
                     .padding(.vertical, 14)
                 }
                 MusicMiniPlayer()
-                Divider().background(Theme.divider)
+                separator
                 footer
             }
         }
@@ -88,6 +88,13 @@ struct DashboardView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
+    }
+
+    private var separator: some View {
+        Rectangle()
+            .fill(Theme.divider.opacity(0.18))
+            .frame(height: 0.5)
+            .accessibilityHidden(true)
     }
 
     private func iconButton(systemName: String, help: String, action: @escaping () -> Void) -> some View {

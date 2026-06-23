@@ -16,11 +16,15 @@ struct ProjectsList: View {
                 Text(loc: "Earnings")
                     .font(Theme.body(size: 11))
                     .foregroundStyle(Theme.textTertiary)
-                    .frame(width: 70, alignment: .trailing)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .frame(width: 76, alignment: .trailing)
                 Text(loc: "Hours")
                     .font(Theme.body(size: 11))
                     .foregroundStyle(Theme.textTertiary)
-                    .frame(width: 50, alignment: .trailing)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .frame(width: 64, alignment: .trailing)
             }
 
             if projects.isEmpty {
@@ -53,13 +57,15 @@ private struct ProjectRow: View {
 
     var body: some View {
         let share = Int(((project.earnings / totalEarnings) * 100).rounded())
+        let earningsText = format.compact(project.earnings).replacingOccurrences(of: " ", with: "\u{00a0}")
+        let hoursText = project.hours.asHours().replacingOccurrences(of: " ", with: "\u{00a0}")
 
         HStack(spacing: 10) {
             Text("\(share)%")
                 .font(Theme.body(size: 12, weight: .semibold))
                 .monospacedDigit()
                 .foregroundStyle(Theme.accent)
-                .frame(width: 44, alignment: .leading)
+                .frame(width: 34, alignment: .leading)
 
             Text(project.title)
                 .font(Theme.body(size: 13, weight: .medium))
@@ -77,15 +83,21 @@ private struct ProjectRow: View {
                 .onHover { isNameHovered = $0 }
                 .zIndex(isNameHovered ? 10 : 0)
 
-            Text(format.compact(project.earnings))
+            Text(earningsText)
                 .font(Theme.body(size: 13, weight: .semibold))
                 .foregroundStyle(Theme.textPrimary)
-                .frame(width: 70, alignment: .trailing)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .allowsTightening(true)
+                .frame(width: 76, alignment: .trailing)
 
-            Text(project.hours.asHours())
+            Text(hoursText)
                 .font(Theme.body(size: 12))
                 .foregroundStyle(Theme.textSecondary)
-                .frame(width: 50, alignment: .trailing)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .allowsTightening(true)
+                .frame(width: 64, alignment: .trailing)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(project.title): \(share)% of total, \(format.compact(project.earnings)), \(project.hours.asHours())")

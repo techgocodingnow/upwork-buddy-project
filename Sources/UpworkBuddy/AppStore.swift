@@ -803,11 +803,12 @@ final class AppStore {
     }
 
     private func performRefresh(aceId: String, force: Bool) async {
-        let periodRange = DateRanges.range(for: selectedPeriod)
-        let prevRange = DateRanges.previousRange(for: selectedPeriod)
-        let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays)
-        let todayRange = DateRanges.range(for: .today)
-        let weekRange = DateRanges.range(for: .week)
+        let refreshDate = Date()
+        let periodRange = DateRanges.range(for: selectedPeriod, now: refreshDate)
+        let prevRange = DateRanges.previousRange(for: selectedPeriod, now: refreshDate)
+        let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays, now: refreshDate)
+        let todayRange = DateRanges.range(for: .today, now: refreshDate)
+        let weekRange = DateRanges.range(for: .week, now: refreshDate)
         let nameStyle = projectNameStyle
 
         let key = ReportCache.Key(

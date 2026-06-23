@@ -4,7 +4,7 @@ import Observation
 import UserNotifications
 
 private let popoverWidth: CGFloat = 380
-private let popoverHeight: CGFloat = 600
+private let popoverHeight: CGFloat = 620
 private let menubarTitleFontSize: CGFloat = 13
 private let menubarIconPointSize: CGFloat = 16
 
