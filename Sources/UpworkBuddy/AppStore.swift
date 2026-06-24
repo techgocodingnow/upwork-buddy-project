@@ -806,7 +806,9 @@ final class AppStore {
         let refreshDate = Date()
         let periodRange = DateRanges.range(for: selectedPeriod, now: refreshDate)
         let prevRange = DateRanges.previousRange(for: selectedPeriod, now: refreshDate)
-        let sparkRange = DateRanges.sparklineRange(days: selectedPeriod.sparklineDays, now: refreshDate)
+        let sparkRange = selectedPeriod == .today
+            ? DateRanges.sparklineRange(days: selectedPeriod.sparklineDays, now: refreshDate)
+            : periodRange
         let todayRange = DateRanges.range(for: .today, now: refreshDate)
         let weekRange = DateRanges.range(for: .week, now: refreshDate)
         let nameStyle = projectNameStyle
@@ -820,7 +822,7 @@ final class AppStore {
 
         if !force, let cached = await ReportCache.shared.get(key) {
             snapshot = cached.snapshot
-            sparkline = cached.daily.suffix(selectedPeriod.sparklineDays)
+            sparkline = normalizedSparkline(cached.daily, range: sparkRange)
         }
 
         loadingCount += 1
@@ -842,11 +844,12 @@ final class AppStore {
             let (_, sparkDaily) = try await sparkResult
             let todayPair = try await todayResult
             let weekPair = try await weekResult
+            let normalizedSparkDaily = normalizedSparkline(sparkDaily, range: sparkRange)
 
             snapshot = periodSnap
             previousSnapshot = prevSnap
-            sparkline = sparkDaily
-            await ReportCache.shared.set(key, snapshot: periodSnap, daily: sparkDaily)
+            sparkline = normalizedSparkDaily
+            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily)
 
             if selectedPeriod == .today {
                 todaySnapshot = periodSnap
@@ -867,6 +870,12 @@ final class AppStore {
         } catch {
             handle(error)
         }
+    }
+
+    private func normalizedSparkline(_ points: [DailyPoint], range: DateRange) -> [DailyPoint] {
+        selectedPeriod == .today
+            ? Array(points.suffix(selectedPeriod.sparklineDays))
+            : DateRanges.fillDailyPoints(points, in: range)
     }
 
     // MARK: - Auth

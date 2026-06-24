@@ -11,6 +11,20 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.7] - 2026-06-24
+
+### Changed
+
+- Changed Week, Month, and Year dashboard charts to use calendar periods:
+  Monday-Sunday, current month, and current year.
+- Localized the new calendar-period chart titles across bundled languages.
+
+### Fixed
+
+- Fixed goal celebrations and progress notifications so switching tabs into an
+  already-complete period does not trigger random confetti.
+- Loosened the dashboard goal ring spacing when progress reaches the goal.
+
 ## [1.0.6] - 2026-06-23
 
 ### Fixed

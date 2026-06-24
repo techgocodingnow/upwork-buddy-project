@@ -5,6 +5,7 @@ struct SparklineView: View {
     let currency: String
     var masked: Bool = false
     var metric: MenuBarMetric = .earnings
+    var title: String?
 
     @State private var hoverIndex: Int?
 
@@ -14,11 +15,12 @@ struct SparklineView: View {
         let total = values.reduce(0, +)
         let format = CurrencyFormat(code: currency, masked: masked)
         let totalText: String = metric == .hours ? total.asHours() : format.compact(total)
+        let titleText = title ?? L10n.t("Last %d days", points.count)
 
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(L10n.t("Last %d days", points.count))
+                    Text(titleText)
                         .font(Theme.body(size: 11))
                         .foregroundStyle(Theme.textTertiary)
                     Text(totalText)
@@ -32,13 +34,13 @@ struct SparklineView: View {
 
             GeometryReader { geo in
                 let count = max(values.count, 1)
-                let gap: CGFloat = 3
-                let rawBarW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                let gap: CGFloat = count > 120 ? 0 : 3
+                let rawBarW = max(0.5, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
                 let barW = count == 1 ? min(rawBarW, 44) : rawBarW
 
                 ZStack(alignment: .topLeading) {
                     Color.clear
-                        .accessibilityLabel(L10n.t("Trend chart, last %d days, total %@", count, totalText))
+                        .accessibilityLabel(L10n.t("Trend chart, %@, total %@", titleText, totalText))
                         .accessibilityAddTraits(.isImage)
                     HStack(alignment: .bottom, spacing: gap) {
                         ForEach(Array(values.enumerated()), id: \.offset) { idx, v in
@@ -82,8 +84,8 @@ struct SparklineView: View {
             .overlay(alignment: .topLeading) {
                 GeometryReader { geo in
                     let count = max(values.count, 1)
-                    let gap: CGFloat = 3
-                    let rawBarW = max(2, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
+                    let gap: CGFloat = count > 120 ? 0 : 3
+                    let rawBarW = max(0.5, (geo.size.width - CGFloat(count - 1) * gap) / CGFloat(count))
                     let barW = count == 1 ? min(rawBarW, 44) : rawBarW
                     if let idx = hoverIndex, idx < points.count {
                         tooltip(for: points[idx], format: format)

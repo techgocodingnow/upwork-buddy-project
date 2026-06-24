@@ -22,8 +22,12 @@ enum DateRanges {
         switch period {
         case .today:
             return DateRange(start: calendar.startOfDay(for: now), end: now)
-        case .week, .month, .year:
-            return sparklineRange(days: period.sparklineDays, now: now, calendar: calendar)
+        case .week:
+            return calendarWeekRange(now: now, calendar: calendar)
+        case .month:
+            return calendarRange(.month, now: now, calendar: calendar)
+        case .year:
+            return calendarRange(.year, now: now, calendar: calendar)
         }
     }
 
@@ -31,6 +35,25 @@ enum DateRanges {
         let end = calendar.startOfDay(for: now)
         let start = calendar.date(byAdding: .day, value: -(days - 1), to: end) ?? end
         return DateRange(start: start, end: now)
+    }
+
+    static func fillDailyPoints(_ points: [DailyPoint], in range: DateRange, calendar: Calendar = .current) -> [DailyPoint] {
+        var byDay: [Date: DailyPoint] = [:]
+        for point in points {
+            byDay[calendar.startOfDay(for: point.date)] = point
+        }
+
+        let endDay = calendar.startOfDay(for: range.end)
+        var day = calendar.startOfDay(for: range.start)
+        var filled: [DailyPoint] = []
+
+        while day <= endDay {
+            filled.append(byDay[day] ?? DailyPoint(date: day, earnings: 0, hours: 0))
+            guard let next = calendar.date(byAdding: .day, value: 1, to: day), next > day else { break }
+            day = next
+        }
+
+        return filled
     }
 
     /// Same-shape range one period earlier — used for delta-vs-prior comparisons.
@@ -43,11 +66,42 @@ enum DateRanges {
             let startOfYesterday = cal.date(byAdding: .day, value: -1, to: startOfToday) ?? startOfToday
             let endOfYesterday = cal.date(byAdding: .second, value: -1, to: startOfToday) ?? startOfYesterday
             return DateRange(start: startOfYesterday, end: endOfYesterday)
-        case .week, .month, .year:
+        case .week:
             let current = range(for: period, now: now, calendar: cal)
             let start = cal.date(byAdding: .day, value: -period.sparklineDays, to: current.start) ?? current.start
             let end = cal.date(byAdding: .second, value: -1, to: current.start) ?? current.start
             return DateRange(start: start, end: end)
+        case .month:
+            return previousCalendarRange(.month, now: now, calendar: cal)
+        case .year:
+            return previousCalendarRange(.year, now: now, calendar: cal)
         }
+    }
+
+    private static func calendarWeekRange(now: Date, calendar: Calendar) -> DateRange {
+        var cal = calendar
+        cal.firstWeekday = 2
+        cal.minimumDaysInFirstWeek = 1
+
+        guard let interval = cal.dateInterval(of: .weekOfYear, for: now) else {
+            return sparklineRange(days: Period.week.sparklineDays, now: now, calendar: cal)
+        }
+
+        let end = cal.date(byAdding: .second, value: -1, to: interval.end) ?? interval.end
+        return DateRange(start: interval.start, end: end)
+    }
+
+    private static func calendarRange(_ component: Calendar.Component, now: Date, calendar: Calendar) -> DateRange {
+        guard let interval = calendar.dateInterval(of: component, for: now) else {
+            return DateRange(start: calendar.startOfDay(for: now), end: now)
+        }
+        let end = calendar.date(byAdding: .second, value: -1, to: interval.end) ?? interval.end
+        return DateRange(start: interval.start, end: end)
+    }
+
+    private static func previousCalendarRange(_ component: Calendar.Component, now: Date, calendar: Calendar) -> DateRange {
+        let current = calendarRange(component, now: now, calendar: calendar)
+        let previousDate = calendar.date(byAdding: component, value: -1, to: current.start) ?? current.start
+        return calendarRange(component, now: previousDate, calendar: calendar)
     }
 }

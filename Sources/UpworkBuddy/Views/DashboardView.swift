@@ -36,7 +36,8 @@ struct DashboardView: View {
                                 points: store.sparkline,
                                 currency: store.currency,
                                 masked: store.hideSensitive,
-                                metric: store.dashboardMetric
+                                metric: store.dashboardMetric,
+                                title: chartTitle
                             )
                             .zIndex(2)
                         }
@@ -53,6 +54,19 @@ struct DashboardView: View {
                 separator
                 footer
             }
+        }
+    }
+
+    private var chartTitle: String? {
+        switch store.selectedPeriod {
+        case .today:
+            return nil
+        case .week:
+            return L10n.t("This week")
+        case .month:
+            return L10n.t("This month")
+        case .year:
+            return L10n.t("This year")
         }
     }
 

@@ -50,7 +50,7 @@ struct HeroSection: View {
                         GoalRing(
                             progress: progress,
                             label: "\(Int(progress * 100))%",
-                            size: 36,
+                            size: 42,
                             lineWidth: 4
                         )
                     }

@@ -12,6 +12,7 @@ final class GoalNotificationService {
 
     private static let kLastNotified  = "UpworkBuddyGoalLastNotified"
     private static let kLastResetSeen = "UpworkBuddyGoalLastResetSeen"
+    private static let kLastProgress  = "UpworkBuddyGoalLastProgress"
 
     func requestAuthorizationIfNeeded() async {
         guard canUseNotifications else { return }
@@ -47,6 +48,7 @@ final class GoalNotificationService {
 
         var lastMap = loadMap(Self.kLastNotified)
         var resetMap = loadMap(Self.kLastResetSeen)
+        var progressMap = loadMap(Self.kLastProgress)
         let format = CurrencyFormat(code: store.currency, masked: false)
 
         let pairs: [(Period, EarningsSnapshot)] = {
@@ -87,8 +89,14 @@ final class GoalNotificationService {
                 let target = store.goalTarget(for: metric, period: period)
                 guard target > 0 else { continue }
                 let current = (metric == .hours) ? snap.totalHours : snap.totalEarnings
-                let pct = Int((current / target) * 100)
-                guard pct > 0 else { continue }
+                let pct = max(0, Int((current / target) * 100))
+                let mapKey = "\(metric.rawValue)-\(period.rawValue)"
+                let progressKey = "seen-\(mapKey)"
+                let priorPct = Self.storedProgress(progressMap[progressKey], bucket: bucket)
+                if pct == 0 {
+                    progressMap[progressKey] = Self.progressValue(bucket: bucket, pct: pct)
+                    continue
+                }
 
                 let actualText = (metric == .hours) ? current.asHours() : format.string(current)
                 let targetText = (metric == .hours) ? target.asHours() : format.string(target)
@@ -96,7 +104,8 @@ final class GoalNotificationService {
 
                 // Progress thresholds (sub-100). Always-evaluated 100% threshold is below.
                 if notificationsAllowed && store.progressNotificationsEnabled {
-                    for threshold in store.enabledThresholds.sorted() where threshold < 100 && pct >= threshold {
+                    for threshold in store.enabledThresholds.sorted()
+                    where threshold < 100 && Self.crossedThreshold(previous: priorPct, current: pct, threshold: threshold) {
                         let key = "prog-\(metric.rawValue)-\(period.rawValue)-\(threshold)"
                         if lastMap[key] == bucket { continue }
                         let remaining = max(0, 100 - threshold)
@@ -113,8 +122,7 @@ final class GoalNotificationService {
 
                 // Goal hit (100%): fires regardless of progressNotificationsEnabled, since
                 // the user explicitly opted in via goalsEnabled. Also drives confetti.
-                if pct >= 100 {
-                    let mapKey = "\(metric.rawValue)-\(period.rawValue)"
+                if Self.crossedThreshold(previous: priorPct, current: pct, threshold: 100) {
                     if lastMap[mapKey] != bucket {
                         if notificationsAllowed {
                             let body = "\(period.label) target reached — \(actualText) of \(targetText)."
@@ -132,11 +140,14 @@ final class GoalNotificationService {
                         }
                     }
                 }
+
+                progressMap[progressKey] = Self.progressValue(bucket: bucket, pct: pct)
             }
         }
 
         saveMap(lastMap, key: Self.kLastNotified)
         saveMap(resetMap, key: Self.kLastResetSeen)
+        saveMap(progressMap, key: Self.kLastProgress)
     }
 
     // MARK: - Private
@@ -165,6 +176,22 @@ final class GoalNotificationService {
     private func saveMap(_ map: [String: String], key: String) {
         guard let data = try? JSONEncoder().encode(map) else { return }
         UserDefaults.standard.set(data, forKey: key)
+    }
+
+    static func crossedThreshold(previous: Int?, current: Int, threshold: Int) -> Bool {
+        guard let previous else { return false }
+        return previous < threshold && current >= threshold
+    }
+
+    private static func progressValue(bucket: String, pct: Int) -> String {
+        "\(bucket):\(pct)"
+    }
+
+    private static func storedProgress(_ raw: String?, bucket: String) -> Int? {
+        guard let raw else { return nil }
+        let parts = raw.split(separator: ":", maxSplits: 1)
+        guard parts.count == 2, String(parts[0]) == bucket else { return nil }
+        return Int(parts[1])
     }
 
     private func bucketKey(for period: Period, on date: Date) -> String {
