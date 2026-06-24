@@ -7,6 +7,7 @@ struct PeriodSegmentedControl: View {
     var body: some View {
         HStack(spacing: 8) {
             ForEach(Period.allCases) { period in
+                let isSelected = selection == period
                 Button {
                     onSelect(period)
                 } label: {
@@ -17,18 +18,18 @@ struct PeriodSegmentedControl: View {
                         .frame(maxWidth: .infinity, minHeight: 36, alignment: .center)
                         .background(
                             RoundedRectangle(cornerRadius: Theme.radius(6))
-                                .fill(selection == period ? Theme.surface : Theme.chipBg.opacity(0.6))
+                                .fill(isSelected ? Theme.accent.opacity(0.22) : Theme.chipBg.opacity(0.6))
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: Theme.radius(6))
-                                .strokeBorder(selection == period ? Theme.divider.opacity(0.12) : Color.clear, lineWidth: 0.5)
+                                .strokeBorder(isSelected ? Theme.accent.opacity(0.45) : Color.clear, lineWidth: 0.5)
                         )
-                        .foregroundStyle(selection == period ? Theme.textPrimary : Theme.textSecondary)
-                        .shadow(color: selection == period ? Color.black.opacity(0.03) : .clear, radius: 1, y: 0.5)
+                        .foregroundStyle(isSelected ? Theme.textPrimary : Theme.textSecondary)
+                        .shadow(color: isSelected ? Theme.accent.opacity(0.12) : .clear, radius: 1, y: 0.5)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(period.label)
-                .accessibilityAddTraits(selection == period ? .isSelected : [])
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
         }
         .accessibilityElement(children: .contain)

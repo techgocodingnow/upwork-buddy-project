@@ -11,6 +11,13 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.8] - 2026-06-24
+
+### Changed
+
+- Highlighted the selected dashboard period tab with an accent-tinted
+  background, border, and shadow.
+
 ## [1.0.7] - 2026-06-24
 
 ### Changed
