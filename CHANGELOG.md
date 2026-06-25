@@ -11,6 +11,23 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.9] - 2026-06-25
+
+### Changed
+
+- Changed the Year dashboard chart to show monthly totals instead of daily bars.
+- Cached period report data using the configured refresh interval so tab
+  switches can render immediately when data is fresh.
+
+### Fixed
+
+- Replaced stale chart carry-over with skeleton loading when a period has no
+  cached data yet.
+- Stabilized the dashboard hero, chart, and Activity layout when switching
+  quickly between Today and longer periods.
+- Fixed progress indicators and chart hover tooltips so they stay inside their
+  tracks and popover bounds.
+
 ## [1.0.8] - 2026-06-24
 
 ### Changed
