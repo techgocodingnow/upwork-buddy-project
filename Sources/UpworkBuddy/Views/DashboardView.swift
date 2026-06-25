@@ -4,6 +4,10 @@ struct DashboardView: View {
     @Environment(AppStore.self) private var store
 
     var body: some View {
+        let skeleton = store.isShowingPeriodSkeleton
+        let snapshot = skeleton ? placeholderSnapshot : store.snapshot
+        let previous = skeleton ? .empty : store.previousSnapshot
+        let sparkline = skeleton ? placeholderSparkline : store.sparkline
         ZStack {
             Theme.bgGradient.ignoresSafeArea()
 
@@ -13,47 +17,78 @@ struct DashboardView: View {
                 ScrollView {
                     VStack(spacing: 12) {
                         HeroSection(
-                            snapshot: store.snapshot,
-                            previous: store.previousSnapshot,
+                            snapshot: snapshot,
+                            previous: previous,
                             period: store.selectedPeriod,
                             currency: store.currency,
                             masked: store.hideSensitive,
                             primary: store.dashboardMetric,
                             goalTarget: store.dashboardGoalTarget
                         )
+                        .redacted(reason: skeleton ? .placeholder : [])
                         PeriodSegmentedControl(selection: store.selectedPeriod) { p in
                             store.switchTo(period: p)
                         }
-                        if store.selectedPeriod == .today {
-                            TodayPulse(
-                                points: store.sparkline,
-                                snapshot: store.snapshot,
-                                currency: store.currency,
-                                masked: store.hideSensitive
-                            )
-                        } else {
-                            SparklineView(
-                                points: store.sparkline,
-                                currency: store.currency,
-                                masked: store.hideSensitive,
-                                metric: store.dashboardMetric,
-                                title: chartTitle
-                            )
-                            .zIndex(2)
+                        Group {
+                            if store.selectedPeriod == .today {
+                                TodayPulse(
+                                    points: sparkline,
+                                    snapshot: snapshot,
+                                    currency: store.currency,
+                                    masked: store.hideSensitive
+                                )
+                            } else {
+                                SparklineView(
+                                    points: sparkline,
+                                    currency: store.currency,
+                                    masked: store.hideSensitive,
+                                    metric: store.dashboardMetric,
+                                    title: chartTitle
+                                )
+                                .zIndex(2)
+                            }
                         }
+                        .frame(minHeight: 180, alignment: .top)
+                        .redacted(reason: skeleton ? .placeholder : [])
                         ProjectsList(
-                            projects: store.snapshot.projects,
+                            projects: snapshot.projects,
                             currency: store.currency,
                             masked: store.hideSensitive
                         )
+                        .frame(minHeight: 112, alignment: .top)
+                        .redacted(reason: skeleton ? .placeholder : [])
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
+                    .transaction { $0.animation = nil }
                 }
                 MusicMiniPlayer()
                 separator
                 footer
             }
+        }
+    }
+
+    private var placeholderSnapshot: EarningsSnapshot {
+        EarningsSnapshot(
+            totalHours: 42,
+            totalEarnings: 2400,
+            projects: [
+                ProjectStat(contractId: "skeleton-1", title: "Loading project", hours: 18, earnings: 1100, hourlyRate: nil),
+                ProjectStat(contractId: "skeleton-2", title: "Loading project", hours: 14, earnings: 800, hourlyRate: nil),
+                ProjectStat(contractId: "skeleton-3", title: "Loading project", hours: 10, earnings: 500, hourlyRate: nil)
+            ],
+            generatedAt: Date()
+        )
+    }
+
+    private var placeholderSparkline: [DailyPoint] {
+        let count = store.selectedPeriod == .year ? 12 : store.selectedPeriod.sparklineDays
+        let component: Calendar.Component = store.selectedPeriod == .year ? .month : .day
+        return (0..<count).map { index in
+            let date = Calendar.current.date(byAdding: component, value: index - count + 1, to: Date()) ?? Date()
+            let value = Double((index % 5) + 2)
+            return DailyPoint(date: date, earnings: value * 120, hours: value)
         }
     }
 

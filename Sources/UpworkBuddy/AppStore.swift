@@ -162,6 +162,7 @@ final class AppStore {
     var todaySnapshot: EarningsSnapshot = .empty
     var previousSnapshot: EarningsSnapshot = .empty
     var sparkline: [DailyPoint] = []
+    var isShowingPeriodSkeleton: Bool = false
 
     // MARK: - Loading
     private var loadingCount: Int = 0
@@ -219,7 +220,10 @@ final class AppStore {
     static let defaultThresholds: [Int] = [75, 90, 95]
 
     var refreshIntervalSeconds: Int {
-        didSet { UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds) }
+        didSet {
+            UserDefaults.standard.set(refreshIntervalSeconds, forKey: Self.kRefreshSeconds)
+            syncReportCacheTTL()
+        }
     }
 
     var currency: String {
@@ -518,6 +522,8 @@ final class AppStore {
     private let api = UpworkAPI()
     private var refreshTask: Task<Void, Never>?
     private var aceId: String?
+    private var periodSwitchID = 0
+    private var pendingPeriod: Period?
 
     init() {
         let defaults = UserDefaults.standard
@@ -671,6 +677,12 @@ final class AppStore {
             loaded[action] = action.defaultShortcut
         }
         self.shortcuts = loaded
+        syncReportCacheTTL()
+    }
+
+    private func syncReportCacheTTL() {
+        let seconds = TimeInterval(max(1, refreshIntervalSeconds))
+        Task { await ReportCache.shared.setTTL(seconds) }
     }
 
     private func persistIntSet(_ set: Set<Int>, key: String) {
@@ -775,9 +787,22 @@ final class AppStore {
     // MARK: - Period
 
     func switchTo(period: Period) {
-        guard period != selectedPeriod else { return }
-        selectedPeriod = period
-        Task { await refresh(force: false) }
+        if period == selectedPeriod {
+            guard pendingPeriod != nil else { return }
+            periodSwitchID += 1
+            pendingPeriod = nil
+            refreshTask?.cancel()
+            return
+        }
+        refreshTask?.cancel()
+        periodSwitchID += 1
+        let switchID = periodSwitchID
+        pendingPeriod = period
+        Task {
+            await applyCachedPeriodOrSkeleton(period: period, switchID: switchID)
+            guard selectedPeriod == period, pendingPeriod == nil else { return }
+            await refresh(force: false)
+        }
     }
 
     // MARK: - Refresh
@@ -804,38 +829,33 @@ final class AppStore {
 
     private func performRefresh(aceId: String, force: Bool) async {
         let refreshDate = Date()
-        let periodRange = DateRanges.range(for: selectedPeriod, now: refreshDate)
-        let prevRange = DateRanges.previousRange(for: selectedPeriod, now: refreshDate)
-        let sparkRange = selectedPeriod == .today
-            ? DateRanges.sparklineRange(days: selectedPeriod.sparklineDays, now: refreshDate)
-            : periodRange
+        let period = selectedPeriod
+        let ranges = ranges(for: period, now: refreshDate)
         let todayRange = DateRanges.range(for: .today, now: refreshDate)
         let weekRange = DateRanges.range(for: .week, now: refreshDate)
         let nameStyle = projectNameStyle
 
-        let key = ReportCache.Key(
-            tenantId: "",
-            rangeStart: periodRange.startString,
-            rangeEnd: periodRange.endString,
-            projectNameStyle: nameStyle
-        )
+        let key = cacheKey(for: ranges.period, nameStyle: nameStyle)
 
         if !force, let cached = await ReportCache.shared.get(key) {
+            guard selectedPeriod == period, pendingPeriod == nil else { return }
             snapshot = cached.snapshot
-            sparkline = normalizedSparkline(cached.daily, range: sparkRange)
+            previousSnapshot = .empty
+            sparkline = normalizedSparkline(cached.daily, range: ranges.spark, period: period)
+            isShowingPeriodSkeleton = false
         }
 
         loadingCount += 1
         defer { loadingCount -= 1 }
 
         do {
-            async let periodResult = api.fetchCombinedEarnings(range: periodRange, aceId: aceId, projectNameStyle: nameStyle)
-            async let prevResult = api.fetchCombinedEarnings(range: prevRange, aceId: aceId, projectNameStyle: nameStyle)
-            async let sparkResult = api.fetchCombinedEarnings(range: sparkRange, aceId: aceId, projectNameStyle: nameStyle)
-            async let todayResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .today)
+            async let periodResult = api.fetchCombinedEarnings(range: ranges.period, aceId: aceId, projectNameStyle: nameStyle)
+            async let prevResult = api.fetchCombinedEarnings(range: ranges.previous, aceId: aceId, projectNameStyle: nameStyle)
+            async let sparkResult = api.fetchCombinedEarnings(range: ranges.spark, aceId: aceId, projectNameStyle: nameStyle)
+            async let todayResult: (EarningsSnapshot, [DailyPoint])? = (period == .today)
                 ? nil
                 : api.fetchCombinedEarnings(range: todayRange, aceId: aceId, projectNameStyle: nameStyle)
-            async let weekResult: (EarningsSnapshot, [DailyPoint])? = (selectedPeriod == .week)
+            async let weekResult: (EarningsSnapshot, [DailyPoint])? = (period == .week)
                 ? nil
                 : api.fetchCombinedEarnings(range: weekRange, aceId: aceId, projectNameStyle: nameStyle)
 
@@ -844,20 +864,22 @@ final class AppStore {
             let (_, sparkDaily) = try await sparkResult
             let todayPair = try await todayResult
             let weekPair = try await weekResult
-            let normalizedSparkDaily = normalizedSparkline(sparkDaily, range: sparkRange)
+            let normalizedSparkDaily = normalizedSparkline(sparkDaily, range: ranges.spark, period: period)
 
+            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily)
+            guard selectedPeriod == period, pendingPeriod == nil else { return }
             snapshot = periodSnap
             previousSnapshot = prevSnap
             sparkline = normalizedSparkDaily
-            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily)
+            isShowingPeriodSkeleton = false
 
-            if selectedPeriod == .today {
+            if period == .today {
                 todaySnapshot = periodSnap
             } else if let pair = todayPair {
                 todaySnapshot = pair.0
             }
 
-            if selectedPeriod == .week {
+            if period == .week {
                 weekSnapshot = periodSnap
             } else if let pair = weekPair {
                 weekSnapshot = pair.0
@@ -872,10 +894,58 @@ final class AppStore {
         }
     }
 
-    private func normalizedSparkline(_ points: [DailyPoint], range: DateRange) -> [DailyPoint] {
-        selectedPeriod == .today
-            ? Array(points.suffix(selectedPeriod.sparklineDays))
-            : DateRanges.fillDailyPoints(points, in: range)
+    private func applyCachedPeriodOrSkeleton(period: Period, switchID: Int, refreshDate: Date = Date()) async {
+        let ranges = ranges(for: period, now: refreshDate)
+        let key = cacheKey(for: ranges.period, nameStyle: projectNameStyle)
+        if let cached = await ReportCache.shared.get(key) {
+            guard periodSwitchID == switchID, pendingPeriod == period else { return }
+            selectedPeriod = period
+            pendingPeriod = nil
+            snapshot = cached.snapshot
+            previousSnapshot = .empty
+            sparkline = normalizedSparkline(cached.daily, range: ranges.spark, period: period)
+            isShowingPeriodSkeleton = false
+        } else {
+            guard periodSwitchID == switchID, pendingPeriod == period else { return }
+            selectedPeriod = period
+            pendingPeriod = nil
+            snapshot = .empty
+            previousSnapshot = .empty
+            sparkline = []
+            isShowingPeriodSkeleton = true
+        }
+    }
+
+    private func ranges(for period: Period, now: Date) -> (period: DateRange, previous: DateRange, spark: DateRange) {
+        let periodRange = DateRanges.range(for: period, now: now)
+        let sparkRange = period == .today
+            ? DateRanges.sparklineRange(days: period.sparklineDays, now: now)
+            : periodRange
+        return (
+            period: periodRange,
+            previous: DateRanges.previousRange(for: period, now: now),
+            spark: sparkRange
+        )
+    }
+
+    private func cacheKey(for range: DateRange, nameStyle: ProjectNameStyle) -> ReportCache.Key {
+        ReportCache.Key(
+            tenantId: "",
+            rangeStart: range.startString,
+            rangeEnd: range.endString,
+            projectNameStyle: nameStyle
+        )
+    }
+
+    private func normalizedSparkline(_ points: [DailyPoint], range: DateRange, period: Period) -> [DailyPoint] {
+        switch period {
+        case .today:
+            return Array(points.suffix(period.sparklineDays))
+        case .year:
+            return DateRanges.fillMonthlyPoints(points, in: range)
+        case .week, .month:
+            return DateRanges.fillDailyPoints(points, in: range)
+        }
     }
 
     // MARK: - Auth
@@ -905,6 +975,7 @@ final class AppStore {
         weekSnapshot = .empty
         previousSnapshot = .empty
         sparkline = []
+        isShowingPeriodSkeleton = false
         isAuthenticated = false
     }
 

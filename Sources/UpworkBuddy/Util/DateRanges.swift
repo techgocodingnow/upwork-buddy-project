@@ -56,6 +56,43 @@ enum DateRanges {
         return filled
     }
 
+    static func fillMonthlyPoints(_ points: [DailyPoint], in range: DateRange, calendar: Calendar = .current) -> [DailyPoint] {
+        var byMonth: [Date: DailyPoint] = [:]
+        for point in points {
+            let month = calendar.dateInterval(of: .month, for: point.date)?.start ?? calendar.startOfDay(for: point.date)
+            let current = byMonth[month] ?? DailyPoint(date: month, earnings: 0, hours: 0)
+            byMonth[month] = DailyPoint(
+                date: month,
+                earnings: current.earnings + point.earnings,
+                hours: current.hours + point.hours,
+                breakdown: mergedBreakdown(current.breakdown + point.breakdown)
+            )
+        }
+
+        let endMonth = calendar.dateInterval(of: .month, for: range.end)?.start ?? calendar.startOfDay(for: range.end)
+        var month = calendar.dateInterval(of: .month, for: range.start)?.start ?? calendar.startOfDay(for: range.start)
+        var filled: [DailyPoint] = []
+
+        while month <= endMonth {
+            filled.append(byMonth[month] ?? DailyPoint(date: month, earnings: 0, hours: 0))
+            guard let next = calendar.date(byAdding: .month, value: 1, to: month), next > month else { break }
+            month = next
+        }
+
+        return filled
+    }
+
+    private static func mergedBreakdown(_ rows: [DailyBreakdown]) -> [DailyBreakdown] {
+        var totals: [String: (earnings: Double, hours: Double)] = [:]
+        for row in rows {
+            let current = totals[row.label] ?? (earnings: 0, hours: 0)
+            totals[row.label] = (earnings: current.earnings + row.earnings, hours: current.hours + row.hours)
+        }
+        return totals
+            .map { DailyBreakdown(label: $0.key, earnings: $0.value.earnings, hours: $0.value.hours) }
+            .sorted { $0.earnings == $1.earnings ? $0.label < $1.label : $0.earnings > $1.earnings }
+    }
+
     /// Same-shape range one period earlier — used for delta-vs-prior comparisons.
     /// Today→yesterday, Week→last week, Month→last month, Year→last year.
     static func previousRange(for period: Period, now: Date = Date(), calendar: Calendar = .current) -> DateRange {

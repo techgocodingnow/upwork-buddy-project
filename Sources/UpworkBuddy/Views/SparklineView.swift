@@ -80,7 +80,7 @@ struct SparklineView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .frame(height: 64)
+            .frame(height: 128)
             .overlay(alignment: .topLeading) {
                 GeometryReader { geo in
                     let count = max(values.count, 1)
@@ -183,7 +183,7 @@ struct SparklineView: View {
 
     private func tooltipX(idx: Int, barW: CGFloat, gap: CGFloat, width: CGFloat) -> CGFloat {
         let center = CGFloat(idx) * (barW + gap) + barW / 2
-        let tooltipW: CGFloat = 320
+        let tooltipW: CGFloat = 340
         let clamped = min(max(center - tooltipW / 2, 0), max(0, width - tooltipW))
         return clamped
     }

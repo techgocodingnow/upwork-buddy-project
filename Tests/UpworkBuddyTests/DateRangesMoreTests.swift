@@ -115,6 +115,43 @@ struct DateRangesMoreTests {
         #expect(points[6].earnings == 0)
     }
 
+    @Test func fillMonthlyPointsPadsYearAndAggregatesMonths() {
+        let now = date("2026-06-24 09:00:00")
+        let range = DateRanges.range(for: .year, now: now, calendar: posixCal)
+        let points = DateRanges.fillMonthlyPoints([
+            DailyPoint(
+                date: date("2026-01-05 00:00:00"),
+                earnings: 10,
+                hours: 1,
+                breakdown: [DailyBreakdown(label: "A", earnings: 10, hours: 1)]
+            ),
+            DailyPoint(
+                date: date("2026-01-20 00:00:00"),
+                earnings: 5,
+                hours: 0.5,
+                breakdown: [
+                    DailyBreakdown(label: "A", earnings: 4, hours: 0.4),
+                    DailyBreakdown(label: "B", earnings: 1, hours: 0.1)
+                ]
+            ),
+            DailyPoint(date: date("2026-03-01 00:00:00"), earnings: 7, hours: 2)
+        ], in: range, calendar: posixCal)
+
+        let first = posixCal.dateComponents([.month, .day], from: points[0].date)
+        let last = posixCal.dateComponents([.month, .day], from: points[11].date)
+        #expect(points.count == 12)
+        #expect(first.month == 1)
+        #expect(first.day == 1)
+        #expect(last.month == 12)
+        #expect(last.day == 1)
+        #expect(points[0].earnings == 15)
+        #expect(points[0].hours == 1.5)
+        #expect(points[0].breakdown[0].label == "A")
+        #expect(points[0].breakdown[0].earnings == 14)
+        #expect(points[1].earnings == 0)
+        #expect(points[2].earnings == 7)
+    }
+
     // MARK: - previousRange
 
     @Test func previousTodayIsYesterday() {

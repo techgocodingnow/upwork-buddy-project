@@ -34,10 +34,11 @@ struct MenuBarStylePreview: View {
             RoundedRectangle(cornerRadius: radius, style: .continuous)
                 .strokeBorder(Theme.divider.opacity(0.7), lineWidth: 1)
             GeometryReader { geo in
+                let fillWidth = max(0, geo.size.width - 4) * clamped
                 HStack(spacing: 0) {
                     RoundedRectangle(cornerRadius: radius - 2, style: .continuous)
                         .fill(fillColor)
-                        .frame(width: geo.size.width * clamped)
+                        .frame(width: fillWidth)
                     Spacer(minLength: 0)
                 }
                 .padding(2)
@@ -59,10 +60,11 @@ struct MenuBarStylePreview: View {
             .strokeBorder(Theme.divider.opacity(0.6), lineWidth: 1)
             .background(
                 GeometryReader { geo in
+                    let fillWidth = max(0, geo.size.width - 4) * clamped
                     HStack(spacing: 0) {
                         RoundedRectangle(cornerRadius: radius - 2, style: .continuous)
                             .fill(fillColor)
-                            .frame(width: geo.size.width * clamped)
+                            .frame(width: fillWidth)
                         Spacer(minLength: 0)
                     }
                     .padding(2)

@@ -33,7 +33,7 @@ struct HeroSection: View {
                 deltaChip(format: format)
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .center, spacing: 8) {
                 Text(primary == .earnings ? earningsText : hoursText)
                     .font(.system(size: 36, weight: .bold, design: .default))
                     .foregroundStyle(Theme.accentDeep)
@@ -43,9 +43,9 @@ struct HeroSection: View {
                     .accessibilityAddTraits(.isHeader)
                     .accessibilityLabel("\(period.label) \(primary == .earnings ? "earnings" : "hours"): \(primary == .earnings ? earningsText : hoursText)")
                 Spacer(minLength: 8)
-                if goalTarget > 0 {
-                    let current = (primary == .earnings) ? snapshot.totalEarnings : snapshot.totalHours
-                    if current > 0.01 {
+                let current = (primary == .earnings) ? snapshot.totalEarnings : snapshot.totalHours
+                ZStack {
+                    if goalTarget > 0 && current > 0.01 {
                         let progress = current / goalTarget
                         GoalRing(
                             progress: progress,
@@ -55,6 +55,7 @@ struct HeroSection: View {
                         )
                     }
                 }
+                .frame(width: 42, height: 42)
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(primary == .earnings ? hoursText : earningsText)
                         .font(Theme.body(size: 13, weight: .semibold))
@@ -81,34 +82,35 @@ struct HeroSection: View {
     private func deltaChip(format: CurrencyFormat) -> some View {
         let current = primary == .earnings ? snapshot.totalEarnings : snapshot.totalHours
         let prior = primary == .earnings ? previous.totalEarnings : previous.totalHours
-        if prior > 0.01 && current > 0.01 {
-            let delta = current - prior
-            let pct = (delta / prior) * 100
-            let positive = delta >= 0
-            let tooltip = deltaTooltip(delta: delta, format: format)
-            HStack(spacing: 3) {
-                Image(systemName: positive ? "arrow.up.right" : "arrow.down.right")
-                    .font(Theme.body(size: 9, weight: .semibold))
-                    .accessibilityHidden(true)
-                Text(String(format: "%@%.0f%%", positive ? "+" : "", pct))
-                    .font(Theme.body(size: 11, weight: .semibold))
-            }
-            .foregroundStyle(positive
-                ? SeverityColor.positive(colorScheme)
-                : SeverityColor.critical(colorScheme))
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(
-                Capsule().fill((positive
+        ZStack(alignment: .leading) {
+            if prior > 0.01 && current > 0.01 {
+                let delta = current - prior
+                let pct = (delta / prior) * 100
+                let positive = delta >= 0
+                let tooltip = deltaTooltip(delta: delta, format: format)
+                HStack(spacing: 3) {
+                    Image(systemName: positive ? "arrow.up.right" : "arrow.down.right")
+                        .font(Theme.body(size: 9, weight: .semibold))
+                        .accessibilityHidden(true)
+                    Text(String(format: "%@%.0f%%", positive ? "+" : "", pct))
+                        .font(Theme.body(size: 11, weight: .semibold))
+                }
+                .foregroundStyle(positive
                     ? SeverityColor.positive(colorScheme)
-                    : SeverityColor.critical(colorScheme)).opacity(0.14))
-            )
-            .help(tooltip)
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(tooltip)
-        } else {
-            EmptyView()
+                    : SeverityColor.critical(colorScheme))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    Capsule().fill((positive
+                        ? SeverityColor.positive(colorScheme)
+                        : SeverityColor.critical(colorScheme)).opacity(0.14))
+                )
+                .help(tooltip)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(tooltip)
+            }
         }
+        .frame(width: 62, height: 20, alignment: .leading)
     }
 
     private func deltaTooltip(delta: Double, format: CurrencyFormat) -> String {

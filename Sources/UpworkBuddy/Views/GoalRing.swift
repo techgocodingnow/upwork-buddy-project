@@ -21,7 +21,6 @@ struct GoalRing: View {
                     style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
-                .animation(.easeInOut(duration: 0.4), value: clamped)
 
             VStack(spacing: 0) {
                 Text(label)
