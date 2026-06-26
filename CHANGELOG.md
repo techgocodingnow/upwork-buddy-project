@@ -11,6 +11,13 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.11] - 2026-06-26
+
+### Fixed
+
+- Keep Today Activity rows tied to actual worked time so posted invoice
+  transactions do not show as `0h` projects for the day.
+
 ## [1.0.10] - 2026-06-26
 
 ### Changed

@@ -74,6 +74,7 @@ struct UpworkAPI: Sendable {
             txRows: txRows,
             timeRows: timeRows,
             filterDate: filterDate,
+            workDateEarningsOnly: cal.isDate(range.start, inSameDayAs: range.end),
             projectNameStyle: projectNameStyle
         )
     }
@@ -307,6 +308,7 @@ struct UpworkAPI: Sendable {
         txRows: [TransactionRow],
         timeRows: [TimeReportRow],
         filterDate: Date? = nil,
+        workDateEarningsOnly: Bool = false,
         projectNameStyle: ProjectNameStyle = .projectTitle
     ) -> (EarningsSnapshot, [DailyPoint]) {
         let cal = Calendar.current
@@ -394,7 +396,7 @@ struct UpworkAPI: Sendable {
         var matchedClients = Set<String>()
         var projects: [ProjectStat] = byContract.map { (cid, agg) in
             var earnings = agg.gross
-            if let cname = agg.clientName, let net = earningsByClient[cname] {
+            if !workDateEarningsOnly, let cname = agg.clientName, let net = earningsByClient[cname] {
                 earnings = net
                 matchedClients.insert(cname)
             }
@@ -408,14 +410,16 @@ struct UpworkAPI: Sendable {
         }
 
         // Residual rows: clients with earnings but no matching active contract.
-        for (clientName, amount) in earningsByClient where !matchedClients.contains(clientName) {
-            projects.append(ProjectStat(
-                contractId: "client:\(clientName)",
-                title: clientName,
-                hours: 0,
-                earnings: amount,
-                hourlyRate: nil
-            ))
+        if !workDateEarningsOnly {
+            for (clientName, amount) in earningsByClient where !matchedClients.contains(clientName) {
+                projects.append(ProjectStat(
+                    contractId: "client:\(clientName)",
+                    title: clientName,
+                    hours: 0,
+                    earnings: amount,
+                    hourlyRate: nil
+                ))
+            }
         }
         projects.sort { $0.earnings > $1.earnings }
 

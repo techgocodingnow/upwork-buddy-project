@@ -118,6 +118,47 @@ final class AggregationTests: XCTestCase {
         XCTAssertEqual(snapshot.totalHours, 0)
     }
 
+    func testSingleDayWorkSnapshotIgnoresPostedTransactionWithoutHours() {
+        let day = DateRange.iso.date(from: "2026-06-26")!
+        let timeRows = [
+            TimeReportRow(
+                dateWorkedOn: "2026-06-26",
+                hours: 4.1666666667,
+                charges: 158.333333,
+                contractId: "service-monster",
+                contractTitle: "ServiceMonster",
+                clientName: "ServiceMonster",
+                hourlyRate: 38
+            )
+        ]
+        let txRows = [
+            TransactionRow(
+                date: "2026-06-26T00:00:00+0000",
+                type: "APInvoice",
+                subtype: "Hourly",
+                clientName: "Xcelerate Restoration Software",
+                teamId: nil,
+                amount: 249,
+                currency: "USD"
+            )
+        ]
+
+        let (snapshot, _) = UpworkAPI.merge(
+            txRows: txRows,
+            timeRows: timeRows,
+            filterDate: day,
+            workDateEarningsOnly: true
+        )
+
+        XCTAssertEqual(snapshot.projects.count, 1)
+        XCTAssertEqual(snapshot.projects.first?.title, "ServiceMonster")
+        XCTAssertEqual(snapshot.projects.first?.hours ?? 0, 4.1666666667, accuracy: 0.001)
+        XCTAssertEqual(snapshot.projects.first?.earnings ?? 0, 158.333333, accuracy: 0.001)
+        XCTAssertNil(snapshot.projects.first { $0.title.contains("Xcelerate") })
+        XCTAssertEqual(snapshot.totalHours, 4.1666666667, accuracy: 0.001)
+        XCTAssertEqual(snapshot.totalEarnings, 158.333333, accuracy: 0.001)
+    }
+
     // MARK: - overlayWorkDiary (live current-day hours)
 
     func testOverlayUsesLiveHoursWhenReportLagsAtZero() {
