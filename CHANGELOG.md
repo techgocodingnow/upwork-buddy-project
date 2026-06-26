@@ -11,6 +11,19 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.10] - 2026-06-26
+
+### Changed
+
+- Fetch the selected dashboard period first, then warm the other period caches
+  in the background.
+
+### Fixed
+
+- Preserve cached previous-period totals so cached tabs keep the change badge
+  accurate.
+- Trigger goal celebrations when today's completed goal is first observed.
+
 ## [1.0.9] - 2026-06-25
 
 ### Changed
