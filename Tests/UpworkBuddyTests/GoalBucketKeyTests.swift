@@ -99,6 +99,8 @@ struct GoalBucketKeyTests {
         #expect(!GoalNotificationService.crossedThreshold(previous: nil, current: 120, threshold: 100))
         #expect(GoalNotificationService.crossedThreshold(previous: 0, current: 100, threshold: 100))
         #expect(GoalNotificationService.crossedThreshold(previous: 99, current: 100, threshold: 100))
+        #expect(GoalNotificationService.crossedThreshold(previous: nil, current: 120, threshold: 100, includeFirstObservation: true))
+        #expect(!GoalNotificationService.crossedThreshold(previous: nil, current: 90, threshold: 100, includeFirstObservation: true))
         #expect(!GoalNotificationService.crossedThreshold(previous: 100, current: 120, threshold: 100))
         #expect(!GoalNotificationService.crossedThreshold(previous: 80, current: 90, threshold: 100))
     }

@@ -122,7 +122,7 @@ final class GoalNotificationService {
 
                 // Goal hit (100%): fires regardless of progressNotificationsEnabled, since
                 // the user explicitly opted in via goalsEnabled. Also drives confetti.
-                if Self.crossedThreshold(previous: priorPct, current: pct, threshold: 100) {
+                if Self.crossedThreshold(previous: priorPct, current: pct, threshold: 100, includeFirstObservation: true) {
                     if lastMap[mapKey] != bucket {
                         if notificationsAllowed {
                             let body = "\(period.label) target reached — \(actualText) of \(targetText)."
@@ -178,8 +178,8 @@ final class GoalNotificationService {
         UserDefaults.standard.set(data, forKey: key)
     }
 
-    static func crossedThreshold(previous: Int?, current: Int, threshold: Int) -> Bool {
-        guard let previous else { return false }
+    static func crossedThreshold(previous: Int?, current: Int, threshold: Int, includeFirstObservation: Bool = false) -> Bool {
+        guard let previous else { return includeFirstObservation && current >= threshold }
         return previous < threshold && current >= threshold
     }
 

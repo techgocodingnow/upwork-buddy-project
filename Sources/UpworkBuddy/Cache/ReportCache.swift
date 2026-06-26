@@ -15,6 +15,7 @@ actor ReportCache {
     struct Entry {
         let snapshot: EarningsSnapshot
         let daily: [DailyPoint]
+        let previous: EarningsSnapshot
         let storedAt: Date
     }
 
@@ -34,8 +35,8 @@ actor ReportCache {
         return entry
     }
 
-    func set(_ key: Key, snapshot: EarningsSnapshot, daily: [DailyPoint]) {
-        entries[key] = Entry(snapshot: snapshot, daily: daily, storedAt: clock.now())
+    func set(_ key: Key, snapshot: EarningsSnapshot, daily: [DailyPoint], previous: EarningsSnapshot = .empty) {
+        entries[key] = Entry(snapshot: snapshot, daily: daily, previous: previous, storedAt: clock.now())
     }
 
     func clear() { entries.removeAll() }

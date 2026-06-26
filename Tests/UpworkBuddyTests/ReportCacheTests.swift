@@ -17,6 +17,16 @@ final class ReportCacheTests: XCTestCase {
         XCTAssertNotNil(entry)
     }
 
+    func testStoresPreviousSnapshot() async {
+        let cache = ReportCache()
+        let key = ReportCache.Key(tenantId: "t1", rangeStart: "2026-05-01", rangeEnd: "2026-05-04")
+        let previous = EarningsSnapshot(totalHours: 3, totalEarnings: 120, projects: [], generatedAt: Date())
+        await cache.set(key, snapshot: .empty, daily: [], previous: previous)
+        let entry = await cache.get(key)
+        XCTAssertEqual(entry?.previous.totalHours, 3)
+        XCTAssertEqual(entry?.previous.totalEarnings, 120)
+    }
+
     func testForceBypassesCache() async {
         let cache = ReportCache()
         let key = ReportCache.Key(tenantId: "t1", rangeStart: "2026-05-01", rangeEnd: "2026-05-04")

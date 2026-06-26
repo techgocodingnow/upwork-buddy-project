@@ -521,6 +521,7 @@ final class AppStore {
 
     private let api = UpworkAPI()
     private var refreshTask: Task<Void, Never>?
+    private var cacheWarmTask: Task<Void, Never>?
     private var aceId: String?
     private var periodSwitchID = 0
     private var pendingPeriod: Period?
@@ -769,7 +770,7 @@ final class AppStore {
     func bootstrap() async {
         if KeychainStore.read(.refresh) != nil {
             isAuthenticated = true
-            await resolveAceAndRefresh(force: true)
+            await resolveAceAndRefresh(force: false)
         } else {
             isAuthenticated = false
         }
@@ -792,9 +793,11 @@ final class AppStore {
             periodSwitchID += 1
             pendingPeriod = nil
             refreshTask?.cancel()
+            cacheWarmTask?.cancel()
             return
         }
         refreshTask?.cancel()
+        cacheWarmTask?.cancel()
         periodSwitchID += 1
         let switchID = periodSwitchID
         pendingPeriod = period
@@ -820,6 +823,7 @@ final class AppStore {
             return
         }
         refreshTask?.cancel()
+        cacheWarmTask?.cancel()
         let task = Task { @MainActor in
             await self.performRefresh(aceId: ace, force: force)
         }
@@ -831,8 +835,6 @@ final class AppStore {
         let refreshDate = Date()
         let period = selectedPeriod
         let ranges = ranges(for: period, now: refreshDate)
-        let todayRange = DateRanges.range(for: .today, now: refreshDate)
-        let weekRange = DateRanges.range(for: .week, now: refreshDate)
         let nameStyle = projectNameStyle
 
         let key = cacheKey(for: ranges.period, nameStyle: nameStyle)
@@ -840,9 +842,15 @@ final class AppStore {
         if !force, let cached = await ReportCache.shared.get(key) {
             guard selectedPeriod == period, pendingPeriod == nil else { return }
             snapshot = cached.snapshot
-            previousSnapshot = .empty
+            previousSnapshot = cached.previous
             sparkline = normalizedSparkline(cached.daily, range: ranges.spark, period: period)
             isShowingPeriodSkeleton = false
+            if period == .today { todaySnapshot = cached.snapshot }
+            if period == .week { weekSnapshot = cached.snapshot }
+            lastError = nil
+            await GoalNotificationService.shared.evaluate(store: self)
+            warmPeriodCaches(excluding: period, aceId: aceId, refreshDate: refreshDate, nameStyle: nameStyle, force: force)
+            return
         }
 
         loadingCount += 1
@@ -852,21 +860,13 @@ final class AppStore {
             async let periodResult = api.fetchCombinedEarnings(range: ranges.period, aceId: aceId, projectNameStyle: nameStyle)
             async let prevResult = api.fetchCombinedEarnings(range: ranges.previous, aceId: aceId, projectNameStyle: nameStyle)
             async let sparkResult = api.fetchCombinedEarnings(range: ranges.spark, aceId: aceId, projectNameStyle: nameStyle)
-            async let todayResult: (EarningsSnapshot, [DailyPoint])? = (period == .today)
-                ? nil
-                : api.fetchCombinedEarnings(range: todayRange, aceId: aceId, projectNameStyle: nameStyle)
-            async let weekResult: (EarningsSnapshot, [DailyPoint])? = (period == .week)
-                ? nil
-                : api.fetchCombinedEarnings(range: weekRange, aceId: aceId, projectNameStyle: nameStyle)
 
             let (periodSnap, _) = try await periodResult
             let (prevSnap, _) = try await prevResult
             let (_, sparkDaily) = try await sparkResult
-            let todayPair = try await todayResult
-            let weekPair = try await weekResult
             let normalizedSparkDaily = normalizedSparkline(sparkDaily, range: ranges.spark, period: period)
 
-            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily)
+            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily, previous: prevSnap)
             guard selectedPeriod == period, pendingPeriod == nil else { return }
             snapshot = periodSnap
             previousSnapshot = prevSnap
@@ -875,18 +875,15 @@ final class AppStore {
 
             if period == .today {
                 todaySnapshot = periodSnap
-            } else if let pair = todayPair {
-                todaySnapshot = pair.0
             }
 
             if period == .week {
                 weekSnapshot = periodSnap
-            } else if let pair = weekPair {
-                weekSnapshot = pair.0
             }
 
             lastError = nil
             await GoalNotificationService.shared.evaluate(store: self)
+            warmPeriodCaches(excluding: period, aceId: aceId, refreshDate: refreshDate, nameStyle: nameStyle, force: force)
         } catch is CancellationError {
             // Period changed mid-flight; ignore.
         } catch {
@@ -902,9 +899,11 @@ final class AppStore {
             selectedPeriod = period
             pendingPeriod = nil
             snapshot = cached.snapshot
-            previousSnapshot = .empty
+            previousSnapshot = cached.previous
             sparkline = normalizedSparkline(cached.daily, range: ranges.spark, period: period)
             isShowingPeriodSkeleton = false
+            if period == .today { todaySnapshot = cached.snapshot }
+            if period == .week { weekSnapshot = cached.snapshot }
         } else {
             guard periodSwitchID == switchID, pendingPeriod == period else { return }
             selectedPeriod = period
@@ -913,6 +912,71 @@ final class AppStore {
             previousSnapshot = .empty
             sparkline = []
             isShowingPeriodSkeleton = true
+        }
+    }
+
+    private func warmPeriodCaches(
+        excluding selected: Period,
+        aceId: String,
+        refreshDate: Date,
+        nameStyle: ProjectNameStyle,
+        force: Bool
+    ) {
+        cacheWarmTask?.cancel()
+        let periods = Period.allCases.filter { $0 != selected }
+        cacheWarmTask = Task { @MainActor in
+            for period in periods {
+                guard !Task.isCancelled else { return }
+                await warmPeriodCache(
+                    period: period,
+                    aceId: aceId,
+                    refreshDate: refreshDate,
+                    nameStyle: nameStyle,
+                    force: force
+                )
+            }
+        }
+    }
+
+    private func warmPeriodCache(
+        period: Period,
+        aceId: String,
+        refreshDate: Date,
+        nameStyle: ProjectNameStyle,
+        force: Bool
+    ) async {
+        let ranges = ranges(for: period, now: refreshDate)
+        let key = cacheKey(for: ranges.period, nameStyle: nameStyle)
+        if !force, let cached = await ReportCache.shared.get(key) {
+            await applyWarmedSideSnapshot(period: period, snapshot: cached.snapshot)
+            return
+        }
+
+        do {
+            async let periodResult = api.fetchCombinedEarnings(range: ranges.period, aceId: aceId, projectNameStyle: nameStyle)
+            async let prevResult = api.fetchCombinedEarnings(range: ranges.previous, aceId: aceId, projectNameStyle: nameStyle)
+            async let sparkResult = api.fetchCombinedEarnings(range: ranges.spark, aceId: aceId, projectNameStyle: nameStyle)
+
+            let (periodSnap, _) = try await periodResult
+            let (prevSnap, _) = try await prevResult
+            let (_, sparkDaily) = try await sparkResult
+            let normalizedSparkDaily = normalizedSparkline(sparkDaily, range: ranges.spark, period: period)
+            await ReportCache.shared.set(key, snapshot: periodSnap, daily: normalizedSparkDaily, previous: prevSnap)
+            await applyWarmedSideSnapshot(period: period, snapshot: periodSnap)
+        } catch is CancellationError {
+            // A selected-period refresh or tab switch should take priority.
+        } catch {
+            // Background cache warming is best-effort; keep the visible period clean.
+        }
+    }
+
+    private func applyWarmedSideSnapshot(period: Period, snapshot: EarningsSnapshot) async {
+        if period == .today {
+            todaySnapshot = snapshot
+            await GoalNotificationService.shared.evaluate(store: self)
+        }
+        if period == .week {
+            weekSnapshot = snapshot
         }
     }
 
@@ -967,6 +1031,8 @@ final class AppStore {
     }
 
     func logout() async {
+        cacheWarmTask?.cancel()
+        refreshTask?.cancel()
         await OAuthClient.shared.logout()
         await ReportCache.shared.clear()
         aceId = nil
