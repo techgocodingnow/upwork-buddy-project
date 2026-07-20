@@ -11,6 +11,11 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+### Fixed
+
+- Fetch every page of yearly Upwork time-report data so the Year dashboard
+  includes work after the first API page instead of stopping around March.
+
 ## [1.0.11] - 2026-06-26
 
 ### Fixed

@@ -43,12 +43,19 @@ enum Queries {
     /// type name varies by tenant; literals are inlined to avoid that lookup.
     /// Returns gross `totalCharges` (hours × rate, before fees), real `totalHoursWorked`,
     /// and contract metadata including `hourlyTerms[].hourlyRate.rawValue`.
-    static func contractTimeReport(rangeStart: String, rangeEnd: String) -> String {
-        """
+    static func contractTimeReport(
+        rangeStart: String,
+        rangeEnd: String,
+        first: Int = 100,
+        after: String? = nil
+    ) -> String {
+        let afterArgument = after.map { ", after: \(graphQLStringLiteral($0))" } ?? ""
+        return """
         query ContractTimeReport {
           user {
             contractTimeReport(
               timeReportDate_bt: {rangeStart: "\(rangeStart)", rangeEnd: "\(rangeEnd)"}
+              pagination: { first: \(first)\(afterArgument) }
             ) {
               edges {
                 node {
@@ -74,6 +81,15 @@ enum Queries {
           }
         }
         """
+    }
+
+    private static func graphQLStringLiteral(_ value: String) -> String {
+        guard let data = try? JSONEncoder().encode(value),
+              let literal = String(data: data, encoding: .utf8)
+        else {
+            return "\"\""
+        }
+        return literal
     }
 
     /// Freelancer Work Diary for one contract on one day. `date` is compact

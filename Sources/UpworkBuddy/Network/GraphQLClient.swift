@@ -29,9 +29,26 @@ private struct GraphQLPayload: Encodable {
     let variables: [String: JSONValue]
 }
 
+protocol GraphQLExecuting: Sendable {
+    func execute<T: Decodable & Sendable>(
+        query: String,
+        variables: [String: JSONValue],
+        as type: T.Type
+    ) async throws -> T
+}
+
+extension GraphQLExecuting {
+    func execute<T: Decodable & Sendable>(
+        query: String,
+        as type: T.Type
+    ) async throws -> T {
+        try await execute(query: query, variables: [:], as: type)
+    }
+}
+
 /// Thin GraphQL client over URLSession with one-shot token refresh on 401 and
 /// per-tenant header injection.
-actor GraphQLClient {
+actor GraphQLClient: GraphQLExecuting {
     static let shared = GraphQLClient()
 
     private var tenantId: String?
