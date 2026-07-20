@@ -11,6 +11,15 @@ automatically and used as the GitHub Release notes.
 
 ## [Unreleased]
 
+## [1.0.13] - 2026-07-21
+
+### Changed
+
+- Show only the month name in Year chart detail headers because each bar
+  represents a whole calendar month.
+
+## [1.0.12] - 2026-07-21
+
 ### Fixed
 
 - Fetch every page of yearly Upwork time-report data so the Year dashboard
