@@ -17,9 +17,9 @@ enum ProjectNameStyle: String, CaseIterable, Sendable, Identifiable {
 /// High-level facade over `GraphQLClient`. Returns plain models the UI can render
 /// without knowing GraphQL.
 struct UpworkAPI: Sendable {
-    let client: GraphQLClient
+    let client: any GraphQLExecuting
 
-    init(client: GraphQLClient = .shared) {
+    init(client: any GraphQLExecuting = GraphQLClient.shared) {
         self.client = client
     }
 
@@ -243,12 +243,19 @@ struct UpworkAPI: Sendable {
     // MARK: - contractTimeReport
 
     /// Freelancer-side per-day hours + gross charges + hourly rate per contract.
-    /// Single-page fetch — `pageInfo.hasNextPage` ignored for now (1-month window
-    /// is well below typical page size for personal accounts).
+    /// Follows the report connection cursor until every page in the requested
+    /// range has been loaded.
     func fetchTimeReport(range: DateRange) async throws -> [TimeReportRow] {
         struct Resp: Decodable {
             struct User: Decodable { let contractTimeReport: Conn? }
-            struct Conn: Decodable { let edges: [Edge]? }
+            struct Conn: Decodable {
+                let edges: [Edge]?
+                let pageInfo: PageInfo?
+            }
+            struct PageInfo: Decodable {
+                let endCursor: String?
+                let hasNextPage: Bool?
+            }
             struct Edge: Decodable { let node: Node }
             struct Node: Decodable {
                 let dateWorkedOn: String?
@@ -271,25 +278,46 @@ struct UpworkAPI: Sendable {
             let user: User?
         }
 
-        let query = Queries.contractTimeReport(
-            rangeStart: Self.compactDateString(range.start),
-            rangeEnd: Self.compactDateString(range.end)
-        )
-        let resp = try await client.execute(query: query, as: Resp.self)
-        let edges = resp.user?.contractTimeReport?.edges ?? []
-        return edges.map { e in
-            let topRate = e.node.contract?.terms?.hourlyTerms?.first?.hourlyRate?.rawValue
-                .flatMap(Double.init)
-            return TimeReportRow(
-                dateWorkedOn: e.node.dateWorkedOn,
-                hours: e.node.totalHoursWorked,
-                charges: e.node.totalCharges,
-                contractId: e.node.contract?.id,
-                contractTitle: e.node.contract?.title,
-                clientName: e.node.contract?.clientTeam?.name,
-                hourlyRate: topRate
+        let rangeStart = Self.compactDateString(range.start)
+        let rangeEnd = Self.compactDateString(range.end)
+        var after: String?
+        var seenCursors = Set<String>()
+        var rows: [TimeReportRow] = []
+
+        while true {
+            let query = Queries.contractTimeReport(
+                rangeStart: rangeStart,
+                rangeEnd: rangeEnd,
+                after: after
             )
+            let resp = try await client.execute(query: query, as: Resp.self)
+            let connection = resp.user?.contractTimeReport
+
+            for edge in connection?.edges ?? [] {
+                let topRate = edge.node.contract?.terms?.hourlyTerms?.first?.hourlyRate?.rawValue
+                    .flatMap(Double.init)
+                rows.append(TimeReportRow(
+                    dateWorkedOn: edge.node.dateWorkedOn,
+                    hours: edge.node.totalHoursWorked,
+                    charges: edge.node.totalCharges,
+                    contractId: edge.node.contract?.id,
+                    contractTitle: edge.node.contract?.title,
+                    clientName: edge.node.contract?.clientTeam?.name,
+                    hourlyRate: topRate
+                ))
+            }
+
+            guard connection?.pageInfo?.hasNextPage == true else { break }
+            guard let nextCursor = connection?.pageInfo?.endCursor,
+                  !nextCursor.isEmpty,
+                  seenCursors.insert(nextCursor).inserted
+            else {
+                throw UpworkError.decoding("Time report pagination did not advance")
+            }
+            after = nextCursor
         }
+
+        return rows
     }
 
     // MARK: - Merge
