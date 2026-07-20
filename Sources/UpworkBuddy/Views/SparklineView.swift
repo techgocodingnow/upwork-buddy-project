@@ -1,11 +1,27 @@
 import SwiftUI
 
+enum SparklineDateLabelFormatter {
+    static func string(
+        for date: Date,
+        period: Period,
+        locale: Locale = L10n.currentLocale,
+        timeZone: TimeZone = .current
+    ) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.setLocalizedDateFormatFromTemplate(period == .year ? "MMM" : "EEE MMM d")
+        return formatter.string(from: date)
+    }
+}
+
 struct SparklineView: View {
     let points: [DailyPoint]
     let currency: String
     var masked: Bool = false
     var metric: MenuBarMetric = .earnings
     var title: String?
+    let period: Period
 
     @State private var hoverIndex: Int?
 
@@ -108,15 +124,12 @@ struct SparklineView: View {
     }
 
     private func tooltip(for point: DailyPoint, format: CurrencyFormat) -> some View {
-        let f = DateFormatter()
-        f.locale = L10n.currentLocale
-        f.setLocalizedDateFormatFromTemplate("EEE MMM d")
         let rows = Array(point.breakdown.prefix(5))
         let isPayoutOnly = point.earnings > 0 && point.hours <= 0.01
         let primaryValue = metric == .hours ? point.hours.asHours() : format.compact(point.earnings)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(f.string(from: point.date))
+                Text(SparklineDateLabelFormatter.string(for: point.date, period: period))
                     .font(Theme.body(size: 11, weight: .semibold))
                     .foregroundStyle(Theme.textPrimary)
                 if isPayoutOnly {

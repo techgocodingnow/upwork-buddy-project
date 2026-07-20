@@ -43,7 +43,8 @@ struct DashboardView: View {
                                     currency: store.currency,
                                     masked: store.hideSensitive,
                                     metric: store.dashboardMetric,
-                                    title: chartTitle
+                                    title: chartTitle,
+                                    period: store.selectedPeriod
                                 )
                                 .zIndex(2)
                             }
